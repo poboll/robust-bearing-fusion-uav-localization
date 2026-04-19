@@ -54,3 +54,16 @@ conda run -n uu python create_graphical_abstract.py
 - `submission/manuscript/manuscript_final.tex`: synchronized backup manuscript source
 - `submission/manuscript/manuscript_final.pdf`: compiled PDF proof
 - `submission/pre_submission_audit.md`: current completion and remaining-item audit
+
+## Publication Workspace
+
+- GitHub repository: `git@github.com:poboll/2026-04-17-b-passive-localization-sci.git`
+- Web URL: `https://github.com/poboll/2026-04-17-b-passive-localization-sci`
+- Current MDPI PDF: `submission/mdpi_manuscript/manuscript_mdpi.pdf`
+
+## Rebuild PDF
+
+```bash
+cd submission/mdpi_manuscript
+latexmk -pdf -interaction=nonstopmode manuscript_mdpi.tex
+```
