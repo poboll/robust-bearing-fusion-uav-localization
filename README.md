@@ -57,8 +57,8 @@ conda run -n uu python create_graphical_abstract.py
 
 ## Publication Workspace
 
-- GitHub repository: `git@github.com:poboll/2026-04-17-b-passive-localization-sci.git`
-- Web URL: `https://github.com/poboll/2026-04-17-b-passive-localization-sci`
+- GitHub repository: `git@github.com:poboll/robust-bearing-fusion-uav-localization.git`
+- Web URL: `https://github.com/poboll/robust-bearing-fusion-uav-localization`
 - Current MDPI PDF: `submission/mdpi_manuscript/manuscript_mdpi.pdf`
 
 ## Rebuild PDF
