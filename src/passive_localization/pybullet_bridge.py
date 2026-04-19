@@ -35,6 +35,8 @@ class PyBulletReplayConfig:
     noise_std: float = 0.010
     attitude_gain: float = 0.20
     yaw_rate_gain: float = 0.012
+    fov_half_angle_deg: float = 105.0
+    sensor_yaw_offset_deg: float = -90.0
     delay_steps_mean: float = 1.2
     delay_steps_std: float = 0.5
     missing_rate: float = 0.04
@@ -181,14 +183,33 @@ def generate_pybullet_replay_cases(
 
             base_bearing = bearing_from_sensor(delayed_sensor, scaled_target)
             roll, pitch = float(source_state[7]), float(source_state[8])
+            yaw = float(source_state[9])
             yaw_rate = float(source_state[15])
             attitude_term = config.attitude_gain * (0.65 * roll + 0.65 * pitch) + config.yaw_rate_gain * yaw_rate
             tilt, speed = _tilt_and_speed_terms(source_state)
+            sensor_heading = float(wrap_angle(np.array([yaw + np.deg2rad(config.sensor_yaw_offset_deg)]))[0])
+            relative_bearing = float(wrap_angle(base_bearing - sensor_heading))
+            fov_half_angle = float(np.deg2rad(config.fov_half_angle_deg))
+            within_fov = abs(relative_bearing) <= fov_half_angle
+            edge_excess = max(0.0, abs(relative_bearing) / max(fov_half_angle, 1e-6) - 0.82)
 
-            missing_prob = min(0.85, config.missing_rate + 0.18 * max(0.0, tilt - 0.10) + 0.05 * max(0.0, speed - 0.35))
-            outlier_prob = min(0.85, config.outlier_rate + 0.20 * max(0.0, tilt - 0.12) + 0.08 * max(0.0, speed - 0.45))
+            missing_prob = min(
+                0.85,
+                config.missing_rate
+                + 0.18 * max(0.0, tilt - 0.10)
+                + 0.05 * max(0.0, speed - 0.35)
+                + 0.25 * edge_excess,
+            )
+            outlier_prob = min(
+                0.85,
+                config.outlier_rate
+                + 0.20 * max(0.0, tilt - 0.12)
+                + 0.08 * max(0.0, speed - 0.45)
+                + 0.18 * edge_excess,
+            )
             is_outlier = bool(rng.random() < outlier_prob)
-            valid = bool(rng.random() >= missing_prob)
+            fov_dropout = 0.0 if within_fov else 0.78
+            valid = bool(rng.random() >= min(0.98, missing_prob + fov_dropout))
             nominal_noise = float(rng.normal(0.0, config.noise_std))
             outlier_noise = float(rng.normal(0.0, config.outlier_scale)) if is_outlier else 0.0
             measured_bearing = float(wrap_angle(base_bearing + common_bias + attitude_term + nominal_noise + outlier_noise))
@@ -201,9 +222,13 @@ def generate_pybullet_replay_cases(
                     "delay_steps": delay_steps,
                     "roll": roll,
                     "pitch": pitch,
+                    "yaw": yaw,
+                    "sensor_heading": sensor_heading,
                     "yaw_rate": yaw_rate,
                     "tilt": tilt,
                     "speed_xy": speed,
+                    "relative_bearing": relative_bearing,
+                    "within_fov": within_fov,
                     "attitude_term": attitude_term,
                     "outlier": is_outlier,
                     "valid": valid,
@@ -242,6 +267,8 @@ def generate_pybullet_replay_cases(
             "seed": config.seed,
             "target": {"x": float(scaled_target.x), "y": float(scaled_target.y)},
             "position_scale": config.position_scale,
+            "fov_half_angle_deg": config.fov_half_angle_deg,
+            "sensor_yaw_offset_deg": config.sensor_yaw_offset_deg,
         },
         "time_s": [float(value) for value in time_history],
         "drones": [

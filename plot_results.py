@@ -28,42 +28,43 @@ from passive_localization.robust import robust_bias_trimmed_refine
 from passive_localization.scenario import generate_circular_scenario
 from passive_localization.schedule import select_sensor_subset
 
+TAB10 = list(plt.get_cmap("tab10").colors)
 PALETTE = {
-    "ls": "#6B7280",
-    "huber": "#94A3B8",
-    "robust": "#0F766E",
-    "tukey": "#C0841A",
-    "ransac": "#7C3AED",
-    "gnc": "#2563EB",
-    "pso": "#C2410C",
-    "sa": "#1D4ED8",
-    "active_all": "#374151",
-    "active_random": "#D97706",
-    "active_spread": "#2563EB",
-    "active_crlb": "#7C3AED",
-    "active_residual": "#B91C1C",
-    "active_reliability": "#0891B2",
-    "active_proposed": "#047857",
-    "active_adaptive": "#14532D",
+    "ls": TAB10[7],
+    "huber": TAB10[9],
+    "robust": TAB10[2],
+    "tukey": TAB10[8],
+    "ransac": TAB10[3],
+    "gnc": TAB10[4],
+    "pso": TAB10[1],
+    "sa": TAB10[5],
+    "active_all": TAB10[7],
+    "active_random": TAB10[8],
+    "active_spread": TAB10[0],
+    "active_crlb": TAB10[4],
+    "active_residual": TAB10[3],
+    "active_reliability": TAB10[9],
+    "active_proposed": TAB10[2],
+    "active_adaptive": TAB10[5],
 }
 
 plt.rcParams.update(
     {
         "font.family": "STIXGeneral",
         "axes.edgecolor": "#CBD5E1",
-        "axes.linewidth": 0.9,
+        "axes.linewidth": 1.0,
         "axes.spines.top": False,
         "axes.spines.right": False,
-        "axes.facecolor": "#FCFBF8",
+        "axes.facecolor": "#FCFCFD",
         "figure.facecolor": "white",
         "axes.titleweight": "semibold",
-        "axes.labelsize": 11,
-        "axes.titlesize": 13,
+        "axes.labelsize": 12.5,
+        "axes.titlesize": 14.5,
         "axes.labelcolor": "#0F172A",
         "text.color": "#0F172A",
-        "legend.fontsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
+        "legend.fontsize": 10.5,
+        "xtick.labelsize": 10.5,
+        "ytick.labelsize": 10.5,
         "xtick.color": "#334155",
         "ytick.color": "#334155",
         "grid.color": "#CBD5E1",
@@ -82,7 +83,7 @@ def _save(fig: plt.Figure, name: str) -> None:
         sub_out = SUBMISSION_FIG / f"{stem}{suffix}"
         save_kwargs = {"facecolor": "white"}
         if suffix == ".png":
-            save_kwargs["dpi"] = 300
+            save_kwargs["dpi"] = 400
         fig.savefig(out, **save_kwargs)
         fig.savefig(sub_out, **save_kwargs)
     plt.close(fig)
@@ -264,7 +265,7 @@ def plot_system_pipeline() -> None:
         ax,
         (0.78, 0.42),
         (0.18, 0.18),
-        "Downstream Target Cue\nposition + confidence\nfor current cycle",
+        "Downstream Target Cue\nposition estimate\nfor current cycle",
         "#FEF3C7",
         ec="#B45309",
     )
@@ -301,6 +302,33 @@ def plot_system_pipeline() -> None:
         color="#14532D",
     )
     _save(fig, "figure_system_pipeline.png")
+
+
+def plot_frontend_flow() -> None:
+    fig, ax = plt.subplots(figsize=(12.6, 4.8))
+    ax.set_xlim(0.0, 1.0)
+    ax.set_ylim(0.0, 1.0)
+    ax.axis("off")
+
+    _box(ax, (0.03, 0.34), (0.14, 0.28), "Current-cycle bearings\n+ reported poses", "#E0F2FE", ec="#0369A1")
+    _box(ax, (0.21, 0.34), (0.15, 0.28), "Pairwise intersections\n+ consensus seeds", "#DBEAFE", ec="#2563EB")
+    _box(ax, (0.40, 0.34), (0.16, 0.28), "Trimmed IRLS\nwith LM updates\nand optional bias", "#DCFCE7", ec="#15803D")
+    _box(ax, (0.60, 0.60), (0.17, 0.20), "Residual / reliability gate\nheterogeneous window?", "#FEF3C7", ec="#B45309")
+    _box(ax, (0.60, 0.14), (0.17, 0.20), "Keep all-sensor robust cue\n(default path)", "#E5E7EB", ec="#6B7280")
+    _box(ax, (0.81, 0.56), (0.16, 0.24), "Stage 2 optional\nbudgeted subset search\n(FIM surrogate + residuals)", "#FCE7F3", ec="#BE185D")
+    _box(ax, (0.81, 0.14), (0.16, 0.22), "Output cue for\ntracking / handoff /\nreplanning", "#FDE68A", ec="#A16207")
+
+    _arrow(ax, (0.17, 0.48), (0.21, 0.48))
+    _arrow(ax, (0.36, 0.48), (0.40, 0.48))
+    _arrow(ax, (0.56, 0.48), (0.60, 0.68))
+    _arrow(ax, (0.56, 0.48), (0.60, 0.24))
+    _arrow(ax, (0.77, 0.68), (0.81, 0.68))
+    _arrow(ax, (0.77, 0.24), (0.81, 0.24))
+    _arrow(ax, (0.89, 0.56), (0.89, 0.36), color="#A16207")
+
+    ax.text(0.69, 0.86, "Stage 1 is the core contribution; Stage 2 is only activated when budget or credibility dispersion justifies pruning.", ha="center", va="center", fontsize=10.2, color="#78350F")
+    ax.text(0.69, 0.05, "Outputs are current-cycle localization cues, not a full autonomy stack or distributed swarm planner.", ha="center", va="center", fontsize=10.0, color="#475569")
+    _save(fig, "figure_frontend_flow.png")
 
 
 def plot_regime_comparison() -> None:
@@ -379,13 +407,43 @@ def plot_runtime() -> None:
     payload = json.loads((EXP / "runtime_result.json").read_text(encoding="utf-8"))
     methods = ["least_squares", "robust_huber", "robust_bias_trimmed", "pso", "sa"]
     labels = ["LS", "Huber", "Robust-BT", "PSO", "SA"]
-    vals = [payload[m]["median_ms"] for m in methods]
+    method_stats = payload["methods"]
+    vals = [method_stats[m]["median_ms"] for m in methods]
 
-    fig, ax = plt.subplots(figsize=(7.5, 4.2))
-    ax.bar(labels, vals, color=[PALETTE["ls"], PALETTE["huber"], PALETTE["robust"], PALETTE["pso"], PALETTE["sa"]])
-    ax.set_ylabel("Median Runtime (ms)")
-    ax.set_title("Runtime Comparison")
-    ax.grid(True, axis="y", linestyle=":", alpha=0.4)
+    fig, axes = plt.subplots(1, 2, figsize=(12.8, 4.6), gridspec_kw={"width_ratios": [1.0, 1.15]})
+    axes[0].bar(labels, vals, color=[PALETTE["ls"], PALETTE["huber"], PALETTE["robust"], PALETTE["pso"], PALETTE["sa"]])
+    for idx, val in enumerate(vals):
+        axes[0].text(idx, val, f"{val:.1f}", ha="center", va="bottom", fontsize=9.5, color="#0F172A")
+    axes[0].set_ylabel("Median runtime (ms)")
+    axes[0].set_title("Method-wise runtime")
+    axes[0].grid(True, axis="y", linestyle=":", alpha=0.4)
+
+    counts = payload["scaling"]["counts"]
+    for key, label, color in [
+        ("stage1_proposed", "Stage 1 robust core", PALETTE["robust"]),
+        ("stage2_screening", "Stage 2 screening", PALETTE["active_spread"]),
+        ("stage2_adaptive", "Adaptive gate", PALETTE["active_adaptive"]),
+    ]:
+        ys = [payload["scaling"][key][str(count)]["median_ms"] for count in counts if str(count) in payload["scaling"][key]]
+        xs = [count for count in counts if str(count) in payload["scaling"][key]]
+        axes[1].plot(xs, ys, marker="o", linewidth=2.3, color=color, label=label)
+    axes[1].set_xlabel("Number of observers")
+    axes[1].set_ylabel("Median runtime (ms)")
+    axes[1].set_title("Runtime scaling by stage")
+    axes[1].grid(True, linestyle=":", alpha=0.35)
+    axes[1].legend(frameon=False, loc="upper left")
+    hardware = payload["meta"]["hardware"]
+    axes[1].text(
+        0.98,
+        0.02,
+        f"{hardware['cpu']}\nPython {hardware['python']}",
+        transform=axes[1].transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=8.8,
+        color="#334155",
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "#F8FAFC", "edgecolor": "#CBD5E1"},
+    )
     _save(fig, "figure_runtime_comparison.png")
 
 
@@ -622,7 +680,7 @@ def plot_selection_benefit_map() -> None:
 
 
 def plot_screening_weight_sensitivity() -> None:
-    if (EXP / "screening_weight_grid_result.json").exists():
+    if not (EXP / "screening_weight_sensitivity.json").exists() and (EXP / "screening_weight_grid_result.json").exists():
         payload = json.loads((EXP / "screening_weight_grid_result.json").read_text(encoding="utf-8"))
         combos = payload["combinations"]
         baseline = payload["baseline"]["default_median_error"]
@@ -703,6 +761,42 @@ def plot_screening_weight_sensitivity() -> None:
     _save(fig, "figure_screening_weight_sensitivity.png")
 
 
+def plot_screening_score_ablation() -> None:
+    payload = json.loads((EXP / "screening_score_ablation.json").read_text(encoding="utf-8"))
+    order = ["all_sensors", "geometry_only", "geometry_plus_residual", "geometry_plus_reliability", "full_score"]
+    labels = ["All sensors", "Geometry", "Geom.+Residual", "Geom.+Reliability", "Full score"]
+    overall = payload["summary"]["overall"]
+    severe = payload["summary"]["by_regime"]["severe"]
+    colors = [
+        PALETTE["active_all"],
+        PALETTE["active_spread"],
+        PALETTE["active_residual"],
+        PALETTE["active_reliability"],
+        PALETTE["active_proposed"],
+    ]
+
+    fig, axes = plt.subplots(1, 2, figsize=(12.8, 4.6))
+    median_vals = [overall[key]["median"] for key in order]
+    severe_p90 = [severe[key]["p90"] for key in order]
+
+    axes[0].bar(labels, median_vals, color=colors)
+    for idx, val in enumerate(median_vals):
+        axes[0].text(idx, val, f"{val:.2f}", ha="center", va="bottom", fontsize=9)
+    axes[0].set_ylabel("Overall median error")
+    axes[0].set_title("Score-term ablation")
+    axes[0].grid(True, axis="y", linestyle=":", alpha=0.35)
+    axes[0].tick_params(axis="x", rotation=14)
+
+    axes[1].bar(labels, severe_p90, color=colors)
+    for idx, val in enumerate(severe_p90):
+        axes[1].text(idx, val, f"{val:.2f}", ha="center", va="bottom", fontsize=9)
+    axes[1].set_ylabel("Severe-regime P90 error")
+    axes[1].set_title("Tail risk under severe corruption")
+    axes[1].grid(True, axis="y", linestyle=":", alpha=0.35)
+    axes[1].tick_params(axis="x", rotation=14)
+    _save(fig, "figure_screening_score_ablation.png")
+
+
 def plot_threshold_sweep() -> None:
     payload = json.loads((EXP / "story_revision_analysis.json").read_text(encoding="utf-8"))
     regimes = [("outlier", "Outlier-rich regime"), ("mixed", "Mixed-corruption regime")]
@@ -734,47 +828,86 @@ def plot_threshold_sweep() -> None:
 
 
 def plot_ransac_failure_case() -> None:
-    payload = json.loads((EXP / "story_revision_analysis.json").read_text(encoding="utf-8"))["ransac_failure_case"]
-    sensors = payload["valid_sensors"]
-    target = payload["target"]
-    estimates = payload["estimates"]
+    analysis_payload = json.loads((EXP / "story_revision_analysis.json").read_text(encoding="utf-8"))
+    cases = analysis_payload.get("ransac_failure_cases") or []
+    if not cases and analysis_payload.get("ransac_failure_case") is not None:
+        cases = [analysis_payload["ransac_failure_case"]]
 
-    fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.8), gridspec_kw={"width_ratios": [1.3, 0.9]})
-    ax = axes[0]
-    for sensor in sensors:
-        start = np.array([sensor["x"], sensor["y"]], dtype=float)
-        ray = np.array([np.cos(sensor["bearing"]), np.sin(sensor["bearing"])], dtype=float)
-        end = start + 16.0 * ray
-        ax.plot([start[0], end[0]], [start[1], end[1]], linestyle="--", linewidth=0.95, color="#CBD5E1", alpha=0.8)
-        color = "#F59E0B" if sensor["sensor_bias"] > 0.08 else "#E5E7EB"
-        edge = "#B45309" if sensor["sensor_bias"] > 0.08 else "#6B7280"
-        ax.scatter(sensor["x"], sensor["y"], s=70, color=color, edgecolor=edge, linewidth=0.9, zorder=3)
+    nrows = max(1, len(cases))
+    fig, axes = plt.subplots(
+        nrows,
+        2,
+        figsize=(12.8, 4.1 * nrows),
+        gridspec_kw={"width_ratios": [1.35, 0.95]},
+    )
+    if nrows == 1:
+        axes = np.asarray([axes], dtype=object)
 
-    ax.scatter(target["x"], target["y"], marker="*", s=230, color="#B91C1C", edgecolor="white", linewidth=0.9, zorder=5, label="True target")
-    markers = {
-        "least_squares": ("o", PALETTE["ls"], "LS"),
-        "ransac": ("X", PALETTE["ransac"], "RANSAC"),
-        "proposed": ("s", PALETTE["robust"], "Proposed"),
-    }
-    for key, (marker, color, label) in markers.items():
-        ax.scatter(estimates[key]["x"], estimates[key]["y"], marker=marker, s=96, color=color, edgecolor="white", linewidth=0.9, zorder=6, label=label)
-    ax.set_title(f"RANSAC failure case under {payload['regime'].replace('_', ' ')}")
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_aspect("equal", adjustable="box")
-    ax.grid(True, linestyle=":", alpha=0.35)
-    ax.legend(frameon=False, loc="upper right")
+    for row_idx, payload in enumerate(cases):
+        sensors = payload["valid_sensors"]
+        target = payload["target"]
+        estimates = payload["estimates"]
+        geo_ax = axes[row_idx, 0]
+        bar_ax = axes[row_idx, 1]
 
-    labels = ["LS", "RANSAC", "GNC-GM", "PSO", "Proposed"]
-    vals = [estimates["least_squares"]["error"], estimates["ransac"]["error"], estimates["gnc_gm"]["error"], estimates["pso"]["error"], estimates["proposed"]["error"]]
-    colors = [PALETTE["ls"], PALETTE["ransac"], PALETTE["gnc"], PALETTE["pso"], PALETTE["robust"]]
-    axes[1].bar(labels, vals, color=colors)
-    for idx, val in enumerate(vals):
-        axes[1].text(idx, val, f"{val:.2f}", ha="center", va="bottom", fontsize=9, color="#0F172A")
-    axes[1].set_ylabel("Localization error")
-    axes[1].set_title("Front-end robustness under heterogeneous bias")
-    axes[1].grid(True, axis="y", linestyle=":", alpha=0.35)
-    axes[1].tick_params(axis="x", rotation=10)
+        for sensor in sensors:
+            start = np.array([sensor["x"], sensor["y"]], dtype=float)
+            ray = np.array([np.cos(sensor["bearing"]), np.sin(sensor["bearing"])], dtype=float)
+            end = start + 16.0 * ray
+            geo_ax.plot([start[0], end[0]], [start[1], end[1]], linestyle="--", linewidth=1.0, color="#CBD5E1", alpha=0.85)
+            pose_error = float(sensor.get("pose_error", 0.0))
+            sensor_bias = float(sensor.get("sensor_bias", 0.0))
+            highlight = pose_error > 0.30 or abs(sensor_bias) > 0.05
+            face = "#FDE68A" if highlight else "#E5E7EB"
+            edge = "#B45309" if highlight else "#6B7280"
+            geo_ax.scatter(sensor["x"], sensor["y"], s=74, color=face, edgecolor=edge, linewidth=0.95, zorder=3)
+
+        geo_ax.scatter(target["x"], target["y"], marker="*", s=240, color="#B91C1C", edgecolor="white", linewidth=0.9, zorder=5, label="True target")
+        markers = {
+            "least_squares": ("o", PALETTE["ls"], "LS"),
+            "ransac": ("X", PALETTE["ransac"], "RANSAC"),
+            "proposed": ("s", PALETTE["robust"], "Proposed"),
+        }
+        for key, (marker, color, label) in markers.items():
+            geo_ax.scatter(
+                estimates[key]["x"],
+                estimates[key]["y"],
+                marker=marker,
+                s=98,
+                color=color,
+                edgecolor="white",
+                linewidth=0.95,
+                zorder=6,
+                label=label,
+            )
+        geo_ax.set_title(
+            f"{payload['regime'].replace('_', ' ').title()} | {payload['formation'].title()} | seed {payload['seed']}"
+        )
+        geo_ax.set_xlabel("X")
+        geo_ax.set_ylabel("Y")
+        geo_ax.set_aspect("equal", adjustable="box")
+        geo_ax.grid(True, linestyle=":", alpha=0.35)
+        if row_idx == 0:
+            geo_ax.legend(frameon=False, loc="upper right")
+
+        labels = ["LS", "RANSAC", "GNC-GM", "PSO", "Proposed"]
+        vals = [
+            estimates["least_squares"]["error"],
+            estimates["ransac"]["error"],
+            estimates["gnc_gm"]["error"],
+            estimates["pso"]["error"],
+            estimates["proposed"]["error"],
+        ]
+        colors = [PALETTE["ls"], PALETTE["ransac"], PALETTE["gnc"], PALETTE["pso"], PALETTE["robust"]]
+        bar_ax.bar(labels, vals, color=colors)
+        best_idx = int(np.argmin(vals))
+        for idx, val in enumerate(vals):
+            txt_color = "#065F46" if idx == best_idx else "#0F172A"
+            bar_ax.text(idx, val, f"{val:.2f}", ha="center", va="bottom", fontsize=9.2, color=txt_color)
+        bar_ax.set_ylabel("Localization error")
+        bar_ax.set_title("Method error on this window")
+        bar_ax.grid(True, axis="y", linestyle=":", alpha=0.35)
+        bar_ax.tick_params(axis="x", rotation=10)
     _save(fig, "figure_ransac_failure_case.png")
 
 
@@ -786,10 +919,11 @@ def plot_tracking_proxy() -> None:
     metrics = [
         ("overall_break", "Overall sequence break rate", [overall[m]["sequence_break_rate"] for m in methods], True),
         ("disturbed_break", "Disturbed sequence break rate", [disturbed[m]["sequence_break_rate"] for m in methods], True),
-        ("disturbed_p90", "Disturbed P90 tracking RMSE", [disturbed[m]["p90_tracking_rmse"] for m in methods], False),
+        ("rapid_reacq", "Rapid reacquisition rate", [disturbed[m]["mean_rapid_reacquisition_rate"] for m in methods], True),
+        ("disturbed_roi", "Disturbed ROI radius P90", [disturbed[m]["median_roi_radius_p90"] for m in methods], False),
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(13.0, 4.6))
+    fig, axes = plt.subplots(1, 4, figsize=(16.4, 4.6))
     for ax, (_metric_key, title, vals, as_percent) in zip(axes, metrics):
         colors = [PALETTE["ls"], PALETTE["ransac"], PALETTE["robust"]]
         ax.bar(methods, vals, color=colors)
@@ -801,14 +935,14 @@ def plot_tracking_proxy() -> None:
             ax.yaxis.set_major_formatter(PercentFormatter(1.0))
 
     axes[0].set_ylabel("Proxy metric value")
-    axes[2].text(
+    axes[-1].text(
         0.04,
         0.95,
         "Disturbed replay:\n"
-        f"LS P90 = {disturbed['LS']['p90_tracking_rmse']:.2f}\n"
-        f"RANSAC P90 = {disturbed['RANSAC']['p90_tracking_rmse']:.2f}\n"
-        f"Proposed P90 = {disturbed['Proposed']['p90_tracking_rmse']:.2f}",
-        transform=axes[2].transAxes,
+        f"LS ROI$_{{P90}}$ = {disturbed['LS']['median_roi_radius_p90']:.2f}\n"
+        f"RANSAC ROI$_{{P90}}$ = {disturbed['RANSAC']['median_roi_radius_p90']:.2f}\n"
+        f"Proposed ROI$_{{P90}}$ = {disturbed['Proposed']['median_roi_radius_p90']:.2f}",
+        transform=axes[-1].transAxes,
         ha="left",
         va="top",
         fontsize=9,
@@ -1079,6 +1213,7 @@ def plot_operational_utility() -> None:
 
 def main() -> None:
     plot_system_pipeline()
+    plot_frontend_flow()
     plot_regime_comparison()
     plot_ablation_mixed()
     plot_formation_generalization()
@@ -1100,6 +1235,8 @@ def main() -> None:
         plot_screening_weight_sensitivity()
     elif (EXP / "screening_weight_grid_result.json").exists():
         plot_screening_weight_sensitivity()
+    if (EXP / "screening_score_ablation.json").exists():
+        plot_screening_score_ablation()
     if (EXP / "active_selection_result.json").exists():
         plot_screening_case_studies()
     if (EXP / "story_revision_analysis.json").exists():

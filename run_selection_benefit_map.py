@@ -44,7 +44,8 @@ def run_selection_benefit_map(output_dir: str | Path = "experiments", seeds: lis
                 scenario_cfg = ScenarioConfig(
                     seed=seed,
                     num_uavs=10,
-                    formation_type="random" if seed % 2 else "circle",
+                    formation_type="degenerate" if seed % 5 == 4 else ("random" if seed % 2 else "circle"),
+                    target_mode="random_interior",
                     bias=0.03,
                     sensor_bias_std=0.03,
                     pose_noise_std=0.20,

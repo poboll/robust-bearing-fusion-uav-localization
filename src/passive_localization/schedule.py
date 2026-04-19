@@ -118,8 +118,11 @@ def _normalize_score_weights(
 
     if weights.shape != (4,):
         raise ValueError("screening score weights must contain four entries")
-    weights = np.maximum(weights, 1e-8)
-    return weights / float(np.sum(weights))
+    weights = np.maximum(weights, 0.0)
+    weight_sum = float(np.sum(weights))
+    if weight_sum <= 0.0:
+        raise ValueError("screening score weights must contain at least one positive entry")
+    return weights / weight_sum
 
 
 def _combined_score(

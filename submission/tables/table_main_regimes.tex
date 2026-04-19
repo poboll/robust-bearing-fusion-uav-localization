@@ -1,16 +1,16 @@
 \begin{table}[!htbp]
 \centering
-\caption{Median localization error across the main corrupted-measurement regimes. Results aggregate 2000 Monte Carlo cases over clean, outlier, mixed, pose-uncertainty, and heterogeneous-bias settings with circular and random formations.}
+\caption{Median localization error across the main corrupted-measurement regimes. Results aggregate 3000 Monte Carlo cases over clean, outlier, mixed, pose-uncertainty, and heterogeneous-bias settings with circular, random, and near-degenerate formations.}
 \label{tab:mainregimes}
 \begin{tabular}{lrrrrr}
 \toprule
 Regime & LS & Huber & GNC-GM & RANSAC & Proposed \\
 \midrule
-Clean                & 0.1052 & 0.1052 & 0.1043 & 0.1052 & 0.1052 \\
-Outlier              & 1.0792 & 0.3458 & 0.3542 & 0.1792 & 0.1799 \\
-Mixed                & 0.8547 & 0.4072 & 0.4167 & 0.3123 & 0.3122 \\
-Pose Uncertainty     & 0.5739 & 0.3667 & 0.3702 & 0.3522 & 0.3513 \\
-Heterogeneous Bias   & 0.4224 & 0.3533 & 0.3602 & 0.3323 & 0.3254 \\
+Clean                & 0.1200 & 0.1200 & 0.1201 & 0.1200 & 0.1201 \\
+Outlier              & 1.1186 & 0.4492 & 0.4471 & 0.2091 & 0.2108 \\
+Mixed                & 1.0015 & 0.5219 & 0.5039 & 0.4315 & 0.4346 \\
+Pose Uncertainty     & 0.6985 & 0.4898 & 0.4899 & 0.4526 & 0.4562 \\
+Heterogeneous Bias   & 0.5303 & 0.4244 & 0.4223 & 0.4148 & 0.4212 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -24,15 +24,15 @@ Heterogeneous Bias   & 0.4224 & 0.3533 & 0.3602 & 0.3323 & 0.3254 \\
 \toprule
 Regime & Method & Median [95\% CI] & Success@0.1R & Cat.@0.5R \\
 \midrule
-Outlier & Least Squares & 1.0792 [0.8748, 1.1428] & 0.4875 & 0.0025 \\
-Outlier & GNC-GM        & 0.3542 [0.3147, 0.3870] & 0.8625 & 0.0025 \\
-Outlier & RANSAC        & 0.1792 [0.1579, 0.2036] & 0.9375 & 0.0100 \\
-Outlier & Proposed      & 0.1799 [0.1585, 0.2041] & 0.9400 & 0.0100 \\
+Outlier & Least Squares & 1.1186 [1.0158, 1.2892] & 0.4533 & 0.0733 \\
+Outlier & GNC-GM        & 0.4471 [0.3987, 0.4769] & 0.7883 & 0.0333 \\
+Outlier & RANSAC        & 0.2091 [0.1937, 0.2373] & 0.9067 & 0.0050 \\
+Outlier & Proposed      & 0.2108 [0.1988, 0.2456] & 0.9050 & 0.0050 \\
 \midrule
-Mixed   & Least Squares & 0.8547 [0.7733, 0.9437] & 0.5625 & 0.0125 \\
-Mixed   & GNC-GM        & 0.4167 [0.3479, 0.4707] & 0.8150 & 0.0200 \\
-Mixed   & RANSAC        & 0.3123 [0.2905, 0.3442] & 0.8925 & 0.0175 \\
-Mixed   & Proposed      & 0.3122 [0.2913, 0.3423] & 0.8925 & 0.0175 \\
+Mixed   & Least Squares & 1.0015 [0.9029, 1.1219] & 0.4983 & 0.0633 \\
+Mixed   & GNC-GM        & 0.5039 [0.4641, 0.5533] & 0.7583 & 0.0450 \\
+Mixed   & RANSAC        & 0.4315 [0.4004, 0.4556] & 0.8550 & 0.0167 \\
+Mixed   & Proposed      & 0.4346 [0.4017, 0.4645] & 0.8517 & 0.0200 \\
 \bottomrule
 \end{tabular}
 \end{table}

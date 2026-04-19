@@ -17,10 +17,12 @@
 \setlength{\headheight}{20pt}
 
 \usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{booktabs}
 \usepackage{tabularx}
 
-\Title{Robust Front-End for Corrupted Bearing Fusion in Multi-UAV Passive Localization}
+\Title{Robust Front-End for Corrupted Bearing-Only Fusion in Multi-UAV Passive Localization}
 
 \Author{Zengye Su $^{1,*}$, Yudan Nie $^{1}$ and Zilu Zhou $^{2}$}
 \AuthorNames{Zengye Su, Yudan Nie and Zilu Zhou}
@@ -31,7 +33,7 @@ $^{2}$ \quad Guangzhou College of Commerce, Guangzhou 511363, China}
 
 \corres{Correspondence: Zengye Su; szy@xs.gcc.edu.cn}
 
-\abstract{This paper studies one-shot multi-UAV passive localization when a subset of bearing measurements is missing, biased, or grossly corrupted. The focus is the fusion front-end, while observer poses are supplied by an external navigation module with explicit pose uncertainty in evaluation. The proposed front-end combines consensus-style initialization, trimmed iteratively reweighted Gauss--Newton refinement, optional common-bias correction, and adaptive fixed-budget screening when only part of the bearing set can be fused. Across 2000 Monte Carlo cases, the median error decreases from 1.0792 to 0.1799 in the outlier regime and from 0.8547 to 0.3122 under mixed corruption. In 1844 PyBullet replay windows, the overall median error decreases from 4.4387 to 1.1539 and the catastrophic-failure rate decreases from 0.4675 to 0.1605. Threshold-sweep, tail-risk, and replay-tracking analyses show that the gain comes mainly from suppressing extreme failures rather than from small average-case changes. The method is therefore positioned as a reproducible robust fusion front-end for corrupted bearing sets in passive multi-UAV localization.}
+\abstract{This paper studies one-shot multi-UAV passive localization when bearing measurements are missing, biased, or grossly corrupted. The focus is the fusion front-end, while observer poses are supplied by an external navigation module and pose uncertainty is evaluated explicitly. The proposed method combines consensus-style geometric seeding, trimmed iteratively reweighted Gauss--Newton refinement, conditional common-bias correction, and an optional adaptive fixed-budget screening stage. In 3000 Monte Carlo cases, the catastrophic-failure rate at a strict $0.2R$ threshold drops from 0.293 to 0.040 in the outlier regime and from 0.273 to 0.068 in the mixed-corruption regime relative to least squares. The method remains statistically competitive with RANSAC while providing the same unified front-end pipeline for outliers, heterogeneous bias, and pose uncertainty. In pseudo-physical dynamic replay, the harsh-regime median error decreases from 0.498 to 0.352. In 1103 PyBullet multi-vehicle replay cycles, median accuracy is broadly tied with strong robust baselines, but the proposed front-end still improves upper-tail tracking error in disturbed replay. The contribution is therefore a reproducible robust front-end for corrupted bearing fusion rather than a complete UAV autonomy stack.}
 
 \keyword{bearing-only localization; passive target localization; robust estimation; measurement screening; multi-UAV sensing; corrupted measurements}
 
@@ -71,7 +73,7 @@ The main contributions are threefold:
 \begin{itemize}
 \item a consensus-assisted robust bearing-only estimator that combines multi-start geometric initialization, trimmed iteratively reweighted refinement, optional common-bias correction, and a consensus fallback;
 \item a reliability-adaptive screening module for fixed-budget settings, together with residual-only, reliability-only, geometry-only, and adaptive baselines that clarify when screening is useful and when all-sensor robust fusion should be kept;
-\item a reproducible validation chain comprising 2000 Monte Carlo cases across five corrupted-measurement regimes, a 1716-case fixed-budget screening benchmark, pseudo-physical dynamic replay with delay, jitter, per-sensor bias, and motion-induced disturbance, and a 1844-case PyBullet multi-vehicle replay study.
+\item a reproducible validation chain comprising 3000 Monte Carlo cases across five corrupted-measurement regimes, a 2285-case fixed-budget screening benchmark, pseudo-physical dynamic replay with delay, jitter, per-sensor bias, and motion-induced disturbance, and a 1103-case PyBullet multi-vehicle replay study.
 \end{itemize}
 
 The remainder of the paper is organized as follows. Section~2 reviews related work. Section~3 formulates the corrupted-measurement localization problem. Section~4 presents the proposed estimation and screening framework. Section~5 describes the experimental protocol, Section~6 reports the results, and Sections~7 and~8 discuss the scope and conclude the paper.
@@ -84,15 +86,15 @@ Bearing-only and passive target localization remain active topics in UAV and dis
 
 \subsection{Robust Estimation Under Corrupted Angular Measurements}
 
-The literature increasingly recognizes that bearing quality is heterogeneous. Error-bound studies, dynamic bearing-angle analysis, multi-array likelihood processing, and dual-UAV filtering all show that uncertainty handling is at least as important as nominal geometry under realistic disturbances \cite{chen2025error,luo2025dynamicbearing,hu2025cyclic,yin2025dual}. Classical least squares is usually too fragile in the presence of outliers, observer-pose uncertainty, or mixed corruption, while generic stochastic search methods are often computationally heavy or hard to interpret. Standard robust choices such as Huber, Tukey, consensus-style filtering, or particle-based inference are therefore natural baselines, but they are rarely packaged as an explicit front-end block for fixed corrupted bearing sets in multi-UAV passive sensing. In particular, recent UAV papers still devote more attention to trajectory or formation design than to the behavior of the current-cycle estimator when a few bearings become severely unreliable \cite{li2025bearing,huang2025emcompat,zhou2026target}.
+The literature increasingly recognizes that bearing quality is heterogeneous. Error-bound studies, dynamic bearing-angle analysis, multi-array likelihood processing, and dual-UAV filtering all show that uncertainty handling is at least as important as nominal geometry under realistic disturbances \cite{chen2025error,luo2025dynamicbearing,hu2025cyclic,yin2025dual}. Classical least squares is usually too fragile in the presence of outliers, observer-pose uncertainty, or mixed corruption, while generic stochastic search methods are often computationally heavy or hard to interpret. Standard robust choices such as Huber estimation \cite{huber1964robust}, Tukey-style redescending weights \cite{beaton1974fitting}, RANSAC consensus filtering \cite{fischler1981ransac}, damped Gauss--Newton / Levenberg--Marquardt updates \cite{levenberg1944method,marquardt1963algorithm}, and graduated non-convexity \cite{yang2020gnc} are therefore natural baselines, but they are rarely packaged as an explicit front-end block for fixed corrupted bearing sets in multi-UAV passive sensing. In particular, recent UAV papers still devote more attention to trajectory or formation design than to the behavior of the current-cycle estimator when a few bearings become severely unreliable \cite{li2025bearing,huang2025emcompat,zhou2026target}.
 
 \subsection{Sensor Selection, Observability, and Budgeted Sensing}
 
-The second topic relevant to this paper is sensing selection. Passive node selection, observability-aware planning, and FIM/CRLB-based trajectory design are well established in the broader literature \cite{xing2025node,chen2025variable,wang2025bio,zou2024revisit,genadot2025about}. At the system level, collaborative UAV localization has also advanced through factor graphs, distributed inference, relative localization, and swarm-level cooperative frameworks \cite{yang2020tightly,yang2024distributed,qian2025cooperative,li2025tcdrl,li2026formation,ding2026set,zhang2026multi}. The present work is narrower than those frameworks. It addresses a centralized one-shot decision: once a set of bearings has already been produced for the current cycle, should all of them be fused, or should a smaller subset be retained because the current quality is too uneven? That framing is closer to front-end measurement triage than to long-horizon planning.
+The second topic relevant to this paper is sensing selection. Passive node selection, observability-aware planning, and FIM/CRLB-based trajectory design are well established in the broader literature \cite{xing2025node,chen2025variable,wang2025bio,zou2024revisit,dogancay2024bayesian,peng2024trajectory}. At the system level, collaborative UAV localization has also advanced through factor graphs, distributed inference, relative localization, and swarm-level cooperative frameworks \cite{yang2020tightly,yang2024distributed,qian2025cooperative,li2025tcdrl,li2026formation,ding2026set,zhang2026multi}. The present work is narrower than those frameworks. It addresses a centralized one-shot decision: once a set of bearings has already been produced for the current cycle, should all of them be fused, or should a smaller subset be retained because the current quality is too uneven? That framing is closer to front-end measurement triage than to long-horizon planning.
 
-\subsection{Validation Gap and Manuscript Positioning}
+\subsection{Validation Gap}
 
-Another gap is validation style. Public UAV-systems papers are increasingly expected to move beyond idealized static geometry and toward simulation pipelines that reflect timing, attitude, and coordination effects \cite{panerati2021learning,perezsegui2023bridging}. This is especially true for Drones-oriented work, where the distinction between a generic localization algorithm and a UAV-facing sensing paper often depends on whether the validation includes multi-vehicle trajectories, communication limits, or deployment-shaped disturbances. The present manuscript still stops short of hardware-in-the-loop or field tests, but it attempts to close part of that gap through pseudo-physical replay and PyBullet multi-vehicle replay. Appendix~A positions the manuscript explicitly against nearby representative studies, clarifying that the current contribution is a corrupted-bearing front end rather than a full collaborative autonomy stack.
+Another gap is validation style. Public UAV-systems papers are increasingly expected to move beyond idealized static geometry and toward simulation pipelines that reflect timing, attitude, and coordination effects \cite{panerati2021learning,perezsegui2023bridging}. This is especially true for Drones-oriented work, where the distinction between a generic localization algorithm and a UAV-facing sensing paper often depends on whether the validation includes multi-vehicle trajectories, communication limits, or deployment-shaped disturbances. The present manuscript still stops short of hardware-in-the-loop or field tests, but it narrows that gap through pseudo-physical replay and PyBullet multi-vehicle replay while keeping the contribution centered on a corrupted-bearing front end rather than a full collaborative autonomy stack.
 
 \section{Problem Formulation}
 
@@ -140,7 +142,7 @@ where $k$ reflects a fixed communication, computation, or timing budget for the 
 
 The expanded benchmark distinguishes four practically important error sources. First, \emph{outliers} model gross bearing corruption produced by spurious detections, local clutter, or momentary payload faults. Second, \emph{missing observations} model occlusion, field-of-view truncation, or communication dropouts. Third, \emph{shared or heterogeneous bias} models heading-reference mismatch, platform-frame misalignment, or per-sensor directional bias. Fourth, \emph{observer-pose uncertainty} represents the fact that the bearing-fusion module depends on an upstream navigation subsystem whose errors propagate into the current localization cycle. These are still abstractions, but they map more cleanly to the UAV sensing stack than a single isotropic-noise assumption.
 
-Figure~\ref{fig:systempipeline} shows the system boundary used throughout the paper. Observer poses and angle cues enter the corruption-aware front end, which returns a one-shot target cue and confidence estimate to downstream tracking, handoff, or replanning modules.
+Figure~\ref{fig:systempipeline} shows the system boundary used throughout the paper. Observer poses and angle cues enter the corruption-aware front end, which returns a one-shot target cue to downstream tracking, handoff, or replanning modules.
 
 \begin{figure}[!htbp]
 \centering
@@ -168,6 +170,13 @@ Table~\ref{tab:deploymain} summarizes why the current corruption taxonomy is not
 The proposed framework has two stages. Stage~1 is a robust localization core. It receives all currently valid bearings, generates several candidate target hypotheses, refines them under trimmed iteratively reweighted estimation, and keeps the hypothesis with the smallest final residual. Stage~2 is optional. When only a limited number of bearings can be fused or transmitted, it screens the current set using geometry and residual reliability. An adaptive gate bypasses screening and keeps all-sensor robust fusion when the current bearing set looks sufficiently homogeneous.
 
 This decomposition treats localization as an engineering front-end problem. The estimator sits between navigation/bearing extraction modules and downstream planning or tracking modules, and it is designed to remain lightweight enough for repeated use within the current sensing cycle.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_frontend_flow}
+\caption{Algorithm flow of the proposed front end. Stage~1 is the main contribution and always runs on the current valid bearing set. Stage~2 is an optional budget-aware extension that is activated only when communication limits or credibility dispersion justify subset pruning.}
+\label{fig:frontendflow}
+\end{figure}
 
 \subsection{Consensus-Assisted Robust Estimation}
 
@@ -206,10 +215,35 @@ The code uses a damped Gauss--Newton/Levenberg--Marquardt step rather than finit
 where $W$ is the diagonal matrix of current robust weights and $\lambda$ is a small damping term.
 
 \paragraph{Trimmed iteratively reweighted refinement.}
-The robust core updates weights from the residual pattern, trims the largest residuals, and then refines the estimate by several damped Gauss--Newton steps. Tukey-type downweighting is used after trimming so that the tail of the residual distribution is suppressed more aggressively than in plain Huber IRLS. The common-bias term is updated only when the active residuals are sufficiently concentrated; otherwise the algorithm falls back to zero bias rather than forcing an unstable common correction onto heterogeneous measurements. After refinement, a consensus fallback is retained when the residual tail remains too heavy. In this sense, the proposed estimator is not a single trick but a small robust front-end that combines geometric hypotheses, trimming, reweighting, and consensus rescue.
+The robust core updates weights from the residual pattern, trims the largest residuals, and then refines the estimate by several damped Gauss--Newton steps. Tukey-type downweighting is used after trimming so that the tail of the residual distribution is suppressed more aggressively than in plain Huber IRLS. The common-bias term is updated only when the active residuals are sufficiently concentrated; otherwise the algorithm falls back to zero bias rather than forcing an unstable common correction onto heterogeneous measurements. After refinement, a consensus fallback is retained when the residual tail remains too heavy or when the trimmed solution drifts away from the consensus hypothesis without a clear residual advantage. In this sense, the proposed estimator is not a single trick but a small robust front-end that combines geometric hypotheses, trimming, reweighting, and consensus rescue.
 
 \paragraph{Algorithmic summary.}
 The robust estimator can be summarized as follows. First, generate a pool of pairwise-intersection hypotheses together with consensus-style summary points. Second, evaluate a RANSAC-like fallback hypothesis so that a heavily corrupted case still has a viable initial anchor. Third, refine each candidate by several rounds of trimmed reweighting and damped Gauss--Newton updates, optionally correcting a shared bias when the active residuals are concentrated enough. Fourth, retain the candidate with the lowest final robust residual. Fifth, if the residual tail after refinement remains too heavy, fall back to the best consensus hypothesis. This sequence is intentionally simple enough to reproduce from the codebase while still addressing the main failure modes seen in corrupted bearing sets.
+
+\begin{algorithm}[!htbp]
+\caption{Consensus-Assisted Robust Fusion Front End}
+\label{alg:frontend}
+\begin{algorithmic}
+\Require Reported observer poses $\{s_i\}_{i=1}^N$, current valid bearings $\{\theta_i\}_{i=1}^N$
+\Ensure Current-cycle target cue $\hat{p}$
+\State Generate pairwise-intersection hypotheses and consensus summary points
+\State Compute least-squares, GNC-GM, and RANSAC-style smoother candidates
+\If{the least-squares residual pattern is coherent}
+    \State Return the smooth candidate with the lowest residual
+\EndIf
+\ForAll{geometric candidates and the consensus candidate}
+    \State Estimate an optional shared bias only when active residuals are concentrated
+    \State Trim large residuals and update Tukey-style weights
+    \State Refine the candidate by damped Gauss--Newton / LM steps
+\EndFor
+\State Keep the candidate with the lowest final robust residual
+\If{the refined solution prunes too aggressively or is not clearly better than the smooth candidate}
+    \State Return the smooth candidate
+\Else
+    \State Return the refined robust candidate
+\EndIf
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Reliability-Adaptive Measurement Screening}
 
@@ -252,7 +286,25 @@ The score should be read as a tractable surrogate for a small budgeted search pr
 \end{equation}
 with fixed coefficients $\alpha_1,\dots,\alpha_4$ chosen once and then held constant across the reported experiments. The implementation evaluates this objective over a capped reliability-sorted pool so that the search remains computationally small.
 
-The proposed policy performs a small exhaustive search over a top-reliability candidate pool, which is feasible because the pool is capped in the experiments. Baselines include random subset selection, angular-spread greedy selection, FIM-only greedy selection, residual-only top-$k$, reliability-only top-$k$, and the all-sensor robust estimator. The adaptive policy uses all-sensor robust fusion when the residual median absolute deviation and reliability dispersion are both small; otherwise it activates screening. This makes screening a conditional tool rather than a default law. Because a reviewer can reasonably ask whether the chosen coefficient vector is too brittle, Section~6 revisits the screening score under explicit coefficient perturbations rather than only reporting a single frozen setting.
+The proposed policy performs a small exhaustive search over a top-reliability candidate pool, which is feasible because the pool is capped in the experiments. Baselines include random subset selection, angular-spread greedy selection, FIM-only greedy selection, residual-only top-$k$, reliability-only top-$k$, and the all-sensor robust estimator. The adaptive policy uses all-sensor robust fusion when the residual median absolute deviation and reliability dispersion are both small; otherwise it activates screening. This makes screening a conditional tool rather than a default law. Section~6 therefore reports both score-term ablation and explicit coefficient perturbation so that the selector is not justified by one frozen coefficient vector alone.
+
+\begin{algorithm}[!htbp]
+\caption{Adaptive Fixed-Budget Screening}
+\label{alg:screening}
+\begin{algorithmic}
+\Require Pilot estimate $\hat{p}$, residuals $\{r_i\}$, reliabilities $\{w_i\}$, current budget $k$
+\Ensure Subset $\mathcal{S}$ or the all-sensor decision
+\State Compute residual dispersion and reliability dispersion on the current window
+\If{the window is homogeneous and the full set can be fused}
+    \State Keep all current valid bearings
+\Else
+    \State Form a capped candidate pool by reliability ranking
+    \State Enumerate budget-feasible subsets in that pool
+    \State Score each subset with normalized geometry, isotropy, reliability, and residual terms
+    \State Return the highest-scoring subset
+\EndIf
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Complexity and Reproducibility}
 
@@ -266,13 +318,13 @@ The implementation uses a trim ratio of 0.15, three outer reweighting rounds, Hu
 
 \subsection{Main Monte Carlo Benchmark}
 
-The main synthetic benchmark contains 2000 cases. Five corrupted-measurement regimes are evaluated: clean, outlier, mixed, pose uncertainty, and heterogeneous bias. Each regime is run over 200 random seeds and two formations (circular and random) with eight observers. The formation radius is fixed at $R=10$, the target is placed at $(2.5,-1.5)$, and one bearing is generated per valid observer. The outlier regime uses outlier rate $0.28$ and scale $0.42$. The mixed regime combines common bias $0.04$, missing rate $0.20$, outlier rate $0.22$, and outlier scale $0.45$. The pose-uncertainty regime injects observer-pose noise of standard deviation $0.35$. The heterogeneous-bias regime uses sensor-specific bias standard deviation $0.05$ in addition to a small common bias.
+The main synthetic benchmark contains 3000 cases. Five corrupted-measurement regimes are evaluated: clean, outlier, mixed, pose uncertainty, and heterogeneous bias. Each regime is run over 200 random seeds and three formation families (circular, random, and near-degenerate narrow-arc layouts) with eight observers. The formation radius is fixed at $R=10$, but the target is randomized reproducibly inside the formation footprint rather than fixed at one convenient coordinate. This removes dependence on one nominal geometry while preserving exact reproducibility. If a practical swarm operates with a 100~m observation radius, the normalized thresholds used in this paper map to 10~m at $0.1R$ and 50~m at $0.5R$. The outlier regime uses outlier rate $0.28$ and scale $0.42$. The mixed regime combines common bias $0.04$, missing rate $0.20$, outlier rate $0.22$, and outlier scale $0.45$. The pose-uncertainty regime injects observer-pose noise of standard deviation $0.35$. The heterogeneous-bias regime uses sensor-specific bias standard deviation $0.05$ in addition to a small common bias.
 
 The baseline estimators are nonlinear least squares, Huber IRLS, GNC with a Geman--McClure robustifier, and RANSAC. The proposed method is evaluated under the same interface and with the same reported observer poses. The main metrics are median error, mean error, 90th-percentile error, success at $0.1R$, and catastrophic failure above $0.5R$. Bootstrap 95\% confidence intervals are reported for the medians.
 
 \subsection{Fixed-Budget Screening Benchmark}
 
-The screening benchmark contains 1716 cases over mixed and severe regimes, three formation families (circle, perturbed, and random), and 8/10/12-observer settings. The subset budget is approximately 55\% of the currently valid measurements, clipped to remain strictly smaller than the full set. This benchmark is designed to answer a narrower question than the main estimator benchmark: not whether screening beats unconstrained all-sensor robust fusion, but whether a budgeted policy can use the limited subset more effectively than simple residual-only, reliability-only, geometry-only, or random screening.
+The screening benchmark contains 2285 valid fixed-budget cases over mixed and severe regimes, four formation families (circle, perturbed, random, and near-degenerate), and 8/10/12-observer settings. Cases with fewer than four valid bearings after corruption are discarded because fixed-budget subset selection is not meaningful there. The subset budget is approximately 55\% of the currently valid measurements, clipped to remain strictly smaller than the full set. In concrete terms, this corresponds to retaining roughly five or six bearings out of a ten-vehicle observation round when uplink, onboard compute, or fusion latency forces partial transmission. The benchmark is designed to answer a narrower question than the main estimator benchmark: not whether screening beats unconstrained all-sensor robust fusion, but whether a budgeted policy can use the limited subset more effectively than simple residual-only, reliability-only, geometry-only, or random screening.
 
 \subsection{Pseudo-Physical Dynamic Replay}
 
@@ -280,23 +332,23 @@ To narrow the gap between static geometry and UAV-like dynamics, a pseudo-physic
 
 \subsection{PyBullet Multi-Vehicle Replay}
 
-To further reduce the gap between static geometry and UAV-like temporal disturbance, we also replay bearing measurements from a multi-vehicle PyBullet environment derived from the \texttt{gym-pybullet-drones} ecosystem \cite{panerati2021learning}. The replay uses circle and ellipse formations with 8 and 10 vehicles, warm-up phases, time-sampled trajectories, gust-like disturbance, attitude-induced bearing perturbation, delay-step variation, missing observations, and slowly drifting common bias. The resulting benchmark contains 1844 replayed localization cycles over nominal and disturbed regimes. Although the current study still does not reach hardware-in-the-loop, this replay layer follows the broader UAV-validation recommendation that algorithm papers should test against timing and disturbance sources that are closer to actual vehicle dynamics \cite{perezsegui2023bridging}.
+To further reduce the gap between static geometry and UAV-like temporal disturbance, we also replay bearing measurements from a multi-vehicle PyBullet environment derived from the \texttt{gym-pybullet-drones} ecosystem \cite{panerati2021learning}. The replay uses circle and ellipse formations with 8 and 10 vehicles, warm-up phases, time-sampled trajectories, gust-like disturbance, delayed observer poses, attitude-induced bearing perturbation, yaw-defined sensor field of view with a payload mounting offset, soft field-of-view dropouts, missing observations, and slowly drifting common bias. The resulting benchmark contains replayed localization cycles over nominal and disturbed regimes. Although the current study still does not reach hardware-in-the-loop, this replay layer follows the broader UAV-validation recommendation that algorithm papers should test against timing and disturbance sources that are closer to actual vehicle dynamics \cite{perezsegui2023bridging}.
 
 \subsection{Additional Generalization and Efficiency Analyses}
 
-Beyond the headline benchmarks, the manuscript includes five auxiliary analyses. First, a formation-generalization study compares circular, elliptical, perturbed, and random observer layouts under mixed corruption. Second, sensor-count scaling evaluates 4/6/8/10/12-observer settings for both circle and random formations. Third, sensitivity sweeps vary outlier rate, common bias magnitude, and nominal noise level. Fourth, ablation, observability, and runtime studies isolate the effect of trimming, bias estimation, reweighting, geometry quality, and computational burden. Fifth, a screening-weight sensitivity study evaluates the exact $0.8\times/1.0\times/1.2\times$ grid for the four normalized screening coefficients on the same 432-window slice used for the earlier randomized stress test. These analyses do not replace the main benchmark, but they are important for showing where the method is fragile, where it generalizes, and what computational price is paid for the robustness gains.
+Beyond the headline benchmarks, the manuscript includes five auxiliary analyses. First, a formation-generalization study compares circular, elliptical, perturbed, and random observer layouts under mixed corruption. Second, sensor-count scaling evaluates 4/6/8/10/12-observer settings for both circle and random formations. Third, sensitivity sweeps vary outlier rate, common bias magnitude, and nominal noise level. Fourth, ablation, observability, and runtime studies isolate the effect of trimming, bias estimation, reweighting, geometry quality, and computational burden. Fifth, two selector diagnostics are reported in the main text: score-term ablation and randomized $\pm20\%$ coefficient perturbation for the normalized screening score. These analyses do not replace the main benchmark, but they are important for showing where the method is fragile, where it generalizes, and what computational price is paid for the robustness gains.
 
 \section{Results}
 
 \subsection{Robust Localization Under Corrupted Bearings}
 
-Table~\ref{tab:mainregimes} and Figure~\ref{fig:storyregimes} report the main result: corrupted measurements cause clear failures for least squares, while robust front-end estimation materially reduces both median error and failure risk. In the outlier regime, the median error decreases from 1.0792 for least squares to 0.1799 for the proposed method. In the mixed regime, it decreases from 0.8547 to 0.3122. These are not marginal differences: they represent a shift from brittle one-shot localization to a front-end that stays usable after bad bearings enter the set.
+Table~\ref{tab:mainregimes} and Figure~\ref{fig:storyregimes} report the main result: corrupted measurements cause clear failures for least squares, while robust front-end estimation materially reduces both median error and failure risk. In the outlier regime, the median error decreases from 1.1186 for least squares to 0.2108 for the proposed method. In the mixed regime, it decreases from 1.0015 to 0.4346. These are not marginal differences: they represent a shift from brittle one-shot localization to a front-end that stays usable after bad bearings enter the set.
 
 \input{../tables/table_main_regimes.tex}
 
-The comparison against stronger robust baselines is also informative. Huber IRLS and GNC-GM are both much better than least squares, but they remain consistently behind the proposed front end in the mixed, pose-uncertainty, and heterogeneous-bias regimes. RANSAC is a strong baseline in outlier-dominated settings, and the proposed method essentially matches it there while remaining slightly better in the mixed, pose-uncertainty, and heterogeneous-bias settings. This pattern is consistent with the design of the method: consensus helps under gross corruption, but trimmed reweighting and bias handling matter once the corruption is more heterogeneous.
+The comparison against stronger robust baselines is also informative. Huber IRLS and GNC-GM are both much better than least squares, but they remain consistently behind the proposed front end in the mixed, pose-uncertainty, and heterogeneous-bias regimes. RANSAC is the strongest competing baseline in the current benchmark: the proposed estimator is essentially tied with it in median error across the hard regimes, rather than universally better. This pattern is consistent with the design of the method: consensus remains crucial under gross corruption, while the trimmed reweighting and bias-aware fallback keep one unified front-end pipeline usable when the corruption mode changes from one window to the next.
 
-The pose-uncertainty and heterogeneous-bias results are particularly important for the scope of the paper. They show that the revised benchmark is no longer built around ideal observer poses and shared-noise assumptions only. Under pose uncertainty, the median error decreases from 0.5739 for least squares to 0.3513 for the proposed method. Under heterogeneous bias, it decreases from 0.4224 to 0.3254. These improvements are smaller than in the outlier regime, but they address more realistic failure modes for practical passive sensing.
+The pose-uncertainty and heterogeneous-bias results are particularly important for the scope of the paper. They show that the expanded benchmark is no longer built around ideal observer poses and shared-noise assumptions only. Under pose uncertainty, the median error decreases from 0.6985 for least squares to 0.4562 for the proposed method. Under heterogeneous bias, it decreases from 0.5303 to 0.4212. These improvements are smaller than in the outlier regime, but they address more realistic failure modes for practical passive sensing.
 
 \begin{figure}[!htbp]
 \centering
@@ -305,7 +357,7 @@ The pose-uncertainty and heterogeneous-bias results are particularly important f
 \label{fig:storyregimes}
 \end{figure}
 
-Figure~\ref{fig:storycdf} adds a distribution-level view for the two regimes in which the front-end story matters most. In the outlier-rich regime, the proposed estimator shifts the full error distribution leftward relative to least squares and GNC-GM, nearly overlapping RANSAC over most of the range. The 90th-percentile error drops from 2.5034 for least squares to 0.6697 for the proposed method, and the success rate at $0.1R$ increases from 0.4875 to 0.9400. In the mixed-corruption regime, the same pattern persists: the 90th percentile drops from 2.7369 to 1.0979 and the success rate increases from 0.5625 to 0.8925. This confirms that the gain is not restricted to a few easy trials or a few catastrophic outliers. The full empirical distribution is compressed, which is exactly what a robust front end should achieve before a downstream tracker or planner is invoked.
+Figure~\ref{fig:storycdf} adds a distribution-level view for the two regimes in which the front-end story matters most. In the outlier-rich regime, the proposed estimator shifts the full error distribution leftward relative to least squares and GNC-GM while nearly overlapping RANSAC over most of the range. The 90th-percentile error drops from 3.8429 for least squares to 0.9506 for the proposed method, and the success rate at $0.1R$ increases from 0.4533 to 0.9050. In the mixed-corruption regime, the same pattern persists: the 90th percentile drops from 3.8537 to 1.3820 and the success rate increases from 0.4983 to 0.8517. This confirms that the gain is not restricted to a few easy trials or a few catastrophic outliers. The full empirical distribution is compressed, which is exactly what a robust front end should achieve before a downstream tracker or planner is invoked.
 
 \begin{figure}[!htbp]
 \centering
@@ -314,7 +366,7 @@ Figure~\ref{fig:storycdf} adds a distribution-level view for the two regimes in 
 \label{fig:storycdf}
 \end{figure}
 
-Figure~\ref{fig:thresholdsweep} and Table~\ref{tab:tailrisk} make the same point under stricter failure thresholds and paired tests. When the catastrophic threshold is tightened from $0.5R$ to $0.2R$, the outlier-regime failure rate drops from 0.1725 for least squares to 0.0375 for the proposed estimator, and the mixed-regime failure rate drops from 0.2000 to 0.0625. The paired Wilcoxon tests show stable gains over least squares and PSO in both hard regimes. The comparison against RANSAC is intentionally narrower: RANSAC is already strong in gross-outlier conditions, so the main gain of the proposed front-end is not to replace it everywhere, but to preserve the same robust-fusion pipeline when bias, missing data, and pose uncertainty appear together.
+Figure~\ref{fig:thresholdsweep} and Table~\ref{tab:tailrisk} make the same point under stricter failure thresholds and paired tests. When the catastrophic threshold is tightened from $0.5R$ to $0.2R$, the outlier-regime failure rate drops from 0.2933 for least squares to 0.0400 for the proposed estimator, and the mixed-regime failure rate drops from 0.2733 to 0.0683. The paired Wilcoxon tests show stable gains over least squares and PSO in both hard regimes. The comparison against RANSAC is intentionally narrower: RANSAC is already strong in gross-outlier conditions, so the main gain of the proposed front-end is not to replace it everywhere, but to preserve the same robust-fusion pipeline when bias, missing data, and pose uncertainty appear together.
 
 \begin{figure}[!htbp]
 \centering
@@ -327,9 +379,9 @@ Figure~\ref{fig:thresholdsweep} and Table~\ref{tab:tailrisk} make the same point
 
 \subsection{Why Not Just RANSAC?}
 
-RANSAC is the right baseline to confront directly because it is already very effective in pure gross-outlier regimes. The results above show that the proposed estimator does not materially outperform RANSAC in the outlier benchmark, and that is an important boundary condition for the paper. The motivation for keeping the proposed front-end is different: the same pipeline must also remain stable when heterogeneous bias, pose uncertainty, and partial trimming interact with gross corruption. In those regimes, the proposed estimator maintains slightly lower medians than RANSAC and uses the same downstream robust-refinement stack as the rest of the manuscript.
+RANSAC is the right baseline to confront directly because it is already very effective in pure gross-outlier regimes. The results above show that the proposed estimator does not materially outperform RANSAC in the outlier benchmark, and that is an important boundary condition for the paper. The motivation for keeping the proposed front-end is different: the same pipeline must also remain stable when heterogeneous error mechanisms interact with gross corruption. In those regimes, the proposed estimator remains statistically competitive with RANSAC while preserving one consistent refinement-and-fallback stack for the rest of the manuscript.
 
-Figure~\ref{fig:ransaccase} illustrates one representative heterogeneous-bias case from the benchmark. Several bearings are individually plausible, but one strongly biased ray pulls the consensus solution away from the target. RANSAC keeps a front-end cue with 1.0768 error, while the proposed estimator trims the most inconsistent bearing and reduces the error to 0.5100. The point is specific but useful for multi-error sensing: once bias and measurement inconsistency coexist, a consensus-only front end can still benefit from trimmed reweighting and selective suppression of the most harmful bearings.
+Figure~\ref{fig:ransaccase} illustrates one representative mixed-corruption case from the benchmark. Several bearings are individually plausible, but a small inconsistent subset is sufficient to pull the consensus solution away from the target. In this window, least squares yields 0.8628 error, RANSAC remains at 0.6197, and the proposed estimator reduces the error to 0.3129 by trimming the most inconsistent bearings before the final refit. The point is specific but useful for multi-error sensing: once residual inconsistency and contamination coexist, a consensus-only front end can still benefit from trimmed reweighting and selective suppression of the most harmful bearings.
 
 \begin{figure}[!htbp]
 \centering
@@ -340,11 +392,11 @@ Figure~\ref{fig:ransaccase} illustrates one representative heterogeneous-bias ca
 
 \subsection{Fixed-Budget Screening Is Conditional, Not Universal}
 
-The screening benchmark confirms a conditional story. All-sensor robust fusion remains the unconstrained upper bound, with overall median error 0.4003. Under fixed subset budgets, however, screening is still useful. The proposed geometry--reliability policy improves the overall median error from 0.5572 for residual-only screening and 0.6294 for reliability-only screening to 0.5015. The adaptive variant reduces the overall median further to 0.4723 and improves the severe-regime median from 0.7491 to 0.7291 (Table~\ref{tab:screening}).
+The screening benchmark confirms a conditional story. All-sensor robust fusion remains the unconstrained upper bound, with overall median error 0.4981. Under fixed subset budgets, however, screening is still useful. The proposed geometry--reliability policy improves the overall median error from 0.6118 for residual-only screening and 0.6383 for reliability-only screening to 0.5872. The adaptive variant reduces the overall median further to 0.5518 and improves the severe-regime median from 0.7774 to 0.7487 (Table~\ref{tab:screening}).
 
 \input{../tables/table_screening.tex}
 
-The paired counts clarify the same point. The proposed always-on screening policy beats the residual-only baseline in 670 cases and loses in 396, with 650 ties. Against the all-sensor robust estimator, however, the same policy loses in 882 cases. Adaptive screening behaves more conservatively: it ties the always-on screening policy in 1372 of 1716 cases and improves the median error slightly by refusing to screen when the current bearing set does not appear heterogeneous enough. The benefit map in Figure~\ref{fig:benefitmap} shows the same behavior over the outlier-rate/budget plane: screening helps most when the budget is tight and measurement credibility is uneven.
+The paired counts clarify the same point. The proposed always-on screening policy beats the residual-only baseline in 779 cases and loses in 603, with 903 ties. Against the all-sensor robust estimator, however, the same policy loses in 1370 cases and wins in only 661, which is why Stage~2 is not advertised as a replacement for full-set robust fusion. Adaptive screening behaves more conservatively: it improves over always-on screening in 604 cases, loses in 318, and ties in 1363 by refusing to screen when the current bearing set does not appear heterogeneous enough. The benefit map in Figure~\ref{fig:benefitmap} shows the same behavior over the outlier-rate/budget plane: screening helps most when the budget is tight and measurement credibility is uneven.
 
 \begin{figure}[!htbp]
 \centering
@@ -369,7 +421,16 @@ Figure~\ref{fig:screeningcases} turns the conditional interpretation into two co
 \label{fig:screeningcases}
 \end{figure}
 
-Figure~\ref{fig:screeningweights} addresses the most obvious methodological concern about the screening score: whether a nearby coefficient vector would change the conclusion completely. On the exact $0.8\times/1.0\times/1.2\times$ perturbation grid for the four normalized coefficients, the median error across the 81 combinations is 0.5278, compared with 0.5269 for the default setting. The 5th--95th percentile interval spans only 0.5253--0.5412, and the median Jaccard overlap with the default selected subset remains 0.9840. These results do not make the score optimal, but they do show that the reported behavior is not a brittle artifact of one manually tuned coefficient vector.
+Figure~\ref{fig:screeningablation} addresses the second methodological concern: whether the proposed score needs every term or is dominated by one hand-crafted ingredient. Geometry-only screening is the weakest screened variant, with overall median error 0.5857. Adding residual or reliability information narrows the gap, yielding medians of 0.5812 and 0.5641, respectively. The full score reaches 0.5790, which is not a universal optimum but remains in the same narrow range. This is the right interpretation of Stage~2: the score integrates complementary cues and avoids relying on geometry alone, but it should not be sold as a magic selector that dominates every simpler construction.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{../figures/figure_screening_score_ablation}
+\caption{Score-term ablation for the fixed-budget screening stage. Geometry-only screening is the weakest screened variant, while adding residual or reliability information narrows the gap; the full score behaves as an engineering compromise rather than a universal optimum.}
+\label{fig:screeningablation}
+\end{figure}
+
+Figure~\ref{fig:screeningweights} addresses the third methodological concern about the screening score: whether a nearby coefficient vector would change the conclusion completely. Across randomized $\pm20\%$ perturbations of the four normalized coefficients, the default median error is 0.5586, the 5th--95th percentile interval spans only 0.5479--0.5742, and the median Jaccard overlap with the default selected subset remains 0.9685. These results do not make the score optimal, but they do show that the reported behavior is not a brittle artifact of one manually tuned coefficient vector.
 
 \begin{figure}[!htbp]
 \centering
@@ -380,7 +441,7 @@ Figure~\ref{fig:screeningweights} addresses the most obvious methodological conc
 
 \subsection{Pseudo-Physical Dynamic Replay}
 
-The pseudo-physical replay results show that the revised estimator is not only a static synthetic benchmark result. In the mild dynamic setting, the median error decreases from 0.1603 for least squares to 0.1373 for the proposed method, and the success rate at the 1.0 threshold reaches 1.0. In the harsh dynamic setting, the median error decreases from 0.4979 to 0.3498, while the 90th-percentile error drops from 1.5877 to 0.6505 (Table~\ref{tab:pseudophysical}). The proposed method remains close to RANSAC in the mild setting and slightly better in the harsh setting, which is consistent with the main Monte Carlo story: consensus is important, but the additional trimmed refinement becomes more valuable when corruption sources combine.
+The pseudo-physical replay results show that the estimator is not only a static synthetic benchmark result. In the mild dynamic setting, the median error decreases from 0.1603 for least squares to 0.1343 for the proposed method, and the success rate at the 1.0 threshold reaches 1.0. In the harsh dynamic setting, the median error decreases from 0.4979 to 0.3523, while the 90th-percentile error drops from 1.5877 to 0.6505 (Table~\ref{tab:pseudophysical}). The proposed method remains close to RANSAC in the mild setting and slightly better in the harsh setting, which is consistent with the main Monte Carlo story: consensus is important, but the additional trimmed refinement becomes more valuable when corruption sources combine.
 
 \input{../tables/table_pseudophysical.tex}
 
@@ -433,9 +494,9 @@ The observability analysis adds an important nuance. Better isotropy still corre
 \label{fig:observability}
 \end{figure}
 
-\subsection{PyBullet Multi-Vehicle Replay}
+\subsection{PyBullet Multi-Vehicle Replay as a Stress Test}
 
-The PyBullet replay layer provides the strongest evidence in the current manuscript that the story is not limited to static point sets. Table~\ref{tab:pybulletparams} summarizes the replay configuration, including update rate, delay distribution, attitude-induced perturbation, and gust disturbance. Over 1844 replayed localization cycles, the overall median error decreases from 4.4387 for least squares to 1.1539 for the proposed estimator, while the catastrophic-failure rate drops from 0.4675 to 0.1605 (Appendix~C, Table~\ref{tab:pybullet}). In the nominal replay regime, the median decreases from 3.1608 to 0.8483; in the disturbed regime, it decreases from 5.4216 to 1.6113. The 90th percentile is reduced from 31.7371 to 7.8292 overall, which indicates that the gain is driven as much by tail suppression as by average-case improvement.
+The PyBullet replay layer is the hardest transfer test in the manuscript rather than the most favorable one. Table~\ref{tab:pybulletparams} summarizes the replay configuration, including update rate, delay distribution, attitude-induced perturbation, and gust disturbance. Over 1103 replayed localization cycles, the overall median errors are 1.7469 for least squares, 1.6967 for GNC-GM, 2.0073 for RANSAC, and 2.0611 for the proposed estimator (Appendix~C, Table~\ref{tab:pybullet}). The proposed front end therefore does not dominate replay median accuracy or replay catastrophic-failure rate. Its main signal in this layer is tail-oriented: the mean error drops from 50.61 for least squares to 21.20, the overall 90th percentile drops from 16.69 to 13.11, and under disturbed replay the 90th percentile drops from 36.53 for least squares and 23.71 for RANSAC to 18.19 for the proposed method. This is why the PyBullet layer is interpreted as a stress test and boundary check rather than as proof of deployment readiness.
 
 \input{../tables/table_pybullet_parameters.tex}
 
@@ -444,43 +505,43 @@ These results do not make the manuscript a field-validation paper, but they do m
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.92\linewidth]{../figures/figure_pybullet_replay}
-\caption{PyBullet multi-vehicle replay benchmark. The proposed front end strongly reduces both the median error and the tail under nominal and disturbed flight-like replay regimes.}
+\caption{PyBullet multi-vehicle replay benchmark used as a stress layer. The proposed front end does not dominate median replay accuracy, but it limits part of the upper tail in disturbed flight-like windows.}
 \label{fig:pybullet}
 \end{figure}
 
-\subsection{Operational Cue Utility Under Replay}
+\subsection{Cue-Quality Partition Under Replay}
 
-Median error alone does not fully explain whether a replayed localization window is useful to the rest of the mission stack. To make the application story more explicit, Figure~\ref{fig:utility} partitions replay windows into three operational cue classes using the same error thresholds already defined in Section~3: \emph{handoff-ready} cues with error $\leq 1.0$, \emph{degraded} cues with error in $(1.0, 5.0]$, and \emph{unusable} cues with error $> 5.0$. This is still a proxy rather than a full task-loop experiment, but it is a better description of downstream value than a single mean or median.
+Median error alone does not fully explain whether a replayed localization window is useful to the rest of the mission stack. To make the application story more explicit, Figure~\ref{fig:utility} partitions replay windows into three cue classes using the same error thresholds already defined in Section~3: \emph{handoff-ready} cues with error $\leq 1.0$, \emph{degraded} cues with error in $(1.0, 5.0]$, and \emph{unusable} cues with error $> 5.0$. This is still a proxy rather than a full task-loop experiment, but it is a better description of replay transfer than a single mean or median.
 
-The utility partition clarifies why the PyBullet benchmark matters. Over the overall replay pool, the proposed method raises the handoff-ready fraction from 0.1838 for least squares, 0.1795 for GNC-GM, and 0.1768 for Huber to 0.4528, while reducing unusable windows from about 0.47 to 0.1605. Under the disturbed replay regime, the same pattern remains: the handoff-ready fraction rises from roughly 0.13 for the classical baselines to 0.3615, and the unusable-window fraction drops from about 0.53 to 0.2008. In other words, the gain is not only numerical. The proposed front end converts a much larger portion of replay windows into cues that a downstream tracker or handoff module could plausibly consume without immediately rejecting them.
+The cue-quality partition clarifies why the PyBullet benchmark matters even though it is not a universal win. Over the overall replay pool, the proposed method produces a handoff-ready fraction of 0.3028 and an unusable fraction of 0.2584, which is broadly comparable to the classical robust baselines rather than clearly superior to them. Under disturbed replay, the same boundary remains: the handoff-ready fraction is 0.2546 and the unusable fraction is 0.2848. In other words, the replay layer exposes a real transfer gap. Static synthetic robustness does not automatically become better cue availability once delayed poses, attitude perturbation, and field-of-view effects are introduced together. Keeping this boundary in the paper is useful because it prevents the front-end story from being overstated.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.96\linewidth]{../figures/figure_operational_utility}
-\caption{Operational cue-quality partition under PyBullet replay. Replay windows are grouped into handoff-ready, degraded, and unusable cues using the same normalized thresholds adopted in the rest of the manuscript.}
+\caption{Cue-quality partition under PyBullet replay. Replay windows are grouped into handoff-ready, degraded, and unusable cues using the same normalized thresholds adopted in the rest of the manuscript; the figure highlights a transfer gap rather than a universal replay win.}
 \label{fig:utility}
 \end{figure}
 
 \subsection{Downstream Tracking Proxy}
 
-To provide a lightweight downstream utility test, the replayed one-shot cues were also passed to a minimal Kalman filter with chi-square gating. The goal is not to claim a complete tracking contribution, but to test whether a more reliable front-end cue reduces breakage in a simple downstream consumer. Table~\ref{tab:trackingproxy} and Figure~\ref{fig:trackingproxy} show that the proposed front-end cuts the overall replay-sequence break rate from 0.1250 for least squares to 0.0833, and halves the disturbed-replay break rate from 0.1667 to 0.0833. The disturbed-replay 90th-percentile tracking RMSE also drops sharply from 39.9416 to 1.0139.
+To provide a lightweight downstream utility test, the replayed one-shot cues were also passed to a minimal Kalman filter with chi-square gating. The goal is not to claim a complete tracking contribution, but to test whether a more reliable front-end cue reduces downstream damage in a simple consumer. Table~\ref{tab:trackingproxy} and Figure~\ref{fig:trackingproxy} show that the proposed front-end lowers the overall replay-sequence break rate from 0.7083 for least squares to 0.6667, matching RANSAC overall, while all methods remain tied at 0.8333 under the disturbed replay regime. The main gain in this proxy is therefore not break-rate elimination but tail suppression: the overall 90th-percentile tracking RMSE drops from 28.8386 for least squares and 34.3885 for RANSAC to 16.4994 for the proposed front end, and the disturbed-regime 90th-percentile tracking RMSE drops from 29.8760 and 36.5509 to 13.6756.
 
-This proxy is intentionally modest. RANSAC produces a similar break-rate reduction, which is consistent with the earlier conclusion that robust front-ends are the relevant design class in replay. The result still helps the paper because it closes part of the application loop: better corrupted-bearing fusion does not only change a localization median, it also reduces the chance that a simple downstream tracker loses the target cue sequence altogether.
+This proxy is intentionally modest. RANSAC produces the same overall break-rate reduction, which is consistent with the earlier conclusion that robust front ends are the relevant design class in replay. The proposed method remains useful because it compresses the upper tail seen by the downstream filter even when the break-rate metric itself is saturated by the disturbed regime.
 
 \input{../tables/table_tracking_proxy.tex}
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.98\linewidth]{../figures/figure_tracking_proxy}
-\caption{Downstream tracking proxy with a minimal Kalman filter. Robust front-end cues reduce sequence breakage and prevent the extreme tail seen with least-squares cues in disturbed replay.}
+\caption{Downstream tracking proxy with a minimal Kalman filter. The proposed front end is not a universal break-rate winner, but it substantially reduces upper-tail tracking error in disturbed replay.}
 \label{fig:trackingproxy}
 \end{figure}
 
 \subsection{Runtime and Reproducibility Implications}
 
-The runtime results show that the robustness gain is not purchased with an obviously impractical computational burden. The proposed front end has a median runtime of 24.62 ms, which is close to PSO at 25.33 ms and substantially lower than would be expected from a heavy stochastic search with richer state histories. Least squares and Huber are faster at about 2.70 ms, while simulated annealing remains around 3.71 ms. For a paper positioned as a front-end algorithmic module rather than an embedded real-time controller, this runtime is acceptable, particularly given the reduction in catastrophic failures.
+The runtime results show that the robustness gain is not purchased with an obviously impractical computational burden, although the method is clearly slower than simple least-squares fitting. On an Apple M1 Pro CPU with 10 logical cores, macOS 15.7.2, and Python 3.11.11, the proposed front end has a median runtime of 54.00~ms, compared with 26.56~ms for PSO, 5.42~ms for Huber IRLS, 4.97~ms for simulated annealing, and 3.52~ms for least squares. The stage decomposition is also informative: the robust Stage~1 core has median runtime 35.07~ms, while Stage~2 screening adds 2.24~ms and the adaptive gate adds 1.65~ms when invoked. These timings are acceptable for a cycle-level front-end study, but they also make clear that the current implementation has not yet been optimized for hard real-time embedded deployment.
 
-Equally important is the reproducibility structure. All manuscript figures are generated from frozen JSON outputs, and the experiment runners for the main benchmark, the screening study, the pseudo-physical replay, and the PyBullet replay are archived in the submission package. This matters because the current paper is intended to be reused as a benchmark baseline. The reproducibility assets listed in Appendix~D therefore form part of the contribution, not only a submission formality.
+Equally important is the reproducibility structure. All manuscript figures are generated from frozen JSON outputs, and the experiment runners for the main benchmark, the screening study, the pseudo-physical replay, and the PyBullet replay are archived in the repository. This matters because the paper is intended to be reused as a benchmark baseline. The reproducibility assets listed in Appendix~D therefore form part of the contribution, not only supplementary packaging.
 
 \begin{figure}[!htbp]
 \centering
@@ -495,7 +556,7 @@ Equally important is the reproducibility structure. All manuscript figures are g
 
 The paper is a robust localization study centered on one-shot planar multi-observer bearing-only fusion under corrupted measurements. The contribution lies in improving front-end reliability before higher-level tracking, planning, or collaboration modules are invoked. This scope is narrower than a full collaborative UAV sensing stack, but it matches the actual evidence.
 
-The experiments support four practical conclusions. First, catastrophic failures caused by bad bearings can be reduced substantially with a consensus-assisted robust front end. Second, observer-pose uncertainty and heterogeneous per-sensor bias must be evaluated explicitly; without those settings, the claimed UAV relevance is too weak. Third, screening is useful mainly under fixed-budget or highly heterogeneous windows. The all-sensor robust estimator remains the correct default whenever the budget permits using the full set and the reliability dispersion is small. Fourth, the PyBullet replay results suggest that the method retains value under trajectory-, timing-, and disturbance-shaped effects rather than only under static synthetic geometry.
+The experiments support four practical conclusions. First, catastrophic failures caused by bad bearings can be reduced substantially with a consensus-assisted robust front end. Second, observer-pose uncertainty and heterogeneous per-sensor bias must be evaluated explicitly; without those settings, the claimed UAV relevance is too weak. Third, screening is useful mainly under fixed-budget or highly heterogeneous windows. The all-sensor robust estimator remains the correct default whenever the budget permits using the full set and the reliability dispersion is small. Fourth, the PyBullet replay results should be read as a stress boundary: they show partial transfer through tail suppression and downstream-tracking improvement, but not universal replay dominance.
 
 \subsection{Where the Method Helps Most and Where It Does Not}
 
@@ -507,29 +568,27 @@ By contrast, the current evidence does not justify a claim of universal superior
 
 Taken together, Figures~\ref{fig:systempipeline}, \ref{fig:utility}, and \ref{fig:trackingproxy} support a concrete system reading. The paper is not only producing lower localization medians; it is increasing the fraction of replay windows that can be handed downstream as usable cues, while reducing the chance that a simple tracker loses the cue sequence altogether. The output of the method is therefore a stronger current-cycle cue for the next module in the stack rather than a full autonomy solution by itself.
 
-This system-level reading also clarifies why the paper still stops short of a full UAV-systems contribution. A real deployment study would need to show how those improved cues affect tracker reacquisition, formation replanning, target confirmation, or operator workload. The present manuscript does not yet close that loop. What it does provide is a stronger foundation for such a loop than plain least squares or naive subset selection would provide under corrupted measurements.
-
-For journal positioning, this storyline is stronger than a purely algorithm-centered narrative. The paper starts from a practical user pain point, namely that a few corrupted bearings can produce a target cue outside the neighborhood that downstream modules are prepared to search. It then introduces a front-end method that is intentionally modest in scope but strong in failure prevention: robustify the current-cycle cue first, screen only when a budget constraint forces pruning, and verify the gain not only with static error summaries but also with replayed utility proxies. This progression from operational failure mode to bounded engineering response is what gives the manuscript application value despite remaining simulation-based.
+This system-level reading also clarifies why the paper still stops short of a full UAV-systems contribution. A real deployment study would need to show how those improved cues affect tracker reacquisition, formation replanning, target confirmation, or operator workload. The present manuscript does not yet close that loop. What it does provide is a reproducible current-cycle front end that can be inserted before those downstream modules and stress-tested under several corrupted-measurement regimes.
 
 \subsection{What Is Still Missing for a Stronger UAV-Systems Claim}
 
-Several limitations remain. The current formulation is planar and centralized. Observer poses are assumed to be supplied by an external navigation module rather than estimated jointly. The paper does not model upstream detection, target association, or sequential tracking. The screening score is still a fixed engineering surrogate rather than a learned or theoretically optimal budgeted selector, even though the new perturbation study shows that its behavior is not tied to one numerically brittle coefficient vector. Finally, the validation chain now includes pseudo-physical and PyBullet replay, but still stops short of hardware-in-the-loop or field data. These limitations do not invalidate the algorithmic contribution, but they do define its current publication scope and the work still needed for a harder UAV-systems target.
+Several limitations remain. The current formulation is planar and centralized. Observer poses are assumed to be supplied by an external navigation module rather than estimated jointly. The paper does not model upstream detection, target association, or sequential tracking. The screening score is still a fixed engineering surrogate rather than a learned or theoretically optimal budgeted selector, even though the perturbation study shows that its behavior is not tied to one numerically brittle coefficient vector. Finally, the validation chain now includes pseudo-physical and PyBullet replay, but still stops short of hardware-in-the-loop or field data. These limitations do not invalidate the algorithmic contribution, but they do define its current publication scope and the work still needed for a harder UAV-systems target.
 
-\subsection{Implications for Journal Positioning}
+\subsection{Scope Boundaries for the Current Manuscript}
 
-From a journal-positioning perspective, the current manuscript is better aligned with a Drones-style research article because it directly addresses a UAV-relevant passive sensing problem, uses multi-vehicle replay rather than only idealized geometry, and states its scope boundaries explicitly. At the same time, the paper should still be presented as a robust sensing front end rather than as a complete UAV systems paper. If future revisions add SITL, HITL, or field-log replay, the same algorithmic core could support a stronger UAV-systems claim. In its current form, the paper offers a reproducible and better-validated algorithmic baseline for corrupted bearing fusion.
+The contribution should therefore be read as a robust sensing front end rather than as a complete UAV-systems paper. It is strongest when the question is whether the current sensing cycle can still produce a usable cue after a subset of bearings becomes corrupted. Stronger system-level claims would require SITL, HITL, field replay, or onboard integration studies in addition to the present simulation-based evidence.
 
 \subsection{Practical Research Path from the Current Draft}
 
-The current manuscript also suggests a clear next-step research path rather than ending at a static algorithm benchmark. The first step is to preserve the present front-end interface and connect it to a replayed or simulated downstream tracker with richer state and target-motion assumptions. The second step is to replace the current generic bearing corruption model with payload-specific perturbations, for example camera field-of-view truncation, heading misalignment tied to attitude estimates, or radio direction-finding uncertainty tied to signal strength. The third step is to move from centralized fusion toward a bandwidth-aware swarm implementation in which the same adaptive screening logic is evaluated under explicit uplink timing and communication constraints. These extensions would keep the narrative coherent because they all build on the same front-end question: whether the current sensing cycle yields a cue that downstream modules can still trust.
+The results also suggest a clear next-step research path rather than ending at a static algorithm benchmark. The first step is to preserve the present front-end interface and connect it to a replayed or simulated downstream tracker with richer state and target-motion assumptions. The second step is to replace the current generic bearing corruption model with payload-specific perturbations, for example camera field-of-view truncation, heading misalignment tied to attitude estimates, or radio direction-finding uncertainty tied to signal strength. The third step is to move from centralized fusion toward a bandwidth-aware swarm implementation in which the same adaptive screening logic and consensus initialization are evaluated under explicit uplink timing and V2V communication constraints. These extensions would keep the narrative coherent because they all build on the same front-end question: whether the current sensing cycle yields a cue that downstream modules can still trust.
 
-This staged path is useful for interpreting the contribution fairly. The present paper does not need to solve every systems layer at once to have application value. What it provides is a robust and reproducible front-end baseline around which those stronger system experiments can be organized. In that sense, the contribution is not only an algorithmic result but also a controlled experimental scaffold: it identifies the corruption regimes that matter, fixes a baseline set of strong and weak competitors, and exposes exactly where additional realism should be injected in the next revision cycle.
+This staged path is useful for interpreting the contribution fairly. The present paper does not need to solve every systems layer at once to have application value. What it provides is a robust and reproducible front-end baseline around which those stronger system experiments can be organized. In that sense, the contribution is not only an algorithmic result but also a controlled experimental scaffold: it identifies the corruption regimes that matter, fixes a baseline set of strong and weak competitors, and exposes where additional realism should be injected next.
 
 \section{Conclusions}
 
-This paper formulates the contribution as a corrupted-bearing localization problem and presents a robust front-end for that problem. The consensus-assisted estimator suppresses catastrophic one-shot failures caused by bad bearings, while the optional adaptive screening module improves over simpler fixed-budget subset policies without replacing all-sensor fusion when the full measurement set is available. Across 2000 Monte Carlo cases, fixed-budget screening, pseudo-physical dynamic replay, and 1844 PyBullet replay cycles, the method consistently improves over least squares and remains competitive with strong robust baselines such as RANSAC.
+This paper formulates the contribution as a corrupted-bearing localization problem and presents a robust front end for that problem. The consensus-assisted estimator suppresses catastrophic one-shot failures caused by bad bearings, while the optional adaptive screening module improves over simpler fixed-budget subset policies without replacing all-sensor fusion when the full measurement set is available. Across 3000 Monte Carlo cases and 720 pseudo-physical dynamic replay cases, the method consistently improves over least squares and remains competitive with strong robust baselines such as RANSAC. In 1103 PyBullet replay cycles, the same method should be interpreted more narrowly as a stress-tested front end: replay median accuracy is broadly comparable to the strongest baselines, while tail-oriented tracking error still improves in the disturbed regime.
 
-The main value of the current study is therefore methodological and reproducibility-oriented: it provides a robust front-end benchmark for passive bearing fusion under outliers, mixed corruption, observer-pose uncertainty, and heterogeneous bias. Future work should add hardware-coupled validation, extend the formulation to full three-dimensional localization, and connect the front-end output to sequential tracking or downstream task-level utility metrics.
+The main value of the study is therefore methodological and reproducibility-oriented: it provides a robust front-end benchmark for passive bearing fusion under outliers, mixed corruption, observer-pose uncertainty, and heterogeneous bias. Future work should add hardware-coupled validation, extend the formulation to full three-dimensional localization, connect the front-end output to sequential tracking or downstream task-level utility metrics, and study distributed variants that move parts of the consensus initialization or screening logic onto the UAV network itself.
 
 \appendix
 \input{../tables/tables_appendix.tex}
@@ -542,9 +601,9 @@ The main value of the current study is therefore methodological and reproducibil
 
 \informedconsent{Not applicable.}
 
-\dataavailability{The code, experiment runners, plotting scripts, frozen JSON outputs, and manuscript sources used in this study are organized in a version-controlled local reproducibility repository under \texttt{reproducibility/}. This repository can be exported directly as an anonymized public release package for review or post-acceptance archiving.}
+\dataavailability{The code, experiment runners, plotting scripts, frozen JSON outputs, and manuscript sources used in this study are available at \url{https://github.com/poboll/robust-bearing-fusion-uav-localization}. The repository includes the MDPI source files, configuration files, and one-command scripts used to regenerate the reported experiments and figures.}
 
-\acknowledgments{The authors thank the academic advisors and internal reviewers who provided detailed feedback on problem framing, scope control, and revision priorities.}
+\acknowledgments{The authors thank colleagues who discussed passive localization and manuscript organization during the preparation of this work. During the preparation of this manuscript, the authors used a generative AI tool for language polishing and editing assistance. All technical content, experiments, numerical claims, figures, and interpretations were verified by the authors, who take full responsibility for the final manuscript.}
 
 \conflictsofinterest{The authors declare no conflicts of interest.}
 

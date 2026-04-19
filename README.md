@@ -1,75 +1,68 @@
 # Robust Bearing Fusion for Multi-UAV Passive Localization
 
-This repository is the cleaned working tree for an SCI-style manuscript on robust front-end estimation under corrupted bearing-only measurements in passive multi-UAV localization. The project is organized around one canonical MDPI manuscript, one reproducible experiment pipeline, and one synchronized submission package.
+This repository contains the canonical working tree for an SCI-oriented manuscript on corrupted bearing-only fusion in passive multi-UAV localization. The paper is written as a robust front-end paper, not as a full autonomy-stack paper: Stage 1 is the main contribution, and Stage 2 is an optional budget-aware screening extension.
 
-## Repository Layout
+## Manuscript Position
 
-- `docs/`: research story, outline, method, experiment plan
-- `lit/`: literature assets and notes
-- `notes/`: working notes
-- `src/`: code scaffold
-- `experiments/`: generated outputs
-- `submission/`: canonical manuscript, figures, tables, and supplementary submission assets
+The current story is intentionally narrow and evidence-aligned:
 
-## Current Research Position
+- Stage 1: consensus-assisted robust front-end estimation under outliers, mixed corruption, pose uncertainty, and heterogeneous bias
+- Stage 2: adaptive fixed-budget screening when uplink, compute, or latency limits prevent fusing every bearing
+- validation chain: 3000-case Monte Carlo benchmark, 720-case pseudo-physical replay, 1103-case PyBullet multi-vehicle stress test, downstream tracking proxy, and runtime/scaling analysis
 
-The current manuscript is organized around three concrete contributions:
+The strongest claims are in the synthetic and pseudo-physical layers. The PyBullet layer is kept as a transfer-gap stress test, where the method is broadly competitive in median replay accuracy and mainly improves tail-oriented tracking metrics rather than universally dominating every baseline.
 
-- consensus-assisted robust bearing fusion under outliers, mixed corruption, pose uncertainty, and heterogeneous bias
-- adaptive fixed-budget screening when only a subset of bearings can be fused or transmitted
-- a validation chain spanning static Monte Carlo, pseudo-physical replay, and PyBullet multi-vehicle replay
+## Canonical Assets
 
-Canonical current documents:
+- `submission/mdpi_manuscript/manuscript_mdpi.tex`: canonical MDPI manuscript source
+- `submission/mdpi_manuscript/manuscript_mdpi.pdf`: latest compiled manuscript proof
+- `submission/mdpi_manuscript/references_curated.bib`: curated bibliography used by the paper
+- `submission/figures/`: submission-ready figures in `PNG`, `PDF`, and `SVG`
+- `submission/tables/`: LaTeX tables pulled into the manuscript
+- `experiments/`: frozen JSON outputs and regenerated figures used by the manuscript
+- `src/`: reusable localization, screening, scenario, and replay code
+- `docs/`: planning, review, and restructuring notes retained for traceability
 
-- `docs/review_reframe_2026-04-18.md`
-- `docs/submission_execution_plan_2026-04-18.md`
-- `submission/pre_submission_audit.md`
-- `reproducibility/README.md`
+## Core Reproducibility Commands
 
-Superseded planning drafts are archived under `docs/archive/` so that the root documentation stays focused on the current submission path.
-
-## Reproducibility Commands
+All Python commands are intended to run in the local Conda `uu` environment.
 
 ```bash
-conda run -n uu bash -lc 'PYTHONPATH=src python run_demo.py'
-conda run -n uu bash -lc 'PYTHONPATH=src python run_batch.py'
-conda run -n uu bash -lc 'PYTHONPATH=src python run_regimes.py'
-conda run -n uu bash -lc 'PYTHONPATH=src python run_ablation.py'
-conda run -n uu bash -lc 'PYTHONPATH=src python run_formations.py'
-conda run -n uu bash -lc 'PYTHONPATH=src python run_runtime.py --repeats 100 --warmup 10'
-conda run -n uu bash -lc 'PYTHONPATH=src python run_active_selection.py'
-conda run -n uu bash -lc 'PYTHONPATH=src python run_all_experiments.py'
-conda run -n uu python run_story_revision_analysis.py
-conda run -n uu python run_screening_weight_grid.py
-conda run -n uu python run_tracking_proxy.py
-conda run -n uu python plot_results.py
-conda run -n uu python create_graphical_abstract.py
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_story_benchmark.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_story_revision_analysis.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_active_selection.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_screening_score_ablation.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_screening_weight_sensitivity.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_selection_benefit_map.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_pseudo_physical_validation.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_pybullet_replay_validation.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_tracking_proxy.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_runtime.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python plot_results.py'
 ```
 
-## Canonical Submission Assets
-
-- `submission/mdpi_manuscript/manuscript_mdpi.tex`: main MDPI-format manuscript source
-- `submission/mdpi_manuscript/manuscript_mdpi.pdf`: compiled MDPI manuscript proof
-- `submission/pre_submission_audit.md`: current completion and remaining-item audit
-- `submission/figures/`: submission-ready 300-DPI figure set in `PNG`, `PDF`, and `SVG`
-- `submission/tables/`: LaTeX table sources used by the manuscript
-- `submission/supplementary/`: highlights, frozen outputs, and data-availability notes
-
-## Publication Workspace
-
-- GitHub repository: `git@github.com:poboll/robust-bearing-fusion-uav-localization.git`
-- Web URL: `https://github.com/poboll/robust-bearing-fusion-uav-localization`
-- Current MDPI PDF: `submission/mdpi_manuscript/manuscript_mdpi.pdf`
-
-## Rebuild the PDF
+## Build the PDF
 
 ```bash
-cd submission/mdpi_manuscript
+cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/submission/mdpi_manuscript
 latexmk -pdf -interaction=nonstopmode manuscript_mdpi.tex
 ```
 
+## Repository Layout
+
+- `docs/`: review reports, restructuring plans, and archived decision trails
+- `reproducibility/`: notes about reruns and packaging
+- `experiments/`: machine-generated outputs only
+- `submission/`: paper-facing assets only
+- `external/`: simulator dependencies or external code snapshots
+
+## Publication Workspace
+
+- Git remote: `git@github.com:poboll/robust-bearing-fusion-uav-localization.git`
+- Web URL: `https://github.com/poboll/robust-bearing-fusion-uav-localization`
+
 ## Cleanup Policy
 
-- The MDPI manuscript under `submission/mdpi_manuscript/` is the only canonical paper source.
-- LaTeX auxiliary files, Python cache files, and archived draft branches are intentionally excluded from the main working tree.
-- Historical planning material is retained only in `docs/archive/` when it is still useful for traceability.
+- `submission/mdpi_manuscript/` is the only canonical paper source.
+- Old stitched table drafts and transient cache files should not be treated as canonical evidence.
+- Historical planning material may remain under `docs/` only when it is still useful for auditability.

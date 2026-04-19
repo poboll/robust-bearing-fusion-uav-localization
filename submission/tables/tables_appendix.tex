@@ -17,7 +17,7 @@ Reference & Primary focus & Corrupted-bearing front end & Fixed-budget screening
 \cite{huang2025emcompat} & Passive positioning and formation electromagnetic compatibility for UAV swarms & Not explicit & No & Simulation-focused \\
 \cite{li2025bearing} & Bearing-only passive localization with formation adjustment under electromagnetic silence & Partial geometry/bias discussion & No & Simulation-focused \\
 \cite{yin2025dual} & Dual-UAV cooperative bearing-only localization with particle filtering & Yes, through filtering & No & Algorithm simulation \\
-This work & One-shot robust fusion under outliers, bias, missing data, and pose uncertainty & Yes & Yes & Synthetic, pseudo-physical replay, and PyBullet replay \\
+This work & One-shot robust fusion under outliers, bias, missing data, and pose uncertainty & Yes & Yes & Synthetic, pseudo-physical replay, and PyBullet stress test \\
 \bottomrule
 \end{tabular}
 }
@@ -34,10 +34,10 @@ This work & One-shot robust fusion under outliers, bias, missing data, and pose 
 \toprule
 Benchmark layer & Cases & Formations / counts & Main perturbations & Main purpose \\
 \midrule
-Main Monte Carlo & 2000 & Circle and random; 8 observers & Outliers, mixed corruption, pose noise, heterogeneous bias & Establish the core robust-localization story \\
-Fixed-budget screening & 1716 & Circle, perturbed, random; 8/10/12 observers & Mixed and severe corruption under subset budgets & Test whether screening helps when not all bearings can be fused \\
+Main Monte Carlo & 3000 & Circle, random, and degenerate; 8 observers & Outliers, mixed corruption, pose noise, heterogeneous bias & Establish the core robust-localization story \\
+Fixed-budget screening & 2285 & Circle, perturbed, random, and degenerate; 8/10/12 observers & Mixed and severe corruption under subset budgets & Test whether screening helps when not all bearings can be fused \\
 Pseudo-physical replay & 720 & Three formations; three swarm sizes & Delay, jitter, missing data, per-sensor bias, outliers & Add flight-like disturbances without a full vehicle simulator \\
-PyBullet multi-vehicle replay & 1844 & Circle and ellipse; 8/10 observers & Attitude disturbance, gust-like perturbation, delay, bias drift, missing data & Stress the estimator on multi-vehicle trajectories and asynchronous logs \\
+PyBullet multi-vehicle replay & 1103 & Circle and ellipse; 8/10 observers & Attitude disturbance, gust-like perturbation, delay, bias drift, missing data & Stress the estimator on multi-vehicle trajectories and asynchronous logs \\
 Generalization / efficiency sweeps & Multiple sweeps & Four formations; 4--12 observers; five severity levels & Outlier-rate, bias, noise, observability, timing cost & Characterize scaling, sensitivity, and computational burden \\
 \bottomrule
 \end{tabularx}
@@ -134,45 +134,55 @@ Random & 2.1047 & 0.5186 & 0.5768 \\
 
 \begin{table}[!htbp]
 \centering
-\caption{PyBullet multi-vehicle replay summary. The proposed estimator sharply reduces the heavy tail relative to least squares and standard robust baselines.}
+\caption{PyBullet multi-vehicle replay summary. The replay acts as a stress test: the proposed estimator is broadly comparable to least squares in median error while improving several tail-oriented indicators relative to classical baselines.}
 \label{tab:pybullet}
 \small
 \begin{tabular}{llrrrr}
 \toprule
 Regime & Method & Median & P90 & Success@1.0 & Cat.@5.0 \\
 \midrule
-Overall & Least Squares & 4.4387 & 31.7371 & 0.1838 & 0.4675 \\
-Overall & Huber IRLS & 4.5419 & 31.8712 & 0.1768 & 0.4740 \\
-Overall & GNC-GM & 4.5296 & 31.8703 & 0.1795 & 0.4729 \\
-Overall & Proposed & 1.1539 & 7.8292 & 0.4528 & 0.1605 \\
+Overall & Least Squares & 1.7469 & 16.6860 & 0.3282 & 0.2448 \\
+Overall & GNC-GM & 1.6967 & 12.7876 & 0.3309 & 0.2221 \\
+Overall & RANSAC & 2.0073 & 15.0330 & 0.3200 & 0.2593 \\
+Overall & Proposed & 2.0611 & 13.1131 & 0.3028 & 0.2584 \\
 \midrule
-Nominal & Least Squares & 3.1608 & 25.4721 & 0.2451 & 0.3986 \\
-Nominal & Proposed & 0.8483 & 5.8284 & 0.5544 & 0.1157 \\
+Nominal & Least Squares & 1.3930 & 13.1086 & 0.3890 & 0.1984 \\
+Nominal & Proposed & 1.8426 & 9.0048 & 0.3340 & 0.2004 \\
 \midrule
-Disturbed & Least Squares & 5.4216 & 36.1911 & 0.1287 & 0.5294 \\
-Disturbed & Proposed & 1.6113 & 9.1317 & 0.3615 & 0.2008 \\
+Disturbed & Least Squares & 2.3330 & 31.1812 & 0.2798 & 0.2933 \\
+Disturbed & Proposed & 2.3099 & 18.8802 & 0.3008 & 0.2707 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[!htbp]
 \centering
-\caption{Legacy paired-significance summary retained for completeness. Positive median improvement means lower error for the proposed front-end family.}
+\caption{Expanded paired-significance summary from the main 3000-case synthetic benchmark. Positive median improvement means lower error for the proposed front-end family.}
 \label{tab:significance}
 \small
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{llrrr}
 \toprule
-Regime & Comparison & Wins--Losses & Sign-test $p$ & Median improvement \\
+Regime & Comparison & Wins--Losses--Ties & Wilcoxon $p$ & Median improvement \\
 \midrule
-Outlier & Proposed vs LS & 17--3 & 0.0026 & 1.2691 \\
-Outlier & Proposed vs PSO & 15--5 & 0.0414 & 0.1971 \\
-Outlier & Proposed vs SA & 18--2 & 0.0004 & 0.5461 \\
+Outlier & Proposed vs LS & 521--70--9 & $2.35\times 10^{-77}$ & 0.7637 \\
+Outlier & Proposed vs RANSAC & 93--86--421 & 0.0357 & 0.0000 \\
+Outlier & Proposed vs PSO & 345--255--0 & $4.70\times 10^{-4}$ & 0.0248 \\
 \midrule
-Mixed & Proposed vs LS & 17--3 & 0.0026 & 0.2419 \\
-Mixed & Proposed vs PSO & 10--10 & 1.0000 & 0.0037 \\
-Mixed & Proposed vs SA & 15--5 & 0.0414 & 0.2472 \\
+Mixed & Proposed vs LS & 411--169--20 & $2.39\times 10^{-42}$ & 0.3258 \\
+Mixed & Proposed vs RANSAC & 78--107--415 & 0.9992 & 0.0000 \\
+Mixed & Proposed vs PSO & 410--190--0 & $5.11\times 10^{-23}$ & 0.1058 \\
+\midrule
+Pose uncertainty & Proposed vs LS & 394--189--17 & $1.21\times 10^{-32}$ & 0.0680 \\
+Pose uncertainty & Proposed vs RANSAC & 127--114--359 & 0.1933 & 0.0000 \\
+Pose uncertainty & Proposed vs PSO & 382--218--0 & $3.07\times 10^{-13}$ & 0.0708 \\
+\midrule
+Heterogeneous bias & Proposed vs LS & 338--240--22 & $2.33\times 10^{-13}$ & 0.0025 \\
+Heterogeneous bias & Proposed vs RANSAC & 136--150--314 & 0.8396 & 0.0000 \\
+Heterogeneous bias & Proposed vs PSO & 384--216--0 & $1.74\times 10^{-11}$ & 0.0631 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \section{Threats to Validity}

@@ -9,6 +9,12 @@ class ScenarioConfig:
     formation_jitter: float = 0.0
     target_x: float = 2.5
     target_y: float = -1.5
+    target_mode: str = "fixed"
+    target_radius_min_frac: float = 0.10
+    target_radius_max_frac: float = 0.45
+    target_avoid_sensor_margin_frac: float = 0.18
+    degenerate_arc_width_deg: float = 42.0
+    degenerate_radial_jitter_frac: float = 0.08
     noise_std: float = 0.02
     bias: float = 0.0
     sensor_bias_std: float = 0.0

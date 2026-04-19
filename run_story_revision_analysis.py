@@ -27,6 +27,7 @@ from passive_localization.scenario import generate_circular_scenario
 
 RADIUS = 10.0
 KEY_REGIMES = ["outlier", "mixed", "pose_uncertainty", "heterogeneous_bias"]
+FAILURE_CASE_REGIMES = ["mixed", "pose_uncertainty", "heterogeneous_bias"]
 THRESHOLDS_R = [round(value, 2) for value in np.arange(0.10, 0.51, 0.05)]
 METHODS = {
     "least_squares_error": "LS",
@@ -163,27 +164,35 @@ def run_story_revision_analysis(
             "proposed_vs_pso": _paired_report(regime_rows, "robust_bias_trimmed_error", "pso_error"),
         }
 
-    candidate_rows = [row for row in rows if row["regime"] in {"pose_uncertainty", "heterogeneous_bias"}]
-    selected_case = max(
-        candidate_rows,
-        key=lambda row: (
-            row["ransac_error"] - row["robust_bias_trimmed_error"],
+    def _case_priority(row: dict) -> tuple[float, float, float, float]:
+        formation_bonus = 0.15 if row["formation"] == "degenerate" else 0.0
+        return (
+            row["ransac_error"] - row["robust_bias_trimmed_error"] + formation_bonus,
             row["least_squares_error"] - row["robust_bias_trimmed_error"],
+            row["gnc_gm_error"] - row["robust_bias_trimmed_error"],
             row["pso_error"] - row["robust_bias_trimmed_error"],
-        ),
-    )
-    failure_case = _reconstruct_case(selected_case, MethodConfig())
+        )
+
+    failure_cases: list[dict] = []
+    for regime in FAILURE_CASE_REGIMES:
+        regime_rows = [row for row in rows if row["regime"] == regime]
+        if not regime_rows:
+            continue
+        selected_case = max(regime_rows, key=_case_priority)
+        failure_cases.append(_reconstruct_case(selected_case, MethodConfig()))
 
     result = {
         "meta": {
             "formation_radius": RADIUS,
             "thresholds_r": THRESHOLDS_R,
             "threshold_note": "Thresholds are reported in normalized units of R and absolute units with R=10.",
+            "failure_case_note": "Failure cases are selected per regime by maximizing the advantage of the proposed estimator over RANSAC while preferring near-degenerate observer layouts when available.",
         },
         "strict_thresholds": strict_thresholds,
         "threshold_sweep": threshold_sweep,
         "paired_stats": paired_stats,
-        "ransac_failure_case": failure_case,
+        "ransac_failure_case": failure_cases[0] if failure_cases else None,
+        "ransac_failure_cases": failure_cases,
     }
     out_path = output_dir / "story_revision_analysis.json"
     out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -20,6 +20,32 @@ class ScenarioData:
     pose_errors: np.ndarray | None = None
 
 
+def _generate_target(config: ScenarioConfig, rng: np.random.Generator, coords: list[tuple[float, float]]) -> Point2D:
+    if config.target_mode == "fixed":
+        return Point2D(config.target_x, config.target_y)
+    if config.target_mode != "random_interior":
+        raise ValueError(f"Unsupported target_mode: {config.target_mode}")
+
+    radius = float(config.formation_radius)
+    min_r = max(0.0, config.target_radius_min_frac * radius)
+    max_r = max(min_r + 1e-6, config.target_radius_max_frac * radius)
+    sensor_xy = np.asarray(coords, dtype=float)
+    min_sensor_gap = max(0.5, config.target_avoid_sensor_margin_frac * radius)
+
+    for _ in range(256):
+        theta = float(rng.uniform(-np.pi, np.pi))
+        sampled_r = float(rng.uniform(min_r, max_r))
+        candidate = np.array([sampled_r * np.cos(theta), sampled_r * np.sin(theta)], dtype=float)
+        if sensor_xy.size == 0:
+            return Point2D(float(candidate[0]), float(candidate[1]))
+        dists = np.linalg.norm(sensor_xy - candidate[None, :], axis=1)
+        if float(np.min(dists)) >= min_sensor_gap:
+            return Point2D(float(candidate[0]), float(candidate[1]))
+
+    fallback = np.array([config.target_x, config.target_y], dtype=float)
+    return Point2D(float(fallback[0]), float(fallback[1]))
+
+
 def generate_circular_scenario(config: ScenarioConfig) -> ScenarioData:
     rng = np.random.default_rng(config.seed)
     angles = np.linspace(0.0, 2.0 * np.pi, config.num_uavs, endpoint=False)
@@ -41,6 +67,17 @@ def generate_circular_scenario(config: ScenarioConfig) -> ScenarioData:
         radii = rng.uniform(0.6 * config.formation_radius, 1.2 * config.formation_radius, size=(config.num_uavs, 1))
         pts = raw * radii
         coords = [(float(x), float(y)) for x, y in pts]
+    elif config.formation_type == "degenerate":
+        center_angle = float(rng.uniform(-np.pi, np.pi))
+        half_width = 0.5 * np.deg2rad(config.degenerate_arc_width_deg)
+        arc = np.linspace(-half_width, half_width, config.num_uavs)
+        coords = []
+        for delta in arc:
+            theta = center_angle + float(delta) + float(rng.normal(0.0, 0.03))
+            radius = config.formation_radius * (
+                1.0 + float(rng.normal(0.0, max(config.degenerate_radial_jitter_frac, 1e-3)))
+            )
+            coords.append((float(radius * np.cos(theta)), float(radius * np.sin(theta))))
     else:
         raise ValueError(f"Unsupported formation_type: {config.formation_type}")
 
@@ -62,7 +99,7 @@ def generate_circular_scenario(config: ScenarioConfig) -> ScenarioData:
         )
         for idx, (x, y) in enumerate(reported_coords)
     ]
-    target = Point2D(config.target_x, config.target_y)
+    target = _generate_target(config, rng, coords)
     true_bearings = np.array([bearing_from_sensor(sensor, target) for sensor in true_sensors], dtype=float)
 
     sensor_biases = rng.normal(0.0, config.sensor_bias_std, size=true_bearings.shape)

@@ -58,7 +58,7 @@ def run_story_benchmark(output_dir: str | Path = "experiments", seeds: list[int]
         "pose_uncertainty": dict(bias=0.03, outlier_rate=0.18, outlier_scale=0.35, pose_noise_std=0.35),
         "heterogeneous_bias": dict(bias=0.01, sensor_bias_std=0.05, missing_rate=0.08, outlier_rate=0.12, outlier_scale=0.30),
     }
-    formations = ["circle", "random"]
+    formations = ["circle", "random", "degenerate"]
     counts = [8]
     method_cfg = MethodConfig()
 
@@ -72,6 +72,7 @@ def run_story_benchmark(output_dir: str | Path = "experiments", seeds: list[int]
                         num_uavs=num_uavs,
                         formation_type=formation,
                         formation_jitter=1.1 if formation == "perturbed" else 0.0,
+                        target_mode="random_interior",
                         **regime_kwargs,
                     )
                     result = run_single_benchmark(scenario_cfg, method_cfg)
@@ -108,7 +109,10 @@ def run_story_benchmark(output_dir: str | Path = "experiments", seeds: list[int]
             "counts": counts,
             "num_runs": len(rows),
             "formation_radius": 10.0,
+            "physical_radius_example_m": 100.0,
             "unit_note": "Errors are reported in the same distance unit as the scenario coordinates; thresholds 0.1R and 0.5R correspond to 1.0 and 5.0 when R=10.",
+            "target_note": "Targets are randomized inside the formation footprint using the deterministic scenario seed so that each run remains reproducible while avoiding a single fixed target layout.",
+            "degenerate_note": "The degenerate formation places observers on a narrow arc to stress near-singular geometry in addition to circle and random layouts.",
         },
         "methods": METHOD_KEYS,
         "runs": rows,

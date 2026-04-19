@@ -33,6 +33,14 @@ def _mean_abs_residual(point: np.ndarray, sensors: list[Sensor2D], bearings: np.
     return float(np.mean(np.abs(_bearing_residual_with_bias(point, bias, sensors, bearings))))
 
 
+def _absolute_residual_stats(residuals: np.ndarray) -> tuple[float, float, float, float]:
+    abs_res = np.abs(residuals)
+    median = float(np.median(abs_res))
+    mad = float(np.median(np.abs(abs_res - median)))
+    p90 = float(np.percentile(abs_res, 90))
+    return median, mad, p90, float(np.mean(abs_res))
+
+
 def _trim_indices(residuals: np.ndarray, trim_ratio: float) -> np.ndarray:
     if trim_ratio <= 0.0:
         return np.array([], dtype=int)
@@ -186,12 +194,37 @@ def tukey_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray
 
 def robust_bias_trimmed_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray, config: MethodConfig) -> RefinedEstimate:
     best_estimate: RefinedEstimate | None = None
+    ls_estimate = least_squares_refine(initial, sensors, bearings, config)
+    gnc_estimate = gnc_geman_mcclure_refine(initial, sensors, bearings, config)
+    ls_residuals = _bearing_residual(ls_estimate.point.as_array(), sensors, bearings)
+    ls_med, ls_mad, ls_p90, ls_mean = _absolute_residual_stats(ls_residuals)
 
     candidate_states: list[tuple[np.ndarray, list[int] | None]] = [(cand, None) for cand in _candidate_points(initial, sensors, bearings)]
     consensus_estimate: RefinedEstimate | None = None
     if len(sensors) >= 4:
         consensus_estimate = ransac_refine(initial, sensors, bearings, config, seed=0)
         candidate_states.append((consensus_estimate.point.as_array(), consensus_estimate.removed_indices))
+    smooth_candidates = [ls_estimate, gnc_estimate]
+    if consensus_estimate is not None:
+        smooth_candidates.append(consensus_estimate)
+    smooth_choice = min(smooth_candidates, key=lambda estimate: estimate.residual)
+
+    coherent_window = (
+        ls_med <= 0.58 * config.huber_delta
+        and ls_mad <= 0.32 * config.huber_delta
+        and ls_p90 <= 1.65 * config.huber_delta
+        and ls_mean <= 0.95 * config.huber_delta
+    )
+    if coherent_window:
+        return RefinedEstimate(
+            point=smooth_choice.point,
+            residual=smooth_choice.residual,
+            method="robust_bias_trimmed",
+            bias=0.0,
+            kept_measurements=smooth_choice.kept_measurements,
+            removed_measurements=smooth_choice.removed_measurements,
+            removed_indices=smooth_choice.removed_indices,
+        )
 
     for start_point, removed_hint in candidate_states:
         point = start_point.copy()
@@ -266,6 +299,12 @@ def robust_bias_trimmed_refine(initial: Point2D, sensors: list[Sensor2D], bearin
     if consensus_estimate is not None:
         best_residuals = np.abs(_bearing_residual(best_estimate.point.as_array(), sensors, bearings))
         severe_fraction = float(np.mean(best_residuals > 1.75 * config.huber_delta))
+        point_gap = float(
+            np.linalg.norm(best_estimate.point.as_array() - consensus_estimate.point.as_array())
+        )
+        residual_gap_small = consensus_estimate.residual <= best_estimate.residual + 0.03
+        heavy_pruning = (best_estimate.removed_measurements or 0) >= max(2, int(0.25 * len(sensors)))
+        suspicious_bias = abs(best_estimate.bias) >= 0.08
         if severe_fraction >= 0.12 or (best_estimate.removed_measurements or 0) >= max(1, int(0.2 * len(sensors))):
             return RefinedEstimate(
                 point=consensus_estimate.point,
@@ -276,6 +315,49 @@ def robust_bias_trimmed_refine(initial: Point2D, sensors: list[Sensor2D], bearin
                 removed_measurements=consensus_estimate.removed_measurements,
                 removed_indices=consensus_estimate.removed_indices,
             )
+        if point_gap > 1.0 and residual_gap_small and (heavy_pruning or suspicious_bias):
+            return RefinedEstimate(
+                point=consensus_estimate.point,
+                residual=consensus_estimate.residual,
+                method="robust_bias_trimmed",
+                bias=0.0,
+                kept_measurements=consensus_estimate.kept_measurements,
+                removed_measurements=consensus_estimate.removed_measurements,
+                removed_indices=consensus_estimate.removed_indices,
+            )
+    point_gap_to_smooth = float(np.linalg.norm(best_estimate.point.as_array() - smooth_choice.point.as_array()))
+    light_residual_advantage = best_estimate.residual <= smooth_choice.residual + 0.010
+    aggressive_pruning = (best_estimate.removed_measurements or 0) >= max(2, int(0.22 * len(sensors)))
+    if aggressive_pruning and point_gap_to_smooth > 0.65 and not light_residual_advantage:
+        return RefinedEstimate(
+            point=smooth_choice.point,
+            residual=smooth_choice.residual,
+            method="robust_bias_trimmed",
+            bias=0.0,
+            kept_measurements=smooth_choice.kept_measurements,
+            removed_measurements=smooth_choice.removed_measurements,
+            removed_indices=smooth_choice.removed_indices,
+        )
+    if best_estimate.residual + 0.015 >= smooth_choice.residual:
+        return RefinedEstimate(
+            point=smooth_choice.point,
+            residual=smooth_choice.residual,
+            method="robust_bias_trimmed",
+            bias=0.0,
+            kept_measurements=smooth_choice.kept_measurements,
+            removed_measurements=smooth_choice.removed_measurements,
+            removed_indices=smooth_choice.removed_indices,
+        )
+    if smooth_choice.residual + 0.008 < best_estimate.residual:
+        return RefinedEstimate(
+            point=smooth_choice.point,
+            residual=smooth_choice.residual,
+            method="robust_bias_trimmed",
+            bias=0.0,
+            kept_measurements=smooth_choice.kept_measurements,
+            removed_measurements=smooth_choice.removed_measurements,
+            removed_indices=smooth_choice.removed_indices,
+        )
     if consensus_estimate is not None and consensus_estimate.residual + 1e-6 < best_estimate.residual:
         return RefinedEstimate(
             point=consensus_estimate.point,

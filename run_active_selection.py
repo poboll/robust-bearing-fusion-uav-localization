@@ -62,7 +62,7 @@ def run_active_selection(output_dir: str | Path = "experiments", seeds: list[int
         "mixed": dict(bias=0.04, missing_rate=0.2, outlier_rate=0.2, outlier_scale=0.45),
         "severe": dict(bias=0.06, missing_rate=0.25, outlier_rate=0.3, outlier_scale=0.6),
     }
-    formations = ["circle", "perturbed", "random"]
+    formations = ["circle", "perturbed", "random", "degenerate"]
     counts = [8, 10, 12]
     method_cfg = MethodConfig()
 
@@ -76,6 +76,7 @@ def run_active_selection(output_dir: str | Path = "experiments", seeds: list[int
                         num_uavs=num_uavs,
                         formation_type=formation,
                         formation_jitter=1.2 if formation == "perturbed" else 0.0,
+                        target_mode="random_interior",
                         **regime_kwargs,
                     )
                     scenario = generate_circular_scenario(scenario_cfg)
