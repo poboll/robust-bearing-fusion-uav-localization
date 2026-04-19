@@ -1,0 +1,206 @@
+{
+  "Bearing-only / Passive": {
+    "code": 200,
+    "success": true,
+    "msg": "",
+    "data": [
+      {
+        "doi": "10.3390/jmse13010109",
+        "first_author": "Chuanxing Hu",
+        "id": "677ef6a6ae8580e7ff7eecfa",
+        "title": "Cyclic Peak Extraction from a Spatial Likelihood Map for Multi-Array Multi-Target Bearing-Only Localization",
+        "venue_name": "JOURNAL OF MARINE SCIENCE AND ENGINEERING",
+        "year": 2025
+      },
+      {
+        "doi": "10.1109/access.2025.3578886",
+        "first_author": "Bencai Wang",
+        "id": "684a1028163c01c850102701",
+        "title": "Measurement Error Estimation and Its Applications in Bearing-Only Localization",
+        "venue_name": "IEEE ACCESS",
+        "year": 2025
+      },
+      {
+        "doi": "10.1109/icsidp62679.2024.10868224",
+        "first_author": "Guanxi Sun",
+        "id": "67ad2f33ae8580e7ff74be56",
+        "title": "Bearing-only Localization Based on an Array Network with Distributed ADMM",
+        "venue_name": "2024 IEEE International Conference on Signal, Information and Data Processing (ICSIDP)",
+        "year": 2024
+      },
+      {
+        "doi": "10.1109/iccasit62299.2024.10827960",
+        "first_author": "Derong Deng",
+        "id": "6786f5b9ae8580e7ffef1486",
+        "title": "Research on Precise Localization and Cooperative Control of UAV Formation Flight Based on Passive Bearing-Only Localization",
+        "venue_name": "2024 IEEE 6th International Conference on Civil Aviation Safety and Information Technology (ICCASIT)",
+        "year": 2024
+      },
+      {
+        "doi": "10.1109/med54222.2022.9837261",
+        "first_author": "Evangelos Vlachos",
+        "id": "6373142690e50fcafd5c8356",
+        "title": "Optimal MmWave Sensor Selection for Bearing-Only Localization in Smart Environments",
+        "venue_name": "2022 30TH MEDITERRANEAN CONFERENCE ON CONTROL AND AUTOMATION (MED)",
+        "year": 2022
+      },
+      {
+        "doi": "10.3390/app12136739",
+        "first_author": "Yiqun Zou",
+        "id": "62f603ff90e50fcafdfd3fc7",
+        "n_citation_bucket": "1-10",
+        "title": "Target Localization and Sensor Movement Trajectory Planning with Bearing-Only Measurements in Three Dimensional Space",
+        "venue_name": "APPLIED SCIENCES-BASEL",
+        "year": 2022
+      },
+      {
+        "doi": "10.23919/iccas47443.2019.8971524",
+        "first_author": "Kenichi Fujita",
+        "id": "5e5e1a1593d709897cea1c54",
+        "n_citation_bucket": "11-50",
+        "title": "Bearing Only Localization for Multiple AUV with Acoustic Broadcast Communication",
+        "venue_name": "2019 19th International Conference on Control, Automation and Systems (ICCAS)",
+        "year": 2019
+      },
+      {
+        "doi": "10.1109/vtcfall.2017.8288255",
+        "first_author": "Yifeng Zhou",
+        "id": "5a9cb5f517c44a376ffb2aa7",
+        "title": "A Globally Optimal Solution to Maximum Likelihood Bearing-Only Geolocation.",
+        "venue_name": "2017 IEEE 86th Vehicular Technology Conference (VTC-Fall)",
+        "year": 2017
+      },
+      {
+        "doi": "10.1109/oceans.2016.7761134",
+        "first_author": "Riccardo Costanzi",
+        "id": "5c756b3ff56def97983c0c45",
+        "n_citation_bucket": "1-10",
+        "title": "Bearing-only AUV Tracking Performance: the Effect of Uncertainty in Underwater Nodes Position",
+        "venue_name": "OCEANS 2016 MTS/IEEE MONTEREY",
+        "year": 2016
+      },
+      {
+        "doi": "10.1109/acc.2015.7171940",
+        "first_author": "Roberto Tron",
+        "id": "5736975c6e3b12023e644955",
+        "n_citation_bucket": "11-50",
+        "title": "Rigid Components Identification and Rigidity Control in Bearing-Only Localization Using the Graph Cycle Basis",
+        "venue_name": "2015 AMERICAN CONTROL CONFERENCE (ACC)",
+        "year": 2015
+      }
+    ],
+    "total": 19,
+    "log_id": "3CXUM80w0A0HomBMcBCTjKskDfL"
+  },
+  "Passive Target Localization": {
+    "code": 200,
+    "success": true,
+    "msg": "",
+    "data": [
+      {
+        "doi": "10.3390/s25030780",
+        "first_author": "Xiaoyou Xing",
+        "id": "67995405ae8580e7ffba3c44",
+        "title": "Node Selection and Path Optimization for Passive Target Localization Via UAVs",
+        "venue_name": "SENSORS",
+        "year": 2025
+      },
+      {
+        "doi": "10.11993/j.issn.2096-3920.2024-0136",
+        "first_author": "LI Jiayi",
+        "id": "678e8e92ae8580e7ff53b85d",
+        "title": "Passive Localization of Underwater Broadband High-Frequency Targets Based on Frequency Difference Matching Field",
+        "title_zh": "基于频差匹配场的水下宽带高频目标被动定位",
+        "venue_name": "Journal of Unmanned Undersea Systems",
+        "year": 2025
+      },
+      {
+        "doi": "10.1109/coa58979.2024.10723519",
+        "first_author": "Yan Liang",
+        "id": "671c27c601d2a3fbfc43ae7d",
+        "title": "An Improved Broadband Target Localization Method Based on the Equivalent Vector Hydrophone",
+        "venue_name": "2024 OES China Ocean Acoustics (COA)",
+        "year": 2024
+      },
+      {
+        "doi": "10.1109/icos63634.2024.10775434",
+        "first_author": "O.A. Stepanov",
+        "id": "675b733aae8580e7ffa233d2",
+        "title": "Recursive and Nonrecursive Passive Target Localization Algorithms with Bearing-Only Measurements",
+        "venue_name": "2024 International Conference on Ocean Studies (ICOS)",
+        "year": 2024
+      },
+      {
+        "doi": "10.3390/s21196439",
+        "first_author": "Taeil Suh",
+        "id": "616809bc5244ab9dcb311c9c",
+        "n_citation_bucket": "1-10",
+        "title": "Observability Study on Passive Target Localization by Conic–Angle Measurements",
+        "venue_name": "SENSORS",
+        "year": 2021
+      },
+      {
+        "doi": "10.1109/icit46573.2021.9453470",
+        "first_author": "Ui-Suk Suh",
+        "id": "60d45c3491e011a1b4e667ed",
+        "n_citation_bucket": "1-10",
+        "title": "A Robust Passive Target Localization for Substation Inspection of UAV in a GPS-denied Environment.",
+        "venue_name": "2021 22ND IEEE INTERNATIONAL CONFERENCE ON INDUSTRIAL TECHNOLOGY (ICIT)",
+        "year": 2021
+      },
+      {
+        "doi": "10.1109/ChiCC.2016.7554704",
+        "first_author": "Sheng Feng",
+        "id": "5c7568d6f56def9798231691",
+        "n_citation_bucket": "1-10",
+        "title": "Passive Target Localization In Multi-View System",
+        "venue_name": "PROCEEDINGS OF THE 35TH CHINESE CONTROL CONFERENCE 2016",
+        "year": 2016
+      },
+      {
+        "doi": "10.19650/j.cnki.cjsi.2015.05.019",
+        "first_author": "Xu Cheng",
+        "id": "5ae2e749f81f1cfaeccc72e7",
+        "n_citation_bucket": "11-50",
+        "title": "Small UAV passive target localization approach and accuracy analysis",
+        "title_zh": "一种小型无人机无源目标定位方法及精度分析",
+        "venue_name": "仪器仪表学报",
+        "year": 2015
+      },
+      {
+        "doi": "10.1109/icspcc.2014.6986256",
+        "first_author": "Bing Leng",
+        "id": "556f33062401b4b38c2355e0",
+        "n_citation_bucket": "1-10",
+        "title": "A Passive Method of Positioning Indoor Target Based on Tdoa",
+        "venue_name": "2014 IEEE INTERNATIONAL CONFERENCE ON SIGNAL PROCESSING, COMMUNICATIONS AND COMPUTING (ICSPCC)",
+        "year": 2014
+      },
+      {
+        "doi": "10.1109/tie.2013.2266076",
+        "first_author": "Ka Hyung Choi",
+        "id": "53e9a7bab7602d97030f8c40",
+        "n_citation_bucket": "11-50",
+        "title": "Robust Least Squares Approach to Passive Target Localization Using Ultrasonic Receiver Array",
+        "venue_name": "IEEE TRANSACTIONS ON INDUSTRIAL ELECTRONICS",
+        "year": 2014
+      }
+    ],
+    "total": 20,
+    "log_id": "3CXUMGf6Pv0gvtiugrzQkrNO48I"
+  },
+  "Cooperative UAV GNSS-denied": {
+    "code": 200,
+    "success": true,
+    "msg": "no data",
+    "data": null,
+    "log_id": "3CXUMFloEe4hzAmszSUkUhCD0EK"
+  },
+  "UAV Sim-to-Real / Validation": {
+    "code": 200,
+    "success": true,
+    "msg": "no data",
+    "data": null,
+    "log_id": "3CXUMFb1pbJgrRpfWjQKmIxQrby"
+  }
+}

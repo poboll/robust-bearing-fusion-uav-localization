@@ -1,0 +1,10 @@
+{
+  "means": {
+    "initial_error": 21.793176548436186,
+    "least_squares_error": 21.729718621525077,
+    "robust_error": 21.778141260032456,
+    "robust_bias_trimmed_error": 21.77657290060036,
+    "pso_error": 53.715184297811575,
+    "sa_error": 20.33993178909042
+  }
+}

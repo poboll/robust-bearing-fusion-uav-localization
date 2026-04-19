@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.DS_Store
+.pipeline/
+external/
+
+submission/mdpi_manuscript/*.aux
+submission/mdpi_manuscript/*.bbl
+submission/mdpi_manuscript/*.blg
+submission/mdpi_manuscript/*.fdb_latexmk
+submission/mdpi_manuscript/*.fls
+submission/mdpi_manuscript/*.log
+submission/mdpi_manuscript/*.out
+
+experiments/test_*/

@@ -1,0 +1,5 @@
+- An uncertainty-aware passive-localization framework is proposed for unreliable bearing measurements.
+- The method couples robust geometric estimation with credibility-guided measurement selection.
+- The robust core sharply improves degraded-regime stability over least squares in outlier-rich and mixed settings.
+- The selection layer outperforms random, spread-based, and FIM-only subset policies under fixed sensing budgets.
+- The study provides a reproducible benchmark and an honest scope boundary for passive UAV sensing research.

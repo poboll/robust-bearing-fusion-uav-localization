@@ -1,0 +1,1614 @@
+{
+  "meta": {
+    "formation_radius": 10.0,
+    "thresholds_r": [
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5
+    ],
+    "threshold_note": "Thresholds are reported in normalized units of R and absolute units with R=10."
+  },
+  "strict_thresholds": {
+    "outlier": {
+      "LS": {
+        "catastrophic_at_0_2R": 0.1725,
+        "catastrophic_at_0_3R": 0.055,
+        "catastrophic_at_0_5R": 0.0025
+      },
+      "RANSAC": {
+        "catastrophic_at_0_2R": 0.0375,
+        "catastrophic_at_0_3R": 0.025,
+        "catastrophic_at_0_5R": 0.01
+      },
+      "GNC-GM": {
+        "catastrophic_at_0_2R": 0.0525,
+        "catastrophic_at_0_3R": 0.0275,
+        "catastrophic_at_0_5R": 0.0025
+      },
+      "PSO": {
+        "catastrophic_at_0_2R": 0.0725,
+        "catastrophic_at_0_3R": 0.035,
+        "catastrophic_at_0_5R": 0.0075
+      },
+      "Proposed": {
+        "catastrophic_at_0_2R": 0.0375,
+        "catastrophic_at_0_3R": 0.025,
+        "catastrophic_at_0_5R": 0.01
+      }
+    },
+    "mixed": {
+      "LS": {
+        "catastrophic_at_0_2R": 0.2,
+        "catastrophic_at_0_3R": 0.0825,
+        "catastrophic_at_0_5R": 0.0125
+      },
+      "RANSAC": {
+        "catastrophic_at_0_2R": 0.06,
+        "catastrophic_at_0_3R": 0.0475,
+        "catastrophic_at_0_5R": 0.0175
+      },
+      "GNC-GM": {
+        "catastrophic_at_0_2R": 0.08,
+        "catastrophic_at_0_3R": 0.0475,
+        "catastrophic_at_0_5R": 0.02
+      },
+      "PSO": {
+        "catastrophic_at_0_2R": 0.0875,
+        "catastrophic_at_0_3R": 0.05,
+        "catastrophic_at_0_5R": 0.025
+      },
+      "Proposed": {
+        "catastrophic_at_0_2R": 0.0625,
+        "catastrophic_at_0_3R": 0.0475,
+        "catastrophic_at_0_5R": 0.0175
+      }
+    },
+    "pose_uncertainty": {
+      "LS": {
+        "catastrophic_at_0_2R": 0.05,
+        "catastrophic_at_0_3R": 0.0075,
+        "catastrophic_at_0_5R": 0.0
+      },
+      "RANSAC": {
+        "catastrophic_at_0_2R": 0.0175,
+        "catastrophic_at_0_3R": 0.01,
+        "catastrophic_at_0_5R": 0.0
+      },
+      "GNC-GM": {
+        "catastrophic_at_0_2R": 0.0175,
+        "catastrophic_at_0_3R": 0.01,
+        "catastrophic_at_0_5R": 0.0
+      },
+      "PSO": {
+        "catastrophic_at_0_2R": 0.02,
+        "catastrophic_at_0_3R": 0.0125,
+        "catastrophic_at_0_5R": 0.0
+      },
+      "Proposed": {
+        "catastrophic_at_0_2R": 0.0175,
+        "catastrophic_at_0_3R": 0.01,
+        "catastrophic_at_0_5R": 0.0
+      }
+    },
+    "heterogeneous_bias": {
+      "LS": {
+        "catastrophic_at_0_2R": 0.01,
+        "catastrophic_at_0_3R": 0.0025,
+        "catastrophic_at_0_5R": 0.0
+      },
+      "RANSAC": {
+        "catastrophic_at_0_2R": 0.0125,
+        "catastrophic_at_0_3R": 0.0075,
+        "catastrophic_at_0_5R": 0.005
+      },
+      "GNC-GM": {
+        "catastrophic_at_0_2R": 0.0025,
+        "catastrophic_at_0_3R": 0.0025,
+        "catastrophic_at_0_5R": 0.0025
+      },
+      "PSO": {
+        "catastrophic_at_0_2R": 0.01,
+        "catastrophic_at_0_3R": 0.0025,
+        "catastrophic_at_0_5R": 0.0025
+      },
+      "Proposed": {
+        "catastrophic_at_0_2R": 0.0125,
+        "catastrophic_at_0_3R": 0.0075,
+        "catastrophic_at_0_5R": 0.005
+      }
+    }
+  },
+  "threshold_sweep": {
+    "outlier": {
+      "LS": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.4875,
+          "failure_rate": 0.5125
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.6675,
+          "failure_rate": 0.3325
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.8275,
+          "failure_rate": 0.1725
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.8975,
+          "failure_rate": 0.1025
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.945,
+          "failure_rate": 0.055
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        }
+      ],
+      "RANSAC": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.9375,
+          "failure_rate": 0.0625
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.95,
+          "failure_rate": 0.05
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9625,
+          "failure_rate": 0.0375
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.975,
+          "failure_rate": 0.025
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9775,
+          "failure_rate": 0.0225
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.985,
+          "failure_rate": 0.015
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        }
+      ],
+      "GNC-GM": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.8625,
+          "failure_rate": 0.1375
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.93,
+          "failure_rate": 0.07
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9475,
+          "failure_rate": 0.0525
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.965,
+          "failure_rate": 0.035
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9875,
+          "failure_rate": 0.0125
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        }
+      ],
+      "PSO": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.88,
+          "failure_rate": 0.12
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.91,
+          "failure_rate": 0.09
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9275,
+          "failure_rate": 0.0725
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.95,
+          "failure_rate": 0.05
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.965,
+          "failure_rate": 0.035
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9775,
+          "failure_rate": 0.0225
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        }
+      ],
+      "Proposed": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.94,
+          "failure_rate": 0.06
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.95,
+          "failure_rate": 0.05
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9625,
+          "failure_rate": 0.0375
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.975,
+          "failure_rate": 0.025
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9775,
+          "failure_rate": 0.0225
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.985,
+          "failure_rate": 0.015
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        }
+      ]
+    },
+    "mixed": {
+      "LS": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.5625,
+          "failure_rate": 0.4375
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.685,
+          "failure_rate": 0.315
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.8,
+          "failure_rate": 0.2
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.8775,
+          "failure_rate": 0.1225
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9175,
+          "failure_rate": 0.0825
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9575,
+          "failure_rate": 0.0425
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.97,
+          "failure_rate": 0.03
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9875,
+          "failure_rate": 0.0125
+        }
+      ],
+      "RANSAC": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.8925,
+          "failure_rate": 0.1075
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.9225,
+          "failure_rate": 0.0775
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.94,
+          "failure_rate": 0.06
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.945,
+          "failure_rate": 0.055
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9525,
+          "failure_rate": 0.0475
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9625,
+          "failure_rate": 0.0375
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9675,
+          "failure_rate": 0.0325
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.975,
+          "failure_rate": 0.025
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        }
+      ],
+      "GNC-GM": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.815,
+          "failure_rate": 0.185
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.89,
+          "failure_rate": 0.11
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.92,
+          "failure_rate": 0.08
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.935,
+          "failure_rate": 0.065
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9525,
+          "failure_rate": 0.0475
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9625,
+          "failure_rate": 0.0375
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.9775,
+          "failure_rate": 0.0225
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.98,
+          "failure_rate": 0.02
+        }
+      ],
+      "PSO": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.8325,
+          "failure_rate": 0.1675
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.8925,
+          "failure_rate": 0.1075
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9125,
+          "failure_rate": 0.0875
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.93,
+          "failure_rate": 0.07
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.95,
+          "failure_rate": 0.05
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.965,
+          "failure_rate": 0.035
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.97,
+          "failure_rate": 0.03
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.975,
+          "failure_rate": 0.025
+        }
+      ],
+      "Proposed": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.8925,
+          "failure_rate": 0.1075
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.92,
+          "failure_rate": 0.08
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9375,
+          "failure_rate": 0.0625
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.945,
+          "failure_rate": 0.055
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9525,
+          "failure_rate": 0.0475
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.96,
+          "failure_rate": 0.04
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9675,
+          "failure_rate": 0.0325
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.975,
+          "failure_rate": 0.025
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        }
+      ]
+    },
+    "pose_uncertainty": {
+      "LS": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.755,
+          "failure_rate": 0.245
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.8875,
+          "failure_rate": 0.1125
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.95,
+          "failure_rate": 0.05
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.975,
+          "failure_rate": 0.025
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        }
+      ],
+      "RANSAC": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.94,
+          "failure_rate": 0.06
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.965,
+          "failure_rate": 0.035
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        }
+      ],
+      "GNC-GM": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.925,
+          "failure_rate": 0.075
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.9875,
+          "failure_rate": 0.0125
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        }
+      ],
+      "PSO": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.9175,
+          "failure_rate": 0.0825
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.97,
+          "failure_rate": 0.03
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.98,
+          "failure_rate": 0.02
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.9875,
+          "failure_rate": 0.0125
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9875,
+          "failure_rate": 0.0125
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        }
+      ],
+      "Proposed": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.94,
+          "failure_rate": 0.06
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.965,
+          "failure_rate": 0.035
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9825,
+          "failure_rate": 0.0175
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        }
+      ]
+    },
+    "heterogeneous_bias": {
+      "LS": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.85,
+          "failure_rate": 0.15
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.94,
+          "failure_rate": 0.06
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 1.0,
+          "failure_rate": 0.0
+        }
+      ],
+      "RANSAC": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.94,
+          "failure_rate": 0.06
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9875,
+          "failure_rate": 0.0125
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        }
+      ],
+      "GNC-GM": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.95,
+          "failure_rate": 0.05
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.985,
+          "failure_rate": 0.015
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        }
+      ],
+      "PSO": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.9425,
+          "failure_rate": 0.0575
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.985,
+          "failure_rate": 0.015
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.9975,
+          "failure_rate": 0.0025
+        }
+      ],
+      "Proposed": [
+        {
+          "threshold_r": 0.1,
+          "threshold_abs": 1.0,
+          "success_rate": 0.9425,
+          "failure_rate": 0.0575
+        },
+        {
+          "threshold_r": 0.15,
+          "threshold_abs": 1.5,
+          "success_rate": 0.9725,
+          "failure_rate": 0.0275
+        },
+        {
+          "threshold_r": 0.2,
+          "threshold_abs": 2.0,
+          "success_rate": 0.9875,
+          "failure_rate": 0.0125
+        },
+        {
+          "threshold_r": 0.25,
+          "threshold_abs": 2.5,
+          "success_rate": 0.99,
+          "failure_rate": 0.01
+        },
+        {
+          "threshold_r": 0.3,
+          "threshold_abs": 3.0,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.35,
+          "threshold_abs": 3.5,
+          "success_rate": 0.9925,
+          "failure_rate": 0.0075
+        },
+        {
+          "threshold_r": 0.4,
+          "threshold_abs": 4.0,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        },
+        {
+          "threshold_r": 0.45,
+          "threshold_abs": 4.5,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        },
+        {
+          "threshold_r": 0.5,
+          "threshold_abs": 5.0,
+          "success_rate": 0.995,
+          "failure_rate": 0.005
+        }
+      ]
+    }
+  },
+  "paired_stats": {
+    "outlier": {
+      "proposed_vs_ls": {
+        "wins": 351,
+        "losses": 43,
+        "ties": 6,
+        "wilcoxon_p_value": 1.2736375273263708e-49,
+        "median_improvement": 0.6769201560362161,
+        "mean_improvement": 0.9602891547753387,
+        "proposed_median": 0.17993278804443105,
+        "baseline_median": 1.0791801090909228,
+        "proposed_p95": 1.494696539088714,
+        "baseline_p95": 3.070878921107402,
+        "proposed_p99": 4.406825876430684,
+        "baseline_p99": 3.8947517283579884
+      },
+      "proposed_vs_ransac": {
+        "wins": 29,
+        "losses": 35,
+        "ties": 336,
+        "wilcoxon_p_value": 0.8770704715207033,
+        "median_improvement": 0.0,
+        "mean_improvement": 0.0006321515447821841,
+        "proposed_median": 0.17993278804443105,
+        "baseline_median": 0.179201254705118,
+        "proposed_p95": 1.494696539088714,
+        "baseline_p95": 1.4912477025050963,
+        "proposed_p99": 4.406825876430684,
+        "baseline_p99": 4.406825876430684
+      },
+      "proposed_vs_gnc": {
+        "wins": 289,
+        "losses": 111,
+        "ties": 0,
+        "wilcoxon_p_value": 4.553632671176798e-21,
+        "median_improvement": 0.08746722871007988,
+        "mean_improvement": 0.18775569537681527,
+        "proposed_median": 0.17993278804443105,
+        "baseline_median": 0.35423703106893667,
+        "proposed_p95": 1.494696539088714,
+        "baseline_p95": 2.0210486441182076,
+        "proposed_p99": 4.406825876430684,
+        "baseline_p99": 3.6855282986404925
+      },
+      "proposed_vs_pso": {
+        "wins": 239,
+        "losses": 161,
+        "ties": 0,
+        "wilcoxon_p_value": 0.0028365967521993807,
+        "median_improvement": 0.027951206039519054,
+        "mean_improvement": 6.081305880333036,
+        "proposed_median": 0.17993278804443105,
+        "baseline_median": 0.2143742628485429,
+        "proposed_p95": 1.494696539088714,
+        "baseline_p95": 2.4558031250670065,
+        "proposed_p99": 4.406825876430684,
+        "baseline_p99": 4.240282256363527
+      }
+    },
+    "mixed": {
+      "proposed_vs_ls": {
+        "wins": 273,
+        "losses": 114,
+        "ties": 13,
+        "wilcoxon_p_value": 1.0647510315653745e-24,
+        "median_improvement": 0.26634617407976807,
+        "mean_improvement": 0.689358499796647,
+        "proposed_median": 0.31220603703939054,
+        "baseline_median": 0.8546933371433743,
+        "proposed_p95": 2.7839865274082487,
+        "baseline_p95": 3.3747861322371016,
+        "proposed_p99": 5.7543168727923275,
+        "baseline_p99": 5.228861196957617
+      },
+      "proposed_vs_ransac": {
+        "wins": 11,
+        "losses": 13,
+        "ties": 376,
+        "wilcoxon_p_value": 0.8942223065747286,
+        "median_improvement": 0.0,
+        "mean_improvement": -0.013233492837772597,
+        "proposed_median": 0.31220603703939054,
+        "baseline_median": 0.3123222673208914,
+        "proposed_p95": 2.7839865274082487,
+        "baseline_p95": 2.7839865274082487,
+        "proposed_p99": 5.7543168727923275,
+        "baseline_p99": 5.1300540321717145
+      },
+      "proposed_vs_gnc": {
+        "wins": 260,
+        "losses": 140,
+        "ties": 0,
+        "wilcoxon_p_value": 5.1520957659666346e-08,
+        "median_improvement": 0.00862995610443501,
+        "mean_improvement": 0.0957482374842499,
+        "proposed_median": 0.31220603703939054,
+        "baseline_median": 0.4167073501120825,
+        "proposed_p95": 2.7839865274082487,
+        "baseline_p95": 2.691747498080672,
+        "proposed_p99": 5.7543168727923275,
+        "baseline_p99": 6.344107410839338
+      },
+      "proposed_vs_pso": {
+        "wins": 299,
+        "losses": 101,
+        "ties": 0,
+        "wilcoxon_p_value": 7.199199777808379e-23,
+        "median_improvement": 0.14995484358362293,
+        "mean_improvement": 0.9028711982281165,
+        "proposed_median": 0.31220603703939054,
+        "baseline_median": 0.5280434055456827,
+        "proposed_p95": 2.7839865274082487,
+        "baseline_p95": 2.8652288402040367,
+        "proposed_p99": 5.7543168727923275,
+        "baseline_p99": 9.335800409814302
+      }
+    },
+    "pose_uncertainty": {
+      "proposed_vs_ls": {
+        "wins": 260,
+        "losses": 133,
+        "ties": 7,
+        "wilcoxon_p_value": 1.9802202578289193e-18,
+        "median_improvement": 0.05299359938424907,
+        "mean_improvement": 0.2907057432650027,
+        "proposed_median": 0.3512628403133643,
+        "baseline_median": 0.5738727141200671,
+        "proposed_p95": 1.1644601711729459,
+        "baseline_p95": 1.9586560435820068,
+        "proposed_p99": 2.4934934223690797,
+        "baseline_p99": 2.726781832940869
+      },
+      "proposed_vs_ransac": {
+        "wins": 35,
+        "losses": 30,
+        "ties": 335,
+        "wilcoxon_p_value": 0.2252493195761992,
+        "median_improvement": 0.0,
+        "mean_improvement": 0.0018021984544751334,
+        "proposed_median": 0.3512628403133643,
+        "baseline_median": 0.35219587257191703,
+        "proposed_p95": 1.1644601711729459,
+        "baseline_p95": 1.1644601696549683,
+        "proposed_p99": 2.4934934223690797,
+        "baseline_p99": 2.4934934223690797
+      },
+      "proposed_vs_gnc": {
+        "wins": 208,
+        "losses": 192,
+        "ties": 0,
+        "wilcoxon_p_value": 0.18444651949727636,
+        "median_improvement": 0.0008107215006876167,
+        "mean_improvement": 0.020752752250052922,
+        "proposed_median": 0.3512628403133643,
+        "baseline_median": 0.37024691360253803,
+        "proposed_p95": 1.1644601711729459,
+        "baseline_p95": 1.3191333130199863,
+        "proposed_p99": 2.4934934223690797,
+        "baseline_p99": 2.529698252652368
+      },
+      "proposed_vs_pso": {
+        "wins": 248,
+        "losses": 152,
+        "ties": 0,
+        "wilcoxon_p_value": 9.480434091083343e-09,
+        "median_improvement": 0.06805554112318932,
+        "mean_improvement": 0.08001649959529124,
+        "proposed_median": 0.3512628403133643,
+        "baseline_median": 0.43838810868490896,
+        "proposed_p95": 1.1644601711729459,
+        "baseline_p95": 1.244785433083513,
+        "proposed_p99": 2.4934934223690797,
+        "baseline_p99": 3.1179819028942157
+      }
+    },
+    "heterogeneous_bias": {
+      "proposed_vs_ls": {
+        "wins": 241,
+        "losses": 149,
+        "ties": 10,
+        "wilcoxon_p_value": 1.4015855438387272e-10,
+        "median_improvement": 3.68908398828971e-08,
+        "mean_improvement": 0.13243136460565563,
+        "proposed_median": 0.32538626362639,
+        "baseline_median": 0.42235861865183844,
+        "proposed_p95": 1.114942291324042,
+        "baseline_p95": 1.593142178613751,
+        "proposed_p99": 2.389905166059189,
+        "baseline_p99": 1.9404259677456432
+      },
+      "proposed_vs_ransac": {
+        "wins": 27,
+        "losses": 20,
+        "ties": 353,
+        "wilcoxon_p_value": 0.05187765410718858,
+        "median_improvement": 0.0,
+        "mean_improvement": 0.005007790537402512,
+        "proposed_median": 0.32538626362639,
+        "baseline_median": 0.33234160918227185,
+        "proposed_p95": 1.114942291324042,
+        "baseline_p95": 1.114942291324042,
+        "proposed_p99": 2.389905166059189,
+        "baseline_p99": 2.389905166059189
+      },
+      "proposed_vs_gnc": {
+        "wins": 215,
+        "losses": 185,
+        "ties": 0,
+        "wilcoxon_p_value": 0.14719884673075995,
+        "median_improvement": 0.0011983131096980904,
+        "mean_improvement": -0.005991275769294745,
+        "proposed_median": 0.32538626362639,
+        "baseline_median": 0.36020298327828204,
+        "proposed_p95": 1.114942291324042,
+        "baseline_p95": 0.9820465853153679,
+        "proposed_p99": 2.389905166059189,
+        "baseline_p99": 1.541342334811471
+      },
+      "proposed_vs_pso": {
+        "wins": 239,
+        "losses": 161,
+        "ties": 0,
+        "wilcoxon_p_value": 7.62926911737566e-07,
+        "median_improvement": 0.051025502509812345,
+        "mean_improvement": 0.04036448365170917,
+        "proposed_median": 0.32538626362639,
+        "baseline_median": 0.41568097415661526,
+        "proposed_p95": 1.114942291324042,
+        "baseline_p95": 1.0287638813773072,
+        "proposed_p99": 2.389905166059189,
+        "baseline_p99": 1.776281822178015
+      }
+    }
+  },
+  "ransac_failure_case": {
+    "regime": "heterogeneous_bias",
+    "formation": "random",
+    "seed": 64,
+    "target": {
+      "x": 2.5,
+      "y": -1.5
+    },
+    "scenario": {
+      "num_uavs": 8,
+      "formation_radius": 10.0,
+      "formation_type": "random",
+      "formation_jitter": 0.0,
+      "target_x": 2.5,
+      "target_y": -1.5,
+      "noise_std": 0.02,
+      "bias": 0.01,
+      "sensor_bias_std": 0.05,
+      "missing_rate": 0.08,
+      "outlier_rate": 0.12,
+      "outlier_scale": 0.3,
+      "pose_noise_std": 0.0,
+      "seed": 64
+    },
+    "valid_sensors": [
+      {
+        "name": "uav_0",
+        "x": -8.539200912546947,
+        "y": -2.935613065656208,
+        "bearing": 0.09839616190837353,
+        "sensor_bias": -0.06967949823175217,
+        "pose_error": 0.0
+      },
+      {
+        "name": "uav_1",
+        "x": -9.79609387372207,
+        "y": 4.318304772513337,
+        "bearing": -0.36913096290102576,
+        "sensor_bias": 0.06613232045560173,
+        "pose_error": 0.0
+      },
+      {
+        "name": "uav_2",
+        "x": 7.459270122497281,
+        "y": 6.844474185545064,
+        "bearing": -2.111835125011387,
+        "sensor_bias": 0.01390833183098039,
+        "pose_error": 0.0
+      },
+      {
+        "name": "uav_3",
+        "x": -9.39197853095825,
+        "y": -0.03764666116843074,
+        "bearing": -0.09175042043164394,
+        "sensor_bias": 0.003605683638191824,
+        "pose_error": 0.0
+      },
+      {
+        "name": "uav_4",
+        "x": -5.887465658307035,
+        "y": -7.33270869541374,
+        "bearing": 0.6182198765841336,
+        "sensor_bias": 0.014644051486813223,
+        "pose_error": 0.0
+      },
+      {
+        "name": "uav_5",
+        "x": 2.8400523897906873,
+        "y": -10.333361439036658,
+        "bearing": 1.5972195800902913,
+        "sensor_bias": -0.021352485910726793,
+        "pose_error": 0.0
+      },
+      {
+        "name": "uav_6",
+        "x": -9.66706945995318,
+        "y": -5.191773933558412,
+        "bearing": 0.4211132607730139,
+        "sensor_bias": 0.09869863917188512,
+        "pose_error": 0.0
+      },
+      {
+        "name": "uav_7",
+        "x": -4.822430055495753,
+        "y": 3.860894457100804,
+        "bearing": -0.4000654907696237,
+        "sensor_bias": 0.14759645526448562,
+        "pose_error": 0.0
+      }
+    ],
+    "estimates": {
+      "least_squares": {
+        "x": 3.1271174436729012,
+        "y": -0.52285949162729,
+        "error": 1.1610684136870284
+      },
+      "gnc_gm": {
+        "x": 3.067790441012246,
+        "y": -0.5632961461757287,
+        "error": 1.0953538673296965
+      },
+      "ransac": {
+        "x": 3.041860833718235,
+        "y": -0.569510665171984,
+        "error": 1.0767653251040845,
+        "removed_indices": []
+      },
+      "pso": {
+        "x": 2.973270347506877,
+        "y": -0.6217075634021373,
+        "error": 0.9976885415871481
+      },
+      "proposed": {
+        "x": 2.6950649201465566,
+        "y": -1.028725146637359,
+        "error": 0.5100493216187639,
+        "removed_indices": [
+          7
+        ],
+        "bias": 0.0
+      }
+    }
+  }
+}

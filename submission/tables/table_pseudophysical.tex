@@ -1,0 +1,20 @@
+\begin{table}[!htbp]
+\centering
+\caption{Pseudo-physical dynamic replay validation with delay, attitude jitter, and per-sensor bias. The proposed method is competitive with RANSAC in the mild setting and slightly better in the harsh setting while remaining clearly stronger than least squares and GNC-GM.}
+\label{tab:pseudophysical}
+\begin{tabular}{llrrrr}
+\toprule
+Regime & Method & Median & P90 & Success@1.0 & Cat.@5.0 \\
+\midrule
+Mild Dynamic  & Least Squares & 0.1603 & 0.6367 & 0.9722 & 0.0000 \\
+Mild Dynamic  & GNC-GM        & 0.1496 & 0.3004 & 1.0000 & 0.0000 \\
+Mild Dynamic  & RANSAC        & 0.1334 & 0.2635 & 1.0000 & 0.0000 \\
+Mild Dynamic  & Proposed      & 0.1373 & 0.2659 & 1.0000 & 0.0000 \\
+\midrule
+Harsh Dynamic & Least Squares & 0.4979 & 1.5877 & 0.7528 & 0.0028 \\
+Harsh Dynamic & GNC-GM        & 0.3647 & 0.7505 & 0.9694 & 0.0028 \\
+Harsh Dynamic & RANSAC        & 0.3559 & 0.6505 & 0.9778 & 0.0056 \\
+Harsh Dynamic & Proposed      & 0.3498 & 0.6505 & 0.9750 & 0.0056 \\
+\bottomrule
+\end{tabular}
+\end{table}

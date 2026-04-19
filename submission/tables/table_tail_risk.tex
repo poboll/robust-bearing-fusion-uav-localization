@@ -1,0 +1,20 @@
+\begin{table}[!htbp]
+\centering
+\caption{Paired tail-risk and significance summary in the two most demanding synthetic regimes. Positive $\Delta$ indicates lower error for the proposed front-end.}
+\label{tab:tailrisk}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Regime & Comparison & Wins--Losses--Ties & Wilcoxon $p$ & Median $\Delta$ & P95 Baseline / Proposed \\
+\midrule
+Outlier & Proposed vs LS     & 351--43--6   & $1.27\times 10^{-49}$ & 0.6769 & 3.0709 / 1.4947 \\
+Outlier & Proposed vs RANSAC & 29--35--336  & 0.8771                & 0.0000 & 1.4912 / 1.4947 \\
+Outlier & Proposed vs PSO    & 239--161--0  & 0.0028                & 0.0280 & 2.4558 / 1.4947 \\
+\midrule
+Mixed   & Proposed vs LS     & 273--114--13 & $1.06\times 10^{-24}$ & 0.2663 & 3.3748 / 2.7840 \\
+Mixed   & Proposed vs RANSAC & 11--13--376  & 0.8942                & 0.0000 & 2.7840 / 2.7840 \\
+Mixed   & Proposed vs PSO    & 299--101--0  & $7.20\times 10^{-23}$ & 0.1500 & 2.8652 / 2.7840 \\
+\bottomrule
+\end{tabular}}
+\end{table}

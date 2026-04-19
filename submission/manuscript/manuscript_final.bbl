@@ -1,0 +1,111 @@
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{kramaric2025comprehensive}
+L.~Kramarić, N.~Jelušić, T.~Radišić, M.~Muštra,
+  \href{https://doi.org/10.3390/drones9030188}{A comprehensive survey on
+  short-distance localization of uavs}, Drones (2025).
+\newblock \href {https://doi.org/10.3390/drones9030188}
+  {\path{doi:10.3390/drones9030188}}.
+\newline\urlprefix\url{https://doi.org/10.3390/drones9030188}
+
+\bibitem{liu2025survey}
+H.~Liu, Q.~Long, B.~Yi, W.~Jiang,
+  \href{https://doi.org/10.1007/s40747-025-01961-2}{A survey of sensors based
+  autonomous unmanned aerial vehicle (uav) localization techniques}, Complex \&
+  Intelligent Systems (2025).
+\newblock \href {https://doi.org/10.1007/s40747-025-01961-2}
+  {\path{doi:10.1007/s40747-025-01961-2}}.
+\newline\urlprefix\url{https://doi.org/10.1007/s40747-025-01961-2}
+
+\bibitem{avola2024uav}
+D.~Avola, L.~Cinque, E.~Emam, F.~Fontana, G.~L. Foresti, M.~R. Marini,
+  A.~Mecca, D.~Pannone, \href{https://doi.org/10.1109/access.2024.3455096}{Uav
+  geo-localization for navigation: A survey}, IEEE Access (2024).
+\newblock \href {https://doi.org/10.1109/access.2024.3455096}
+  {\path{doi:10.1109/access.2024.3455096}}.
+\newline\urlprefix\url{https://doi.org/10.1109/access.2024.3455096}
+
+\bibitem{wang2025bio}
+Q.~Wang, Z.~Li, J.~Peng, K.~Lu,
+  \href{https://doi.org/10.3390/biomimetics10050336}{Bio-inspired observability
+  enhancement method for uav target localization and sensor bias estimation
+  with bearing-only measurement}, Biomimetics (2025).
+\newblock \href {https://doi.org/10.3390/biomimetics10050336}
+  {\path{doi:10.3390/biomimetics10050336}}.
+\newline\urlprefix\url{https://doi.org/10.3390/biomimetics10050336}
+
+\bibitem{chen2025error}
+Z.~Chen, S.~F. Zhang, Y.~Fang, W.~Fu, M.~Ji,
+  \href{https://doi.org/10.1109/tim.2025.3551589}{The error lower bound of
+  target state estimation in passive localization by bearing-only sensors},
+  IEEE Transactions on Instrumentation and Measurement (2025).
+\newblock \href {https://doi.org/10.1109/tim.2025.3551589}
+  {\path{doi:10.1109/tim.2025.3551589}}.
+\newline\urlprefix\url{https://doi.org/10.1109/tim.2025.3551589}
+
+\bibitem{li2025bearing}
+S.~Li, H.~Lei, C.~Zhu, Y.~Ruan, Q.~Feng,
+  \href{https://doi.org/10.3390/drones9110767}{Bearing-only passive
+  localization and optimized adjustment for uav formations under
+  electromagnetic silence}, Drones (2025).
+\newblock \href {https://doi.org/10.3390/drones9110767}
+  {\path{doi:10.3390/drones9110767}}.
+\newline\urlprefix\url{https://doi.org/10.3390/drones9110767}
+
+\bibitem{li2026formation}
+Q.~Li, P.~Wang, X.~Li, J.~Zhang, Y.~Luo, W.~Yu, H.~Cheng,
+  \href{https://doi.org/10.3390/s26061984}{Formation-constrained cooperative
+  localization for uav swarms in gnss-denied environments}, Sensors (2026).
+\newblock \href {https://doi.org/10.3390/s26061984}
+  {\path{doi:10.3390/s26061984}}.
+\newline\urlprefix\url{https://doi.org/10.3390/s26061984}
+
+\bibitem{yang2024distributed}
+P.~Yang, G.-Y. Ye, C.-L. Shao, S.-L. Yang, Z.-X. Huang,
+  \href{https://doi.org/10.1088/1361-6501/ad91d6}{A distributed factor graph
+  model solving method for cooperative localization of uav swarms}, Measurement
+  Science and Technology (2024).
+\newblock \href {https://doi.org/10.1088/1361-6501/ad91d6}
+  {\path{doi:10.1088/1361-6501/ad91d6}}.
+\newline\urlprefix\url{https://doi.org/10.1088/1361-6501/ad91d6}
+
+\bibitem{peng2024trajectory}
+J.~Peng, Q.~Wang, B.~Jin, Y.~Zhang, K.~Lu,
+  \href{https://doi.org/10.3390/biomimetics9090510}{Trajectory optimization to
+  enhance observability for bearing-only target localization and sensor bias
+  calibration}, Biomimetics (2024).
+\newblock \href {https://doi.org/10.3390/biomimetics9090510}
+  {\path{doi:10.3390/biomimetics9090510}}.
+\newline\urlprefix\url{https://doi.org/10.3390/biomimetics9090510}
+
+\bibitem{he2019trajectory}
+S.~He, H.~Shin, A.~Tsourdos,
+  \href{https://doi.org/10.1109/tro.2019.2896436}{Trajectory optimization for
+  target localization with bearing-only measurement}, IEEE Transactions on
+  Robotics (2019).
+\newblock \href {https://doi.org/10.1109/tro.2019.2896436}
+  {\path{doi:10.1109/tro.2019.2896436}}.
+\newline\urlprefix\url{https://doi.org/10.1109/tro.2019.2896436}
+
+\bibitem{chen2025variable}
+L.~Chen, C.~You, Y.~Wang, X.~Li,
+  \href{https://doi.org/10.3390/s25175297}{Variable-speed uav path optimization
+  based on the crlb criterion for passive target localization}, Sensors (2025).
+\newblock \href {https://doi.org/10.3390/s25175297}
+  {\path{doi:10.3390/s25175297}}.
+\newline\urlprefix\url{https://doi.org/10.3390/s25175297}
+
+\bibitem{xing2025node}
+X.~Xing, Z.~Zhong, X.~Li, Y.~Yue, \href{https://doi.org/10.3390/s25030780}{Node
+  selection and path optimization for passive target localization via uavs},
+  Sensors (2025).
+\newblock \href {https://doi.org/10.3390/s25030780}
+  {\path{doi:10.3390/s25030780}}.
+\newline\urlprefix\url{https://doi.org/10.3390/s25030780}
+
+\end{thebibliography}

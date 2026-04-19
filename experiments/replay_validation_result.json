@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "input": "experiments/examples/replay_case_example.json",
+    "num_cases": 1
+  },
+  "cases": [
+    {
+      "case_id": "demo_case_001",
+      "num_measurements": 5,
+      "num_valid_measurements": 5,
+      "target": {
+        "x": 2.5,
+        "y": -1.5
+      },
+      "results": {
+        "initial": {
+          "method": "initial",
+          "x": 2.624596110759186,
+          "y": -7.371402638824196,
+          "residual": NaN,
+          "error": 5.872724507246023
+        },
+        "least_squares": {
+          "method": "least_squares",
+          "x": 2.7505845607965167,
+          "y": -7.199929248923529,
+          "residual": 0.3296267857225293,
+          "error": 5.705434783155752
+        },
+        "robust_huber": {
+          "method": "robust_huber",
+          "x": 2.672410183955958,
+          "y": -7.338203793376712,
+          "residual": 0.3428190869083848,
+          "error": 5.840748993453661
+        },
+        "robust_bias_trimmed": {
+          "method": "robust_bias_trimmed",
+          "x": 2.703944555426859,
+          "y": -1.4455337513629918,
+          "residual": 0.009307271791948235,
+          "error": 0.21109228770575109,
+          "bias": -0.00032177548237166675
+        }
+      },
+      "meta": {
+        "meta": {
+          "source": "schema_example"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "initial": {
+      "mean": 5.872724507246023,
+      "median": 5.872724507246023,
+      "p90": 5.872724507246023,
+      "success_at_1_0": 0.0,
+      "catastrophic_at_5_0": 1.0
+    },
+    "least_squares": {
+      "mean": 5.705434783155752,
+      "median": 5.705434783155752,
+      "p90": 5.705434783155752,
+      "success_at_1_0": 0.0,
+      "catastrophic_at_5_0": 1.0
+    },
+    "robust_huber": {
+      "mean": 5.840748993453661,
+      "median": 5.840748993453661,
+      "p90": 5.840748993453661,
+      "success_at_1_0": 0.0,
+      "catastrophic_at_5_0": 1.0
+    },
+    "robust_bias_trimmed": {
+      "mean": 0.21109228770575109,
+      "median": 0.21109228770575109,
+      "p90": 0.21109228770575109,
+      "success_at_1_0": 1.0,
+      "catastrophic_at_5_0": 0.0
+    }
+  }
+}

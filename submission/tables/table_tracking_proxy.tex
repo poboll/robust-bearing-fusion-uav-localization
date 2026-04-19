@@ -1,0 +1,16 @@
+\begin{table}[!htbp]
+\centering
+\caption{Downstream tracking proxy on PyBullet replay using a minimal Kalman filter with chi-square gating. Sequence break means at least one three-miss gating failure within a replay sequence.}
+\label{tab:trackingproxy}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Method & Overall Break Rate & Disturbed Break Rate & Disturbed Median RMSE & Disturbed P90 RMSE \\
+\midrule
+Least Squares & 0.1250 & 0.1667 & 0.7143 & 39.9416 \\
+RANSAC        & 0.0833 & 0.0833 & 0.6707 & 1.0013 \\
+Proposed      & 0.0833 & 0.0833 & 0.8222 & 1.0139 \\
+\bottomrule
+\end{tabular}}
+\end{table}

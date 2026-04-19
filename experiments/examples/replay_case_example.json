@@ -1,0 +1,19 @@
+[
+  {
+    "case_id": "demo_case_001",
+    "target": {
+      "x": 2.5,
+      "y": -1.5
+    },
+    "measurements": [
+      {"name": "uav_0", "x": 10.0, "y": 0.0, "bearing": -2.9441970937, "valid": true},
+      {"name": "uav_1", "x": 3.0901699437, "y": 9.5105651630, "bearing": -1.6243268623, "valid": true},
+      {"name": "uav_2", "x": -8.0901699437, "y": 5.8778525229, "bearing": -0.5810562503, "valid": true},
+      {"name": "uav_3", "x": -8.0901699437, "y": -5.8778525229, "bearing": 0.3923401442, "valid": true},
+      {"name": "uav_4", "x": 3.0901699437, "y": -9.5105651630, "bearing": 1.4976662056, "valid": true}
+    ],
+    "meta": {
+      "source": "schema_example"
+    }
+  }
+]

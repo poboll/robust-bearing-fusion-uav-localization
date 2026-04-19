@@ -1,0 +1,1770 @@
+[
+  {
+    "key": "sciacchitano2026multi",
+    "title": "Multi-UAV Trajectory Optimization for Bearing-Only Localization in GPS Denied Environments",
+    "doi": "10.48550/arxiv.2602.11116",
+    "year": "2026",
+    "journal": "Open MIND",
+    "status": "doi_resolves",
+    "resolved": {
+      "landing_url": "https://arxiv.org/abs/2602.11116"
+    }
+  },
+  {
+    "key": "zhong2026predefined",
+    "title": "Predefined-Time Bearing-Only Mobile Localization: An Integral Reciprocal Zeroing Neural Network Solution",
+    "doi": "10.36227/techrxiv.177156335.53210623/v1",
+    "year": "2026",
+    "journal": "",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Predefined-Time Bearing-Only Mobile Localization: An Integral Reciprocal Zeroing Neural Network Solution",
+      "container": "",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            2,
+            20
+          ]
+        ],
+        "date-time": "2026-02-20T04:55:56Z",
+        "timestamp": 1771563356000
+      },
+      "type": "posted-content"
+    }
+  },
+  {
+    "key": "zeng2026three",
+    "title": "Three-dimensional passive localization of near-surface targets using a deep-sea bottom mounted horizontal array",
+    "doi": "10.1121/10.0043180",
+    "year": "2026",
+    "journal": "JASA Express Letters",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Three-dimensional passive localization of near-surface targets using a deep-sea bottom mounted horizontal array",
+      "container": "JASA Express Letters",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            3,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "viberg2026statistical",
+    "title": "Statistical Properties of Target Localization Using Passive Radar Systems",
+    "doi": "10.48550/arxiv.2601.20817",
+    "year": "2026",
+    "journal": "",
+    "status": "doi_resolves",
+    "resolved": {
+      "landing_url": "https://arxiv.org/abs/2601.20817"
+    }
+  },
+  {
+    "key": "li2026formation",
+    "title": "Formation-Constrained Cooperative Localization for UAV Swarms in GNSS-Denied Environments",
+    "doi": "10.3390/s26061984",
+    "year": "2026",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Formation-Constrained Cooperative Localization for UAV Swarms in GNSS-Denied Environments",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            3,
+            22
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "wang2026adaptive",
+    "title": "Adaptive Particle Filter-Neural Network Fusion for Cooperative Localization of Multi-UAV Systems in GNSS-Denied Indoor Environments",
+    "doi": "10.3390/computers15030172",
+    "year": "2026",
+    "journal": "Computers",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Adaptive Particle Filter-Neural Network Fusion for Cooperative Localization of Multi-UAV Systems in GNSS-Denied Indoor Environments",
+      "container": "Computers",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            3,
+            6
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "liu2026high",
+    "title": "A High-Precision Cooperative Localization Method for UAVs Based on Multi-Condition Constraints",
+    "doi": "10.3390/s26051641",
+    "year": "2026",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A High-Precision Cooperative Localization Method for UAVs Based on Multi-Condition Constraints",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            3,
+            5
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "tymofieiev2026sensor",
+    "title": "SENSOR MODALITIES FOR RELATIVE LOCALIZATION OF COOPERATIVE UAV SWARMS IN GNSS-DENIED ENVIRONMENTS",
+    "doi": "10.20998/2413-3000.2025.11.8",
+    "year": "2026",
+    "journal": "Bulletin of NTU KhPI Series Strategic Management Portfolio Program and Project Management",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "SENSOR MODALITIES FOR RELATIVE LOCALIZATION OF COOPERATIVE UAV SWARMS IN GNSS-DENIED ENVIRONMENTS",
+      "container": "Bulletin of NTU \"KhPI\". Series: Strategic management, portfolio, program and project management",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            1,
+            17
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "choi2026hierarchical",
+    "title": "Hierarchical Bearing-only Multi-target Localization via Coarse-to-fine Grid Search and Nonlinear Refinement",
+    "doi": "10.5302/j.icros.2026.25.0255",
+    "year": "2026",
+    "journal": "Journal of Institute of Control Robotics and Systems",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Hierarchical Bearing-only Multi-target Localization via Coarse-to-fine Grid Search and Nonlinear Refinement",
+      "container": "Journal of Institute of Control, Robotics and Systems",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            2,
+            28
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "liu2026dfp",
+    "title": "DFP-MLT: A lightweight wi-Fi-based framework for device-free passive multi-target localization via feature fusion and multi-label learning",
+    "doi": "10.1016/j.dsp.2026.106053",
+    "year": "2026",
+    "journal": "Digital Signal Processing",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "DFP-MLT: A lightweight wi-Fi-based framework for device-free passive multi-target localization via feature fusion and multi-label learning",
+      "container": "Digital Signal Processing",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            6
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "chiu2026mutual",
+    "title": "Mutual Information-Based Communication Strategies for UAV Cooperative Odor Source Localization: 3D Simulation Experiments and Parameter Design",
+    "doi": "10.1109/icaiic68212.2026.11454215",
+    "year": "2026",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Mutual Information-Based Communication Strategies for UAV Cooperative Odor Source Localization: 3D Simulation Experiments and Parameter Design",
+      "container": "2026 International Conference on Artificial Intelligence in Information and Communication (ICAIIC)",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            2,
+            24
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "zhou2026target",
+    "title": "Target localization in UAV swarm under multi-error coupling: A cooperative utility of information optimization approach",
+    "doi": "10.1016/j.adhoc.2026.104154",
+    "year": "2026",
+    "journal": "Ad Hoc Networks",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Target localization in UAV swarm under multi-error coupling: A cooperative utility of information optimization approach",
+      "container": "Ad Hoc Networks",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            4
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "zhang2026multi",
+    "title": "Multi-UAV-Assisted Cooperative Localization of Underground Sensor Nodes Using Multiobjective Reinforcement Learning",
+    "doi": "10.1109/jiot.2026.3655176",
+    "year": "2026",
+    "journal": "IEEE Internet of Things Journal",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Multi-UAV-Assisted Cooperative Localization of Underground Sensor Nodes Using Multiobjective Reinforcement Learning",
+      "container": "IEEE Internet of Things Journal",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            4,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "wu2026bearing",
+    "title": "Bearing-Only Localization for Wideband Off-Grid Sources with Distributed Sensor Array Networks",
+    "doi": "10.1109/jsen.2026.3651323",
+    "year": "2026",
+    "journal": "IEEE Sensors Journal",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Bearing-Only Localization for Wideband Off-Grid Sources with Distributed Sensor Array Networks",
+      "container": "IEEE Sensors Journal",
+      "published": {
+        "date-parts": [
+          [
+            2026
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "liu2026sensing",
+    "title": "Sensing With Unknown Signals: ISAC Enabled Distributed Passive Sensing for Multi-Target Detection and Localization",
+    "doi": "10.1109/tnse.2026.3670825",
+    "year": "2026",
+    "journal": "IEEE Transactions on Network Science and Engineering",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Sensing With Unknown Signals: ISAC Enabled Distributed Passive Sensing for Multi-Target Detection and Localization",
+      "container": "IEEE Transactions on Network Science and Engineering",
+      "published": {
+        "date-parts": [
+          [
+            2026
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "zhou2026direct",
+    "title": "Direct Target Localization for Distributed Hybrid Active-Passive Radars with Direct-path Interference",
+    "doi": "10.1109/taes.2026.3679854",
+    "year": "2026",
+    "journal": "IEEE Transactions on Aerospace and Electronic Systems",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Direct Target Localization for Distributed Hybrid Active-Passive Radars with Direct-path Interference",
+      "container": "IEEE Transactions on Aerospace and Electronic Systems",
+      "published": {
+        "date-parts": [
+          [
+            2026
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "wang2026asymmetric",
+    "title": "Asymmetric Cooperative Localization for UAV Inspection Inside Wind Turbine Towers Based on 3D Semantic Segmentation",
+    "doi": "10.1109/iceaai68945.2026.11442581",
+    "year": "2026",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Asymmetric Cooperative Localization for UAV Inspection Inside Wind Turbine Towers Based on 3D Semantic Segmentation",
+      "container": "2026 2nd International Conference on Electrical Automation and Artificial Intelligence (ICEAAI)",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            1,
+            16
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "ding2026set",
+    "title": "Set-Membership Estimation Based Distributed Cooperative Localization of Multiple UAVs",
+    "doi": "10.1109/tsipn.2026.3663852",
+    "year": "2026",
+    "journal": "IEEE Transactions on Signal and Information Processing over Networks",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Set-Membership Estimation Based Distributed Cooperative Localization of Multiple UAVs",
+      "container": "IEEE Transactions on Signal and Information Processing over Networks",
+      "published": {
+        "date-parts": [
+          [
+            2026
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "anon2026study",
+    "title": "Study on Cooperative Localization Using Heterogeneous UAV Swarm",
+    "doi": "",
+    "year": "2026",
+    "journal": "Tokyo Tech Research Repository (Tokyo Institute of Technology)",
+    "status": "no_doi",
+    "resolved": null
+  },
+  {
+    "key": "kramaric2025comprehensive",
+    "title": "A Comprehensive Survey on Short-Distance Localization of UAVs",
+    "doi": "10.3390/drones9030188",
+    "year": "2025",
+    "journal": "Drones",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Comprehensive Survey on Short-Distance Localization of UAVs",
+      "container": "Drones",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            3,
+            4
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "panerati2021learning",
+    "title": "Learning to Fly---a Gym Environment with PyBullet Physics for Reinforcement Learning of Multi-agent Quadcopter Control",
+    "doi": "10.1109/IROS51168.2021.9635857",
+    "year": "2021",
+    "journal": "",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Learning to Fly—a Gym Environment with PyBullet Physics for Reinforcement Learning of Multi-agent Quadcopter Control",
+      "container": "2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "published": {
+        "date-parts": [
+          [
+            2021,
+            9,
+            27
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "perezsegui2023bridging",
+    "title": "Bridging the Gap between Simulation and Real Autonomous UAV Flights in Industrial Applications",
+    "doi": "10.3390/aerospace10090814",
+    "year": "2023",
+    "journal": "Aerospace",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Bridging the Gap between Simulation and Real Autonomous UAV Flights in Industrial Applications",
+      "container": "Aerospace",
+      "published": {
+        "date-parts": [
+          [
+            2023,
+            9,
+            17
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "liu2025survey",
+    "title": "A survey of sensors based autonomous unmanned aerial vehicle (UAV) localization techniques",
+    "doi": "10.1007/s40747-025-01961-2",
+    "year": "2025",
+    "journal": "Complex \\& Intelligent Systems",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A survey of sensors based autonomous unmanned aerial vehicle (UAV) localization techniques",
+      "container": "Complex &amp; Intelligent Systems",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            8
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "xing2025node",
+    "title": "Node Selection and Path Optimization for Passive Target Localization via UAVs",
+    "doi": "10.3390/s25030780",
+    "year": "2025",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Node Selection and Path Optimization for Passive Target Localization via UAVs",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            1,
+            28
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "wang2025bio",
+    "title": "Bio-Inspired Observability Enhancement Method for UAV Target Localization and Sensor Bias Estimation with Bearing-Only Measurement",
+    "doi": "10.3390/biomimetics10050336",
+    "year": "2025",
+    "journal": "Biomimetics",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Bio-Inspired Observability Enhancement Method for UAV Target Localization and Sensor Bias Estimation with Bearing-Only Measurement",
+      "container": "Biomimetics",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            5,
+            20
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "chen2025research",
+    "title": "Research on a radioactive source localization algorithm based on UAV aerial survey data",
+    "doi": "10.1016/j.radmeas.2025.107437",
+    "year": "2025",
+    "journal": "Radiation Measurements",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on a radioactive source localization algorithm based on UAV aerial survey data",
+      "container": "Radiation Measurements",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            6
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "chen2025variable",
+    "title": "Variable-Speed UAV Path Optimization Based on the CRLB Criterion for Passive Target Localization",
+    "doi": "10.3390/s25175297",
+    "year": "2025",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Variable-Speed UAV Path Optimization Based on the CRLB Criterion for Passive Target Localization",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            8,
+            26
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "bach2025range",
+    "title": "Range and Bearing Estimations Using Trilateration Ultrawideband Tag for Range-Only Simultaneous Localization and Mapping",
+    "doi": "10.1109/tie.2025.3589465",
+    "year": "2025",
+    "journal": "IEEE Transactions on Industrial Electronics",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Range and Bearing Estimations Using Trilateration Ultrawideband Tag for Range-Only Simultaneous Localization and Mapping",
+      "container": "IEEE Transactions on Industrial Electronics",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            12
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "chen2025error",
+    "title": "The Error Lower Bound of Target State Estimation in Passive Localization by Bearing-Only Sensors",
+    "doi": "10.1109/tim.2025.3551589",
+    "year": "2025",
+    "journal": "IEEE Transactions on Instrumentation and Measurement",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "The Error Lower Bound of Target State Estimation in Passive Localization by Bearing-Only Sensors",
+      "container": "IEEE Transactions on Instrumentation and Measurement",
+      "published": {
+        "date-parts": [
+          [
+            2025
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "li2025bearing",
+    "title": "Bearing-Only Passive Localization and Optimized Adjustment for UAV Formations Under Electromagnetic Silence",
+    "doi": "10.3390/drones9110767",
+    "year": "2025",
+    "journal": "Drones",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Bearing-Only Passive Localization and Optimized Adjustment for UAV Formations Under Electromagnetic Silence",
+      "container": "Drones",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            11,
+            6
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "liu2025research",
+    "title": "Research on purely azimuthal passive localization method in UAV formation flight",
+    "doi": "10.1088/1742-6596/3073/1/012027",
+    "year": "2025",
+    "journal": "Journal of Physics Conference Series",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on purely azimuthal passive localization method in UAV formation flight",
+      "container": "Journal of Physics: Conference Series",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            8,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "yu2025passive",
+    "title": "Passive localization of dual targets in deep-ocean direct-arrival zone using a horizontal line array",
+    "doi": "10.1121/10.0039110",
+    "year": "2025",
+    "journal": "JASA Express Letters",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Passive localization of dual targets in deep-ocean direct-arrival zone using a horizontal line array",
+      "container": "JASA Express Letters",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            9,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "qian2025cooperative",
+    "title": "A Cooperative Localization Algorithm Based on Theory of Surveying Adjustment With Range Network for UAV Clusters",
+    "doi": "10.1109/tim.2025.3587358",
+    "year": "2025",
+    "journal": "IEEE Transactions on Instrumentation and Measurement",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Cooperative Localization Algorithm Based on Theory of Surveying Adjustment With Range Network for UAV Clusters",
+      "container": "IEEE Transactions on Instrumentation and Measurement",
+      "published": {
+        "date-parts": [
+          [
+            2025
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "mudrik2025optimization",
+    "title": "Optimization of Observer Trajectory for Coordinated Bearing-Only Localization in Constrained Three-Dimensional Scenarios",
+    "doi": "10.2514/6.2025-2604",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Optimization of Observer Trajectory for Coordinated Bearing-Only Localization in Constrained Three-Dimensional Scenarios",
+      "container": "AIAA SCITECH 2025 Forum",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            1,
+            6
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "dou2025moving",
+    "title": "Moving‐Target Localization and Circumnavigation Control for Second‐Order Multiagent Systems With Bearing‐Only Measurements",
+    "doi": "10.1002/rnc.70085",
+    "year": "2025",
+    "journal": "International Journal of Robust and Nonlinear Control",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Moving‐Target Localization and Circumnavigation Control for Second‐Order Multiagent Systems With Bearing‐Only Measurements",
+      "container": "International Journal of Robust and Nonlinear Control",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            12
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "sui2025predefined",
+    "title": "Predefined-Time Target Localization and Circumnavigation using Bearing-Only Measurements: Theory and Experiments",
+    "doi": "10.23919/ecc65951.2025.11186835",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Predefined-Time Target Localization and Circumnavigation using Bearing-Only Measurements: Theory and Experiments",
+      "container": "2025 European Control Conference (ECC)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            6,
+            24
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "xiong2025deep",
+    "title": "A Deep Neural Network-Based DOA Estimation Method for Sound-Guided Relative Localization of Micro-UAVs",
+    "doi": "10.1109/aim64088.2025.11175850",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Deep Neural Network-Based DOA Estimation Method for Sound-Guided Relative Localization of Micro-UAVs",
+      "container": "2025 IEEE/ASME International Conference on Advanced Intelligent Mechatronics (AIM)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            7,
+            14
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "hyeonmin2025adaptive",
+    "title": "Adaptive Sliding Window Factor Graph Optimization For Enhanced UWB/INS Integrated UAV Localization",
+    "doi": "10.13009/eucass2025-139",
+    "year": "2025",
+    "journal": "Centre français de recherche aérospatiale - The French Aerospace Lab",
+    "status": "doi_resolves",
+    "resolved": {
+      "landing_url": "https://www.eucass.eu/doi/EUCASS2025-139.pdf"
+    }
+  },
+  {
+    "key": "dufour2025bearing",
+    "title": "The bearing only localization problem via partially observed Markov decision process",
+    "doi": "10.1007/s00186-025-00890-7",
+    "year": "2025",
+    "journal": "Mathematical Methods of Operations Research",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "The bearing only localization problem via partially observed Markov decision process",
+      "container": "Mathematical Methods of Operations Research",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            4
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "hu2025cyclic",
+    "title": "Cyclic Peak Extraction from a Spatial Likelihood Map for Multi-Array Multi-Target Bearing-Only Localization",
+    "doi": "10.3390/jmse13010109",
+    "year": "2025",
+    "journal": "Journal of Marine Science and Engineering",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Cyclic Peak Extraction from a Spatial Likelihood Map for Multi-Array Multi-Target Bearing-Only Localization",
+      "container": "Journal of Marine Science and Engineering",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            1,
+            8
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "lai2025collaborative",
+    "title": "Collaborative Beamforming for Multi‐Target Localization Using Passive Anchors",
+    "doi": "10.1049/ell2.70510",
+    "year": "2025",
+    "journal": "Electronics Letters",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Collaborative Beamforming for Multi‐Target Localization Using Passive Anchors",
+      "container": "Electronics Letters",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "benkouider2025rlsuav",
+    "title": "RLSUAV: RELATIVE LOCALIZATION IN A SWARM OF UAVS",
+    "doi": "10.5121/ijcnc.2025.17603",
+    "year": "2025",
+    "journal": "International journal of Computer Networks \\& Communications",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "RLSUAV: RELATIVE LOCALIZATION IN A SWARM OF UAVS",
+      "container": "International journal of Computer Networks &amp; Communications",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            11,
+            28
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "lakemann2025reflection",
+    "title": "Reflection-Based Relative Localization for Cooperative UAV Teams Using Active Markers",
+    "doi": "10.48550/arxiv.2511.17166",
+    "year": "2025",
+    "journal": "",
+    "status": "doi_resolves",
+    "resolved": {
+      "landing_url": "https://arxiv.org/abs/2511.17166"
+    }
+  },
+  {
+    "key": "hazeez2025evaluating",
+    "title": "Evaluating Relative Localization in GPS-Denied Environments Using Starling2 UAVs",
+    "doi": "10.5038/dquf4453",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Evaluating Relative Localization in GPS-Denied Environments Using Starling2 UAVs",
+      "container": "38th Florida Conference on Recent Advances in Robotics",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            5,
+            9
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "bao2025improved",
+    "title": "Improved BP-Based Cooperative Localization Algorithm of Factor Graph in UAV Networks",
+    "doi": "10.1109/wocc63563.2025.11082185",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Improved BP-Based Cooperative Localization Algorithm of Factor Graph in UAV Networks",
+      "container": "2025 IEEE 34th Wireless and Optical Communications Conference (WOCC)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            5,
+            20
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "li2025recursive",
+    "title": "A Recursive Total Least Squares Solution for Bearing-Only Target Motion Analysis and Circumnavigation",
+    "doi": "10.1109/iros60139.2025.11246818",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Recursive Total Least Squares Solution for Bearing-Only Target Motion Analysis and Circumnavigation",
+      "container": "2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            10,
+            19
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "dinesh2025non",
+    "title": "Non-linear Observer Design for Bearing-only Target Motion Analysis",
+    "doi": "10.23919/ecc65951.2025.11187037",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Non-linear Observer Design for Bearing-only Target Motion Analysis",
+      "container": "2025 European Control Conference (ECC)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            6,
+            24
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "yin2025dual",
+    "title": "Dual-UAV cooperative bearing-only target localization based on multi-level box particle filter",
+    "doi": "10.1016/j.dsp.2025.105572",
+    "year": "2025",
+    "journal": "Digital Signal Processing",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Dual-UAV cooperative bearing-only target localization based on multi-level box particle filter",
+      "container": "Digital Signal Processing",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "zheng2025cooperatively",
+    "title": "Cooperatively Localizing Multi-Target by Dynamic UAV Formation Equipped with Bearing-only Sensors",
+    "doi": "10.1109/itoec63606.2025.10967742",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Cooperatively Localizing Multi-Target by Dynamic UAV Formation Equipped with Bearing-only Sensors",
+      "container": "2025 IEEE 8th Information Technology and Mechatronics Engineering Conference (ITOEC)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            3,
+            14
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "li2025cooperative",
+    "title": "Cooperative Localization Algorithm for UAV Swarms Based on Passive Positioning Technology",
+    "doi": "10.1109/ecie65947.2025.11087003",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Cooperative Localization Algorithm for UAV Swarms Based on Passive Positioning Technology",
+      "container": "2025 5th International Conference on Electronics, Circuits and Information Engineering (ECIE)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            5,
+            23
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "xiao2025node",
+    "title": "A Node Selection Scheme for Target Localization in Passive Radar Networks",
+    "doi": "10.1109/icvisp68610.2025.11451676",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Node Selection Scheme for Target Localization in Passive Radar Networks",
+      "container": "2025 9th International Conference on Vision, Image and Signal Processing (ICVISP)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            11,
+            28
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "zong2025distributed",
+    "title": "Distributed Passive Localization of a Noncooperative Underwater Target Utilizing Broadband Acoustic Interference Structure",
+    "doi": "10.1109/jiot.2025.3627685",
+    "year": "2025",
+    "journal": "IEEE Internet of Things Journal",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Distributed Passive Localization of a Noncooperative Underwater Target Utilizing Broadband Acoustic Interference Structure",
+      "container": "IEEE Internet of Things Journal",
+      "published": {
+        "date-parts": [
+          [
+            2026,
+            1,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "luo2025passive",
+    "title": "Passive Sensing and Target Localization Using a Dual-Functioning mmWave Communication System: Prototype Design and Field Experiment",
+    "doi": "10.1109/vtc2025-fall65116.2025.11310066",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Passive Sensing and Target Localization Using a Dual-Functioning mmWave Communication System: Prototype Design and Field Experiment",
+      "container": "2025 IEEE 102nd Vehicular Technology Conference (VTC2025-Fall)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            10,
+            19
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "li2025tcdrl",
+    "title": "TCDRL: Two-Stage Cooperative Dimensionality-Reduced Localization Framework for UAVs in GNSS-Poor Environments",
+    "doi": "10.1109/tvt.2025.3649547",
+    "year": "2025",
+    "journal": "IEEE Transactions on Vehicular Technology",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "TCDRL: Two-Stage Cooperative Dimensionality-Reduced Localization Framework for UAVs in GNSS-Poor Environments",
+      "container": "IEEE Transactions on Vehicular Technology",
+      "published": {
+        "date-parts": [
+          [
+            2026
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "lei2025cooperative",
+    "title": "Cooperative Relative Localization for UAV Swarm in GNSS-Denied Environments",
+    "doi": "10.1109/globecom59602.2025.11432122",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Cooperative Relative Localization for UAV Swarm in GNSS-Denied Environments",
+      "container": "GLOBECOM 2025 - 2025 IEEE Global Communications Conference",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            12,
+            8
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "luo2025hierarchical",
+    "title": "A Hierarchical Clustered Relative Localization Algorithm in GNSS-denied UAV Swarm Environments",
+    "doi": "10.1109/globecom59602.2025.11432255",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Hierarchical Clustered Relative Localization Algorithm in GNSS-denied UAV Swarm Environments",
+      "container": "GLOBECOM 2025 - 2025 IEEE Global Communications Conference",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            12,
+            8
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "boulkaid2025proposal",
+    "title": "A proposal for UAV clustering-based relative localization in GNSS-denied environments",
+    "doi": "10.23919/pemwn67312.2025.11304114",
+    "year": "2025",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A proposal for UAV clustering-based relative localization in GNSS-denied environments",
+      "container": "2025 14th IFIP/IEEE International Conference on Performance Evaluation and Modeling in Wired and Wireless Networks (PEMWN)",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            11,
+            25
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "genadot2025about",
+    "title": "About Fisher Information Matrix and Self-Optimizing Control in Bearing Only Localization",
+    "doi": "",
+    "year": "2025",
+    "journal": "SPIRE - Sciences Po Institutional REpository",
+    "status": "no_doi",
+    "resolved": null
+  },
+  {
+    "key": "dinesh2025nonlinear",
+    "title": "A Nonlinear State Observer Using Past Measurements with its Application to Bearing-only Target Motion Analysis",
+    "doi": "",
+    "year": "2025",
+    "journal": "SPIRE - Sciences Po Institutional REpository",
+    "status": "no_doi",
+    "resolved": null
+  },
+  {
+    "key": "peng2024trajectory",
+    "title": "Trajectory Optimization to Enhance Observability for Bearing-Only Target Localization and Sensor Bias Calibration",
+    "doi": "10.3390/biomimetics9090510",
+    "year": "2024",
+    "journal": "Biomimetics",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Trajectory Optimization to Enhance Observability for Bearing-Only Target Localization and Sensor Bias Calibration",
+      "container": "Biomimetics",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            23
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "avola2024uav",
+    "title": "UAV Geo-Localization for Navigation: A Survey",
+    "doi": "10.1109/access.2024.3455096",
+    "year": "2024",
+    "journal": "IEEE Access",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "UAV Geo-Localization for Navigation: A Survey",
+      "container": "IEEE Access",
+      "published": {
+        "date-parts": [
+          [
+            2024
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "sui2024adaptive",
+    "title": "Adaptive Bearing-Only Target Localization and Circumnavigation Under Unknown Wind Disturbance: Theory and Experiments",
+    "doi": "10.1109/lra.2024.3487483",
+    "year": "2024",
+    "journal": "IEEE Robotics and Automation Letters",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Adaptive Bearing-Only Target Localization and Circumnavigation Under Unknown Wind Disturbance: Theory and Experiments",
+      "container": "IEEE Robotics and Automation Letters",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            12
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "yang2024distributed",
+    "title": "A distributed factor graph model solving method for cooperative localization of UAV swarms",
+    "doi": "10.1088/1361-6501/ad91d6",
+    "year": "2024",
+    "journal": "Measurement Science and Technology",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A distributed factor graph model solving method for cooperative localization of UAV swarms",
+      "container": "Measurement Science and Technology",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            1,
+            31
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "jia2024composite",
+    "title": "Composite Disturbance Filtering for Onboard UWB-Based Relative Localization of Tiny UAVs in Unknown Confined Spaces",
+    "doi": "10.1109/tase.2024.3412068",
+    "year": "2024",
+    "journal": "IEEE Transactions on Automation Science and Engineering",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Composite Disturbance Filtering for Onboard UWB-Based Relative Localization of Tiny UAVs in Unknown Confined Spaces",
+      "container": "IEEE Transactions on Automation Science and Engineering",
+      "published": {
+        "date-parts": [
+          [
+            2025
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "mei2024bearing",
+    "title": "Bearing-Only Multi-Target Localization Incorporating Waveguide Characteristics for Low Detection Rate Scenarios in Shallow Water",
+    "doi": "10.3390/jmse12122300",
+    "year": "2024",
+    "journal": "Journal of Marine Science and Engineering",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Bearing-Only Multi-Target Localization Incorporating Waveguide Characteristics for Low Detection Rate Scenarios in Shallow Water",
+      "container": "Journal of Marine Science and Engineering",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            12,
+            13
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "yang2024research",
+    "title": "Research on Passive Localization in Circular Formation Flight of UAVs with Simulated Annealing Optimization Based on Triangulation and Greedy Strategy",
+    "doi": "10.1109/iccect60629.2024.10545760",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on Passive Localization in Circular Formation Flight of UAVs with Simulated Annealing Optimization Based on Triangulation and Greedy Strategy",
+      "container": "2024 IEEE 2nd International Conference on Control, Electronics and Computer Technology (ICCECT)",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            4,
+            26
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "tang2024research",
+    "title": "Research on Purely Azimuth Passive Localization Model for UAV Formation Flight",
+    "doi": "10.1088/1742-6596/2861/1/012001",
+    "year": "2024",
+    "journal": "Journal of Physics Conference Series",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on Purely Azimuth Passive Localization Model for UAV Formation Flight",
+      "container": "Journal of Physics: Conference Series",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            10,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "ali2024comparative",
+    "title": "A Comparative Study of IMM Kalman Filters and Neural Computing for Underwater Bearing Only Target Motion Analysis",
+    "doi": "10.1109/ibcast61650.2024.10877241",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Comparative Study of IMM Kalman Filters and Neural Computing for Underwater Bearing Only Target Motion Analysis",
+      "container": "2024 21st International Bhurban Conference on Applied Sciences and Technology (IBCAST)",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            20
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "huang2024research",
+    "title": "Research on Purely Azimuthal Passive Localization and Adjustment Strategy for UAVs Based on Multimodality",
+    "doi": "10.1109/iccect60629.2024.10546064",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on Purely Azimuthal Passive Localization and Adjustment Strategy for UAVs Based on Multimodality",
+      "container": "2024 IEEE 2nd International Conference on Control, Electronics and Computer Technology (ICCECT)",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            4,
+            26
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "anon2024recursive",
+    "title": "Recursive and Nonrecursive Passive Target Localization Algorithms with Bearing-Only Measurements",
+    "doi": "10.1109/icos63634.2024.10775434",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Recursive and Nonrecursive Passive Target Localization Algorithms with Bearing-Only Measurements",
+      "container": "2024 International Conference on Ocean Studies (ICOS)",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            10,
+            8
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "deng2024research",
+    "title": "Research on Precise Localization and Cooperative Control of UAV Formation Flight Based on Passive Bearing-Only Localization",
+    "doi": "10.1109/iccasit62299.2024.10827960",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on Precise Localization and Cooperative Control of UAV Formation Flight Based on Passive Bearing-Only Localization",
+      "container": "2024 IEEE 6th International Conference on Civil Aviation Safety and Information Technology (ICCASIT)",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            10,
+            23
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "mao2024research",
+    "title": "Research on Passive Localization Techniques for UAV Formations Based on the Law of Sines",
+    "doi": "10.1109/iciscae62304.2024.10761126",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on Passive Localization Techniques for UAV Formations Based on the Law of Sines",
+      "container": "2024 IEEE 7th International Conference on Information Systems and Computer Aided Education (ICISCAE)",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            9,
+            27
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "huang2024research2",
+    "title": "Research on UAV Formation Localization Based on Pure Bearing Passive Localization Model and Gradient Descent Algorithm",
+    "doi": "10.1145/3701100.3701139",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Research on UAV Formation Localization Based on Pure Bearing Passive Localization Model and Gradient Descent Algorithm",
+      "container": "Proceedings of the 2024 3rd International Conference on Algorithms, Data Mining, and Information Technology",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            9,
+            27
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "huang2024purely",
+    "title": "Purely Azimuthal UAV Passive Localization Based on a Triangular Model",
+    "doi": "10.1109/cisce62493.2024.10653170",
+    "year": "2024",
+    "journal": "Unknown venue",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Purely Azimuthal UAV Passive Localization Based on a Triangular Model",
+      "container": "2024 6th International Conference on Communications, Information System and Computer Engineering (CISCE)",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            5,
+            10
+          ]
+        ]
+      },
+      "type": "proceedings-article"
+    }
+  },
+  {
+    "key": "zou2024revisit",
+    "title": "A Revisit to D-Criterion-Based Sensor Trajectory Planning in Bearing-Only Target Motion Analysis",
+    "doi": "10.1109/jsen.2024.3510378",
+    "year": "2024",
+    "journal": "IEEE Sensors Journal",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Revisit to D-Criterion-Based Sensor Trajectory Planning in Bearing-Only Target Motion Analysis",
+      "container": "IEEE Sensors Journal",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            2,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "zhang2023bearing",
+    "title": "Bearing‐only motion analysis of target based on low‐quality bearing‐time recordings map",
+    "doi": "10.1049/rsn2.12519",
+    "year": "2023",
+    "journal": "IET Radar Sonar \\& Navigation",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Bearing‐only motion analysis of target based on low‐quality bearing‐time recordings map",
+      "container": "IET Radar, Sonar &amp; Navigation",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            5
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "dai2022uav",
+    "title": "UAV Localization Algorithm Based on Factor Graph Optimization in Complex Scenes",
+    "doi": "10.3390/s22155862",
+    "year": "2022",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "UAV Localization Algorithm Based on Factor Graph Optimization in Complex Scenes",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2022,
+            8,
+            5
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "yang2022trajectory",
+    "title": "Trajectory Optimization for Target Localization and Sensor Bias Calibration with Bearing-Only Information",
+    "doi": "10.1142/s2737480722500157",
+    "year": "2022",
+    "journal": "Guidance Navigation and Control",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Trajectory Optimization for Target Localization and Sensor Bias Calibration with Bearing-Only Information",
+      "container": "Guidance, Navigation and Control",
+      "published": {
+        "date-parts": [
+          [
+            2022,
+            9
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "yang2020tightly",
+    "title": "Tightly coupled integrated navigation system via factor graph for UAV indoor localization",
+    "doi": "10.1016/j.ast.2020.106370",
+    "year": "2020",
+    "journal": "Aerospace Science and Technology",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Tightly coupled integrated navigation system via factor graph for UAV indoor localization",
+      "container": "Aerospace Science and Technology",
+      "published": {
+        "date-parts": [
+          [
+            2021,
+            1
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "shule2020uwb",
+    "title": "UWB-Based Localization for Multi-UAV Systems and Collaborative Heterogeneous Multi-Robot Systems: a Survey",
+    "doi": "10.48550/arxiv.2004.08174",
+    "year": "2020",
+    "journal": "",
+    "status": "doi_resolves",
+    "resolved": {
+      "landing_url": "https://arxiv.org/abs/2004.08174"
+    }
+  },
+  {
+    "key": "he2019trajectory",
+    "title": "Trajectory Optimization for Target Localization With Bearing-Only Measurement",
+    "doi": "10.1109/tro.2019.2896436",
+    "year": "2019",
+    "journal": "IEEE Transactions on Robotics",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Trajectory Optimization for Target Localization With Bearing-Only Measurement",
+      "container": "IEEE Transactions on Robotics",
+      "published": {
+        "date-parts": [
+          [
+            2019,
+            6
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "gao2023scalable",
+    "title": "A Scalable Distributed Control Algorithm for Bearing-Only Passive UAV Formation Maintenance",
+    "doi": "10.3390/s23083849",
+    "year": "2023",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A Scalable Distributed Control Algorithm for Bearing-Only Passive UAV Formation Maintenance",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2023,
+            4,
+            10
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "kang2024aoa",
+    "title": "A New Method of UAV Swarm Formation Flight Based on AOA Azimuth-Only Passive Positioning",
+    "doi": "10.3390/drones8060243",
+    "year": "2024",
+    "journal": "Drones",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "A New Method of UAV Swarm Formation Flight Based on AOA Azimuth-Only Passive Positioning",
+      "container": "Drones",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            6,
+            4
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "dogancay2024bayesian",
+    "title": "UAV Path Optimization for Angle-Only Self-Localization and Target Tracking Based on the Bayesian Fisher Information Matrix",
+    "doi": "10.3390/s24103120",
+    "year": "2024",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "UAV Path Optimization for Angle-Only Self-Localization and Target Tracking Based on the Bayesian Fisher Information Matrix",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2024,
+            5,
+            14
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "huang2025emcompat",
+    "title": "Passive Positioning and Adjustment Strategy for UAV Swarm Considering Formation Electromagnetic Compatibility",
+    "doi": "10.3390/drones9060426",
+    "year": "2025",
+    "journal": "Drones",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Passive Positioning and Adjustment Strategy for UAV Swarm Considering Formation Electromagnetic Compatibility",
+      "container": "Drones",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            6,
+            12
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  },
+  {
+    "key": "luo2025dynamicbearing",
+    "title": "Dynamic Bearing--Angle for Vision-Based UAV Target Motion Analysis",
+    "doi": "10.3390/s25144396",
+    "year": "2025",
+    "journal": "Sensors",
+    "status": "crossref_ok",
+    "resolved": {
+      "title": "Dynamic Bearing–Angle for Vision-Based UAV Target Motion Analysis",
+      "container": "Sensors",
+      "published": {
+        "date-parts": [
+          [
+            2025,
+            7,
+            14
+          ]
+        ]
+      },
+      "type": "journal-article"
+    }
+  }
+]

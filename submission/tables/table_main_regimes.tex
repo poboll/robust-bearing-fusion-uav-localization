@@ -1,0 +1,38 @@
+\begin{table}[!htbp]
+\centering
+\caption{Median localization error across the main corrupted-measurement regimes. Results aggregate 2000 Monte Carlo cases over clean, outlier, mixed, pose-uncertainty, and heterogeneous-bias settings with circular and random formations.}
+\label{tab:mainregimes}
+\begin{tabular}{lrrrrr}
+\toprule
+Regime & LS & Huber & GNC-GM & RANSAC & Proposed \\
+\midrule
+Clean                & 0.1052 & 0.1052 & 0.1043 & 0.1052 & 0.1052 \\
+Outlier              & 1.0792 & 0.3458 & 0.3542 & 0.1792 & 0.1799 \\
+Mixed                & 0.8547 & 0.4072 & 0.4167 & 0.3123 & 0.3122 \\
+Pose Uncertainty     & 0.5739 & 0.3667 & 0.3702 & 0.3522 & 0.3513 \\
+Heterogeneous Bias   & 0.4224 & 0.3533 & 0.3602 & 0.3323 & 0.3254 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Detailed statistics in the two hardest synthetic regimes. Thresholds are normalized by the formation radius $R=10$: success at $0.1R$ and catastrophic failure above $0.5R$.}
+\label{tab:hardregimes}
+\small
+\begin{tabular}{llrrr}
+\toprule
+Regime & Method & Median [95\% CI] & Success@0.1R & Cat.@0.5R \\
+\midrule
+Outlier & Least Squares & 1.0792 [0.8748, 1.1428] & 0.4875 & 0.0025 \\
+Outlier & GNC-GM        & 0.3542 [0.3147, 0.3870] & 0.8625 & 0.0025 \\
+Outlier & RANSAC        & 0.1792 [0.1579, 0.2036] & 0.9375 & 0.0100 \\
+Outlier & Proposed      & 0.1799 [0.1585, 0.2041] & 0.9400 & 0.0100 \\
+\midrule
+Mixed   & Least Squares & 0.8547 [0.7733, 0.9437] & 0.5625 & 0.0125 \\
+Mixed   & GNC-GM        & 0.4167 [0.3479, 0.4707] & 0.8150 & 0.0200 \\
+Mixed   & RANSAC        & 0.3123 [0.2905, 0.3442] & 0.8925 & 0.0175 \\
+Mixed   & Proposed      & 0.3122 [0.2913, 0.3423] & 0.8925 & 0.0175 \\
+\bottomrule
+\end{tabular}
+\end{table}

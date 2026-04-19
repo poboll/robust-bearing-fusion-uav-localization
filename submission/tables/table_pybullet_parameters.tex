@@ -1,0 +1,22 @@
+\begin{table}[!htbp]
+\centering
+\caption{PyBullet replay configuration used for the semi-physical multi-UAV validation layer. Localization windows are sampled every three control steps, corresponding to a 16~Hz cue-update rate.}
+\label{tab:pybulletparams}
+\small
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.28\linewidth} >{\RaggedRight\arraybackslash}p{0.18\linewidth} X}
+\toprule
+Parameter group & Setting & Value used in replay \\
+\midrule
+Vehicle simulator & Physics engine & \texttt{gym-pybullet-drones} with \texttt{PYB\_GND\_DRAG\_DW} physics \\
+Timing & Simulation / control / localization rates & 240~Hz simulation, 48~Hz control, 16~Hz localization window update \\
+Formation replay & Swarm layouts and counts & Circle and ellipse formations with 8 or 10 vehicles \\
+Motion envelope & Orbit and altitude & 7.0--7.5~s replay horizon, 6.0~s orbit period, 0.95~m base altitude with 0.04~m stagger \\
+Delay perturbation & Delay-step distribution & Mean 0.25 / 0.30 control steps, standard deviation 0.15 / 0.20 in nominal / disturbed replay \\
+Attitude-induced corruption & Attitude and yaw-rate gains & 0.014 / 0.016 attitude gain and 0.0012 / 0.0015 yaw-rate gain in nominal / disturbed replay \\
+Bias process & Common bias and drift & 0.004 / 0.005 shared bias with 0.0015 / 0.002 sinusoidal drift \\
+Random corruption & Missing rate and outlier rate & 0.004 / 0.005 missing rate and 0.004 / 0.005 outlier rate in nominal / disturbed replay \\
+Outlier magnitude & Outlier scale & 0.04 / 0.05 radians in nominal / disturbed replay \\
+Gust disturbance & Gust force standard deviation & 0.11 / 0.12 with 0.20 / 0.22 trigger probability in nominal / disturbed replay \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,117 @@
+{
+  "clean": {
+    "scenario": {
+      "num_uavs": 6,
+      "formation_radius": 10.0,
+      "formation_type": "circle",
+      "formation_jitter": 0.0,
+      "target_x": 2.5,
+      "target_y": -1.5,
+      "noise_std": 0.02,
+      "bias": 0.0,
+      "missing_rate": 0.0,
+      "outlier_rate": 0.0,
+      "outlier_scale": 0.25,
+      "seed": 0
+    },
+    "initial_error": 0.0487177271779851,
+    "least_squares_error": 0.04680894545265859,
+    "robust_error": 0.04680894545265859,
+    "robust_bias_trimmed_error": 0.010892374472059102,
+    "gnc_gm_error": 0.04498611556644344,
+    "pso_error": 0.02167778826336908,
+    "sa_error": 0.0487177271779851
+  },
+  "biased": {
+    "scenario": {
+      "num_uavs": 6,
+      "formation_radius": 10.0,
+      "formation_type": "circle",
+      "formation_jitter": 0.0,
+      "target_x": 2.5,
+      "target_y": -1.5,
+      "noise_std": 0.02,
+      "bias": 0.04,
+      "missing_rate": 0.0,
+      "outlier_rate": 0.0,
+      "outlier_scale": 0.25,
+      "seed": 0
+    },
+    "initial_error": 0.3812883232178321,
+    "least_squares_error": 0.3668465991847123,
+    "robust_error": 0.36728873789661876,
+    "robust_bias_trimmed_error": 0.3003293747255306,
+    "gnc_gm_error": 0.35435590669334005,
+    "pso_error": 0.02097061795454054,
+    "sa_error": 0.3637000328960861
+  },
+  "missing": {
+    "scenario": {
+      "num_uavs": 6,
+      "formation_radius": 10.0,
+      "formation_type": "circle",
+      "formation_jitter": 0.0,
+      "target_x": 2.5,
+      "target_y": -1.5,
+      "noise_std": 0.02,
+      "bias": 0.0,
+      "missing_rate": 0.33,
+      "outlier_rate": 0.0,
+      "outlier_scale": 0.25,
+      "seed": 0
+    },
+    "initial_error": 0.09454824970276368,
+    "least_squares_error": 0.08951567248426218,
+    "robust_error": 0.08951567248426218,
+    "robust_bias_trimmed_error": 0.1288694978378112,
+    "gnc_gm_error": 0.08474257626834282,
+    "pso_error": 0.04212924803012021,
+    "sa_error": 0.1375001723219443
+  },
+  "outlier": {
+    "scenario": {
+      "num_uavs": 6,
+      "formation_radius": 10.0,
+      "formation_type": "circle",
+      "formation_jitter": 0.0,
+      "target_x": 2.5,
+      "target_y": -1.5,
+      "noise_std": 0.02,
+      "bias": 0.0,
+      "missing_rate": 0.0,
+      "outlier_rate": 0.33,
+      "outlier_scale": 0.45,
+      "seed": 0
+    },
+    "initial_error": 4.219904849143483,
+    "least_squares_error": 4.197123059652318,
+    "robust_error": 4.203170851078127,
+    "robust_bias_trimmed_error": 0.12043432538038251,
+    "gnc_gm_error": 4.183569511754426,
+    "pso_error": 0.7575798797315155,
+    "sa_error": 0.7232523669323291
+  },
+  "mixed": {
+    "scenario": {
+      "num_uavs": 6,
+      "formation_radius": 10.0,
+      "formation_type": "circle",
+      "formation_jitter": 0.0,
+      "target_x": 2.5,
+      "target_y": -1.5,
+      "noise_std": 0.02,
+      "bias": 0.04,
+      "missing_rate": 0.2,
+      "outlier_rate": 0.2,
+      "outlier_scale": 0.45,
+      "seed": 0
+    },
+    "initial_error": 9.295443765696652,
+    "least_squares_error": 9.073330733416592,
+    "robust_error": 9.279302368109429,
+    "robust_bias_trimmed_error": 0.751597351454557,
+    "gnc_gm_error": 9.277061150525306,
+    "pso_error": 1.774925209500671,
+    "sa_error": 6.014425214974461
+  }
+}
