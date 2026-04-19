@@ -1,15 +1,15 @@
-# B Passive Localization SCI Workspace
+# Robust Bearing Fusion for Multi-UAV Passive Localization
 
-This subproject is the working area for turning the 2022B passive localization topic into an SCI manuscript centered on a robust front-end for corrupted bearing fusion in passive multi-UAV localization.
+This repository is the cleaned working tree for an SCI-style manuscript on robust front-end estimation under corrupted bearing-only measurements in passive multi-UAV localization. The project is organized around one canonical MDPI manuscript, one reproducible experiment pipeline, and one synchronized submission package.
 
-## Structure
+## Repository Layout
 
 - `docs/`: research story, outline, method, experiment plan
 - `lit/`: literature assets and notes
 - `notes/`: working notes
 - `src/`: code scaffold
 - `experiments/`: generated outputs
-- `submission/`: synchronized manuscript, figures, tables, references, and supplementary package
+- `submission/`: canonical manuscript, figures, tables, and supplementary submission assets
 
 ## Current Research Position
 
@@ -19,16 +19,16 @@ The current manuscript is organized around three concrete contributions:
 - adaptive fixed-budget screening when only a subset of bearings can be fused or transmitted
 - a validation chain spanning static Monte Carlo, pseudo-physical replay, and PyBullet multi-vehicle replay
 
-Canonical current docs:
+Canonical current documents:
 
 - `docs/review_reframe_2026-04-18.md`
 - `docs/submission_execution_plan_2026-04-18.md`
 - `submission/pre_submission_audit.md`
 - `reproducibility/README.md`
 
-Older planning notes remain in `docs/` as archive material and may reflect superseded wording.
+Superseded planning drafts are archived under `docs/archive/` so that the root documentation stays focused on the current submission path.
 
-## Run
+## Reproducibility Commands
 
 ```bash
 conda run -n uu bash -lc 'PYTHONPATH=src python run_demo.py'
@@ -46,14 +46,14 @@ conda run -n uu python plot_results.py
 conda run -n uu python create_graphical_abstract.py
 ```
 
-## Current Submission State
+## Canonical Submission Assets
 
 - `submission/mdpi_manuscript/manuscript_mdpi.tex`: main MDPI-format manuscript source
 - `submission/mdpi_manuscript/manuscript_mdpi.pdf`: compiled MDPI manuscript proof
-- `submission/manuscript/manuscript_final.md`: human-readable final draft
-- `submission/manuscript/manuscript_final.tex`: synchronized backup manuscript source
-- `submission/manuscript/manuscript_final.pdf`: compiled PDF proof
 - `submission/pre_submission_audit.md`: current completion and remaining-item audit
+- `submission/figures/`: submission-ready 300-DPI figure set in `PNG`, `PDF`, and `SVG`
+- `submission/tables/`: LaTeX table sources used by the manuscript
+- `submission/supplementary/`: highlights, frozen outputs, and data-availability notes
 
 ## Publication Workspace
 
@@ -61,9 +61,15 @@ conda run -n uu python create_graphical_abstract.py
 - Web URL: `https://github.com/poboll/robust-bearing-fusion-uav-localization`
 - Current MDPI PDF: `submission/mdpi_manuscript/manuscript_mdpi.pdf`
 
-## Rebuild PDF
+## Rebuild the PDF
 
 ```bash
 cd submission/mdpi_manuscript
 latexmk -pdf -interaction=nonstopmode manuscript_mdpi.tex
 ```
+
+## Cleanup Policy
+
+- The MDPI manuscript under `submission/mdpi_manuscript/` is the only canonical paper source.
+- LaTeX auxiliary files, Python cache files, and archived draft branches are intentionally excluded from the main working tree.
+- Historical planning material is retained only in `docs/archive/` when it is still useful for traceability.

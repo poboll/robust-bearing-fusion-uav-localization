@@ -12,9 +12,9 @@ Date: 2026-04-18
 - Story reframed around:
   `robust inference + credibility-guided measurement management`
 - Replay-validation interface added:
-  [run_replay_validation.py](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/run_replay_validation.py)
+  [run_replay_validation.py](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/run_replay_validation.py)
 - Example replay case added:
-  [replay_case_example.json](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/examples/replay_case_example.json)
+  [replay_case_example.json](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/examples/replay_case_example.json)
 
 ### Evidence already strong enough to use in the manuscript
 

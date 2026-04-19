@@ -3,16 +3,16 @@
   "runtime_repeats": 100,
   "runtime_warmup": 10,
   "artifacts": {
-    "regime_comparison": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/regime_comparison.json",
-    "ablation_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/ablation_result.json",
-    "ablation_summary": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/ablation_summary.json",
-    "formation_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/formation_result.json",
-    "sensitivity_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/sensitivity_result.json",
-    "scaling_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/scaling_result.json",
-    "observability_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/observability_result.json",
-    "active_selection_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/active_selection_result.json",
-    "pybullet_replay_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/pybullet_replay_result.json",
-    "significance_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/significance_result.json",
-    "runtime_result": "/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/runtime_result.json"
+    "regime_comparison": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/regime_comparison.json",
+    "ablation_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/ablation_result.json",
+    "ablation_summary": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/ablation_summary.json",
+    "formation_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/formation_result.json",
+    "sensitivity_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/sensitivity_result.json",
+    "scaling_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/scaling_result.json",
+    "observability_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/observability_result.json",
+    "active_selection_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/active_selection_result.json",
+    "pybullet_replay_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/pybullet_replay_result.json",
+    "significance_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/significance_result.json",
+    "runtime_result": "/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/runtime_result.json"
   }
 }

@@ -32,7 +32,7 @@ The current published benchmark is a **Monte Carlo single-cycle 2D passive-local
 ### Core generation logic
 
 Main source file:
-- [scenario.py](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/src/passive_localization/scenario.py)
+- [scenario.py](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/src/passive_localization/scenario.py)
 
 Main formula in code:
 
@@ -65,8 +65,8 @@ It is *not* enough for a hard Q1 systems claim because it does not yet model:
 ### Replay validation interface
 
 Files:
-- [replay.py](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/src/passive_localization/replay.py)
-- [run_replay_validation.py](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/run_replay_validation.py)
+- [replay.py](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/src/passive_localization/replay.py)
+- [run_replay_validation.py](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/run_replay_validation.py)
 
 Purpose:
 
@@ -77,8 +77,8 @@ Purpose:
 ### Pseudo-physical dynamic extension
 
 Files:
-- [pseudo_physical.py](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/src/passive_localization/pseudo_physical.py)
-- [run_pseudo_physical_validation.py](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/run_pseudo_physical_validation.py)
+- [pseudo_physical.py](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/src/passive_localization/pseudo_physical.py)
+- [run_pseudo_physical_validation.py](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/run_pseudo_physical_validation.py)
 
 Purpose:
 
@@ -93,7 +93,7 @@ This is still synthetic, but it is a stronger intermediate step than static geom
 ## 5. New Dynamic Validation Results
 
 Output:
-- [pseudo_physical_result.json](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/experiments/pseudo_physical_result.json)
+- [pseudo_physical_result.json](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/experiments/pseudo_physical_result.json)
 
 Key outcomes:
 

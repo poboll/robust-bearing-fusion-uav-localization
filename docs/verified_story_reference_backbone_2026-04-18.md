@@ -27,8 +27,8 @@ It is **not** a new physical sensing model, and it should **not** be sold as a f
 
 ## 3. Evidence Pool Structure
 
-- Full current literature pool: [docs/literature_pool_master.md](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/docs/literature_pool_master.md)
-- Strict SCI/SCIE core pool: [docs/sci_verified_core_pool_2016_2026.md](/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci/docs/sci_verified_core_pool_2016_2026.md)
+- Full current literature pool: [docs/literature_pool_master.md](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/docs/literature_pool_master.md)
+- Strict SCI/SCIE core pool: [docs/sci_verified_core_pool_2016_2026.md](/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization/docs/sci_verified_core_pool_2016_2026.md)
 - Current manuscript backbone: `40` recent, real, DOI-backed references already cited in the MDPI draft
 
 ## 4. Story Mapping

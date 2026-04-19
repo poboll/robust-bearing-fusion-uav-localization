@@ -2,9 +2,9 @@
 
 ## Current Packaging Direction
 
-- Primary formatted manuscript: `mdpi_manuscript/`
-- Synchronized backup manuscript: `manuscript/`
-- Recommended current story: uncertainty-aware passive localization under unreliable bearings
+- Canonical formatted manuscript: `mdpi_manuscript/`
+- Recommended current story: robust front-end estimation for corrupted bearing fusion in passive multi-UAV localization
+- Supporting submission assets: `figures/`, `tables/`, `graphical_abstract/`, and `supplementary/`
 
 ## Recommended Journal Order
 
@@ -17,7 +17,6 @@ This package is currently best aligned with sensing / UAV / localization journal
 ## Package Contents
 
 - `mdpi_manuscript/`: main MDPI-format manuscript package
-- `manuscript/`: backup non-MDPI narrative draft kept in sync with the same story
 - `graphical_abstract/`: graphical abstract assets
 - `figures/`: 300-DPI figure files prepared for submission
 - `tables/`: final table sources
@@ -30,6 +29,6 @@ This package is currently best aligned with sensing / UAV / localization journal
 
 This package is assembled from the latest validated project materials and is intended to serve as the final staging area before journal submission formatting and author metadata completion.
 
-On April 18, 2026, the experiment suite available in this workspace had already been synchronized into the submission package, including regime comparison, ablation, formation generalization, sensitivity sweeps, scaling, significance summaries, observability interpretation, and the measurement-selection benchmark. The resulting figures and frozen JSON outputs are archived under `submission/`.
+On April 18-19, 2026, the experiment suite available in this workspace had already been synchronized into the submission package, including regime comparison, ablation, formation generalization, sensitivity sweeps, scaling, significance summaries, observability interpretation, threshold sweeps, tracking-proxy analysis, and the measurement-selection benchmark. The resulting figures and frozen JSON outputs are archived under `submission/`.
 
-The MDPI manuscript and the synchronized backup manuscript both compile successfully from the current sources. The remaining non-technical items are author metadata, final portal-specific wording, and any last advisor-level polish.
+The MDPI manuscript compiles successfully from the current sources. The remaining non-technical items are author metadata, final portal-specific wording, and any last advisor-level polish.

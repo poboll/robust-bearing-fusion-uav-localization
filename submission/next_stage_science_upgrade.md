@@ -6,7 +6,7 @@ What is still missing if the goal is not just a credible SCI submission, but a m
 
 ## Already Strong Enough For The Current Package
 
-- Main story is coherent: uncertainty-aware passive localization under unreliable bearings.
+- Main story is coherent: robust front-end estimation under corrupted bearing fusion for passive multi-UAV localization.
 - Experiments now include regime comparison, ablation, formation generalization, severity sweeps, scaling, paired significance summaries, observability interpretation, and a measurement-selection benchmark.
 - The paper now has an honest scope boundary and a synchronized MDPI-format submission package.
 - The submission package is reproducible and ready for final metadata completion.
@@ -53,7 +53,7 @@ What is still missing if the goal is not just a credible SCI submission, but a m
 
 If submitted now, the package is best positioned as:
 
-- a solid simulation-based SCI submission centered on uncertain passive sensing
+- a solid simulation-based SCI submission centered on robust passive sensing front-end estimation
 - strongest for `Sensors` or `Drones`
 - potentially acceptable for adjacent sensing / localization journals if the scope statement is kept conservative
 

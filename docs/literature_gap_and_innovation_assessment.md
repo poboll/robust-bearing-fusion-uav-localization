@@ -6,7 +6,7 @@
 - Coverage window: `2018-2026`.
 - Corpus root: `.pipeline/literature/passive-localization-2026-sci/`
 - Machine-readable index: `.pipeline/literature/passive-localization-2026-sci/library_index.json`
-- BibTeX export: `submission/manuscript/references_curated.bib`
+- BibTeX export: `submission/mdpi_manuscript/references_curated.bib`
 
 ### Theme Distribution
 

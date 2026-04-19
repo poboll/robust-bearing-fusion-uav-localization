@@ -5,7 +5,7 @@ This directory prepares the manuscript assets for an anonymized public release.
 ## Environment
 
 - Recommended interpreter: `/opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python`
-- Main code root: `/Users/Apple/Developer/Pycharm/q/research/2026-04-17-b-passive-localization-sci`
+- Main code root: `/Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization`
 - PyBullet replay requires `pybullet` and `gym-pybullet-drones` to be installed in the same environment.
 
 ## Regenerate Core Results

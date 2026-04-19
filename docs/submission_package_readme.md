@@ -4,9 +4,10 @@
 
 ```text
 submission/
-  manuscript/
-    manuscript_final.md
-    references.bib
+  mdpi_manuscript/
+    manuscript_mdpi.tex
+    manuscript_mdpi.pdf
+    references_curated.bib
   figures/
     figure_regime_comparison.png
     figure_ablation_mixed.png
@@ -23,17 +24,16 @@ submission/
 
 ## Current Source Materials
 
-### Manuscript Drafts
-- `docs/manuscript_v1.md`
-- `docs/manuscript_v2.md`
-- `docs/manuscript_v3.md`
+### Canonical Manuscript Source
+- `submission/mdpi_manuscript/manuscript_mdpi.tex`
+- `submission/mdpi_manuscript/references_curated.bib`
 
-### Journal Variants
-- `docs/journal_variants_v1.md`
+### Journal Positioning
 - `docs/journal_scope_notes.md`
+- `docs/frontier_and_submission_strategy.md`
 
 ### Tables and Captions
-- `docs/tables_v1.md`
+- `submission/tables/tables_final.tex`
 - `docs/figure_captions_v1.md`
 
 ### Experimental Assets
@@ -46,8 +46,8 @@ submission/
 ## Best Immediate Packaging Sequence
 
 1. choose target journal
-2. pick title + abstract variant
-3. merge manuscript_v3 with tables and captions
-4. convert to final submission format
+2. finalize author block and affiliations
+3. update the canonical MDPI manuscript directly
+4. regenerate figures and tables if numbers change
 5. add cover letter
 6. freeze experiment outputs

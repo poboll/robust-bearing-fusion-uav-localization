@@ -3,13 +3,14 @@ __pycache__/
 .DS_Store
 .pipeline/
 external/
-
-submission/mdpi_manuscript/*.aux
-submission/mdpi_manuscript/*.bbl
-submission/mdpi_manuscript/*.blg
-submission/mdpi_manuscript/*.fdb_latexmk
-submission/mdpi_manuscript/*.fls
-submission/mdpi_manuscript/*.log
-submission/mdpi_manuscript/*.out
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.spl
+*.synctex.gz
 
 experiments/test_*/

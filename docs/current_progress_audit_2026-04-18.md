@@ -9,7 +9,7 @@
 - Generated the readable master pool:
   `docs/literature_pool_master.md`
 - Exported a usable BibTeX file:
-  `submission/manuscript/references_curated.bib`
+  `submission/mdpi_manuscript/references_curated.bib`
 - Separated a strict `37`-paper `SCI/SCIE` core pool into:
   `docs/sci_verified_core_pool_2016_2026.md`
 - Rechecked the manuscript backbone against official journal pages / DOI landing pages and corrected several cited metadata fields that were too loose in the earlier pool.
@@ -55,8 +55,7 @@
 - Successfully compiled:
   `submission/mdpi_manuscript/manuscript_mdpi.pdf`
 - Updated the MDPI manuscript to the strong-version story and recompiled successfully.
-- Updated the Elsevier-style backup manuscript and recompiled successfully:
-  `submission/manuscript/manuscript_final.pdf`
+- Consolidated the submission chain onto the MDPI manuscript source so the submission package now has a single canonical paper file.
 
 ## What Is Now Scientifically Strong
 
@@ -94,7 +93,7 @@
 ### After the reconstruction and source-verification pass
 
 - `current story quality`: strong enough for a serious `Sensors` / `Drones` submission if kept honest
-- `best current framing`: uncertainty-aware passive bearing-only localization with credibility-guided measurement selection
+- `best current framing`: robust front-end estimation for corrupted bearing fusion in passive multi-UAV localization
 - `remaining gap to harder一区`: semi-real / hardware-grounded validation, plus at least one stronger modern baseline
 
 ## Immediate Next Recommended Action
