@@ -1,44 +1,63 @@
 # Pre-Submission Audit
 
-Audit date: April 18, 2026
+Audit date: April 19, 2026
 
-## Completed
+## Current Status
 
-- Core experiments had already been synchronized from the current codebase into the submission package.
-- The latest figure set was synchronized into `submission/figures/`, and all manuscript figures currently used in the paper are stored as 300-DPI PNG files.
-- The JSON outputs used for tables were archived under `submission/supplementary/frozen_results/`.
-- `submission/mdpi_manuscript/manuscript_mdpi.tex` was rebuilt around the robust corrupted-bearing front-end story and compiled successfully.
-- The method section was upgraded from qualitative prose to explicit formulas for residuals, weighted Huber refinement, bias correction, and credibility-guided subset scoring.
-- `submission/tables/tables_final.md` and `submission/tables/tables_final.tex` were updated with the current regime, scaling, significance, and measurement-selection numbers.
-- The graphical abstract source was upgraded to the current story and exported in both `PDF` and `PNG`.
-- The cover letter was rewritten as a reusable journal-agnostic skeleton so no venue or metadata is accidentally fabricated.
-- A high-seed follow-up validation (`100` seeds for the outlier and mixed regimes) was added to strengthen the robustness claim against small-sample criticism.
+- Canonical manuscript: `submission/mdpi_manuscript/manuscript_mdpi.tex`
+- Current PDF build: `submission/mdpi_manuscript/manuscript_mdpi.pdf`
+- Current paper title: `Corruption-Aware Bearing-Only Localization for Passive Multi-UAV Sensing`
+- Current page count: `36`
+- Current repository snapshot: public GitHub mirror plus frozen JSON outputs and plotting scripts inside the submission package
+
+## Completed in the Current Revision Round
+
+- The manuscript was rebuilt around the `corrupted bearing fusion front-end` story instead of an inflated full-UAV-autonomy claim.
+- The abstract was compressed to MDPI-compatible length and aligned with the actual evidence boundary.
+- A system-placement figure and a front-end flow figure were added to clarify where the method sits in the UAV sensing stack.
+- The main Monte Carlo tables were synchronized to the latest 3000-case results, including stricter threshold analysis, paired Wilcoxon statistics, and upper-tail metrics.
+- RANSAC, GNC-GM, Huber, least squares, and fixed-budget subset baselines were retained in the core comparison set.
+- The screening section now includes score-term ablation, coefficient-perturbation evidence, and an explicit FIM-surrogate interpretation.
+- The RANSAC discussion now includes a four-case reviewer-facing failure gallery and an explicit fairness note on internal consensus seeding versus the external RANSAC baseline.
+- The ablation section now includes a `no_consensus_seed` component-removal result instead of only bias/trim/reweight toggles.
+- A public real-flight replay layer based on measured multi-view trajectory data was added between the synthetic and PyBullet validation layers.
+- Pseudo-physical replay, PyBullet replay, cue-quality partitioning, and tracking-proxy evidence were retained to make the application boundary explicit rather than implicit.
+- Data availability wording now points directly to the repository containing code, figure scripts, MDPI sources, and frozen outputs.
+- The MDPI manuscript compiles successfully after the latest text and table synchronization pass.
 
 ## Scientifically Checked
 
-- The paper is now explicitly positioned as an `algorithmic framework`, not as a new physical model or a complete swarm-control system.
-- The manuscript does not claim universal superiority over PSO or over all-sensor fusion.
-- The manuscript explicitly states that validation is simulation-based.
-- The main story is robust corrupted-bearing fusion under passive multi-UAV localization, not runtime advantage.
-- The measurement-selection layer is described as a conditional measurement-triage tool rather than a universal rule.
-- The manuscript states its strongest gains honestly: outlier-rich and mixed regimes are the main evidence-bearing settings.
-- The paper includes a modest observability-oriented interpretation layer rather than overstating theoretical novelty.
-- The paper now contains a higher-sample follow-up check showing that the advantage over least squares remains stable beyond the original 20-seed summaries.
+- The paper no longer claims universal superiority over RANSAC, PSO, or all-sensor robust fusion.
+- Stage 1 is treated as the main contribution; Stage 2 is treated as an optional budget-aware extension.
+- The strongest evidence-bearing regimes are outlier, mixed corruption, pose uncertainty, heterogeneous bias, and harsh pseudo-physical replay.
+- Public real-flight replay is interpreted as a measured-data replay layer, not as onboard deployment proof.
+- PyBullet replay is interpreted as a boundary or stress layer, not as deployment proof.
+- The downstream tracker section is presented as a proxy utility test whose metrics remain partly mixed.
+- The manuscript states clearly that observer poses are supplied by an upstream navigation module and are not solved jointly here.
+- Physical-scale mapping is explicit: the normalized thresholds are interpreted through an example 100 m formation radius.
+- Runtime reporting includes hardware, operating system, Python version, and stage-level timing decomposition.
 
-## Still Pending Before Portal Submission
+## Remaining Risks Before Submission
 
-- Insert real author affiliations and the real corresponding-author e-mail.
-- Finalize the exact target journal and portal metadata using the synchronized title, abstract, keywords, and author information.
-- Perform one final advisor-level language polish if desired.
-- Confirm that the graphical abstract dimensions and portal wording match the chosen journal's current guide for authors at submission time.
-- Finalize the CRediT contribution statement, data-availability wording, and code-release policy.
+- The paper is still a `simulation-plus-replay` study rather than a UAV platform validation paper. This remains the main risk for `Drones` or similarly application-heavy journals.
+- The screening score is more defensible than before, but it is still an engineering surrogate rather than a learned or provably optimal selector.
+- The bibliography is broad, but a final manual pass should still confirm that the most foregrounded citations are journal-grade and directly comparable.
+- The repository is public but not anonymous. If double-anonymous review is required by the eventual venue, a separate anonymous release workflow is still needed.
 
-## If You Want To Push Beyond The Current Submission Level
+## Still Required Before Portal Submission
 
-- Add one stronger non-heuristic baseline such as factor-graph or distributed graph optimization.
-- Add a hardware-in-the-loop, replay-based, or semi-real measurement validation layer.
-- Extend the current one-shot selection layer toward sequential planning or richer uncertainty quantification.
+- Confirm the final target journal and re-check its current guide for authors on the submission date.
+- Reconfirm author affiliations, email addresses, and metadata exactly as they should appear in the portal.
+- Do one final manual proofreading pass on captions, reference formatting, and float placement in the compiled PDF.
+- Decide whether the current public GitHub repository is acceptable for the chosen venue or whether an anonymized archive is needed.
+- Prepare a stronger venue-specific cover letter rather than reusing a generic skeleton.
+
+## If the Goal Is to Push Beyond the Current Level
+
+- Add SITL, HITL, flight-log replay, or laboratory-scale platform data.
+- Add one stronger modern baseline such as a robust factor-graph or smoothing-based method.
+- Extend the downstream utility study from a Kalman proxy to task-level reacquisition, search-region overlap, or handoff acceptance metrics.
 
 ## Journal Requirement Note
 
-The current project now has a complete MDPI-format package with a single canonical manuscript source under `submission/mdpi_manuscript/`. Portal-specific requirements should be checked one more time immediately before submission because journal guides and upload fields can change.
+The current project has a single MDPI-format source of truth under `submission/mdpi_manuscript/`. Portal-specific checks should be repeated immediately before submission because author instructions, upload forms, and editorial screening requirements can change.

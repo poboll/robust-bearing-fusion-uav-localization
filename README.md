@@ -8,9 +8,9 @@ The current story is intentionally narrow and evidence-aligned:
 
 - Stage 1: consensus-assisted robust front-end estimation under outliers, mixed corruption, pose uncertainty, and heterogeneous bias
 - Stage 2: adaptive fixed-budget screening when uplink, compute, or latency limits prevent fusing every bearing
-- validation chain: 3000-case Monte Carlo benchmark, 720-case pseudo-physical replay, 1103-case PyBullet multi-vehicle stress test, downstream tracking proxy, and runtime/scaling analysis
+- validation chain: 3000-case Monte Carlo benchmark, 536-window public real-flight replay, 720-case pseudo-physical replay, 1103-case PyBullet multi-vehicle stress test, downstream tracking proxy, and runtime/scaling analysis
 
-The strongest claims are in the synthetic and pseudo-physical layers. The PyBullet layer is kept as a transfer-gap stress test, where the method is broadly competitive in median replay accuracy and mainly improves tail-oriented tracking metrics rather than universally dominating every baseline.
+The strongest claims are in the synthetic, public real-flight replay, and pseudo-physical layers. The PyBullet layer is kept as a transfer-gap stress test, where the method is broadly competitive in median replay accuracy and mainly improves tail-oriented tracking metrics rather than universally dominating every baseline.
 
 ## Canonical Assets
 
@@ -34,6 +34,7 @@ conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-be
 conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_screening_score_ablation.py'
 conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_screening_weight_sensitivity.py'
 conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_selection_benefit_map.py'
+conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_public_dataset3_replay_validation.py'
 conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_pseudo_physical_validation.py'
 conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_pybullet_replay_validation.py'
 conda run -n uu bash -lc 'cd /Users/Apple/Developer/Pycharm/q/research/robust-bearing-fusion-uav-localization && PYTHONPATH=src python run_tracking_proxy.py'

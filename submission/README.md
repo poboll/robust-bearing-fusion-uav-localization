@@ -29,6 +29,6 @@ This package is currently best aligned with sensing / UAV / localization journal
 
 This package is assembled from the latest validated project materials and is intended to serve as the final staging area before journal submission formatting and author metadata completion.
 
-On April 18-19, 2026, the experiment suite available in this workspace had already been synchronized into the submission package, including regime comparison, ablation, formation generalization, sensitivity sweeps, scaling, significance summaries, observability interpretation, threshold sweeps, tracking-proxy analysis, and the measurement-selection benchmark. The resulting figures and frozen JSON outputs are archived under `submission/`.
+On April 18-19, 2026, the experiment suite available in this workspace had already been synchronized into the submission package, including regime comparison, ablation, formation generalization, sensitivity sweeps, scaling, significance summaries, observability interpretation, threshold sweeps, tracking-proxy analysis, the measurement-selection benchmark, and the public real-flight trajectory replay layer. The resulting figures and frozen JSON outputs are archived under `submission/`.
 
 The MDPI manuscript compiles successfully from the current sources. The remaining non-technical items are author metadata, final portal-specific wording, and any last advisor-level polish.

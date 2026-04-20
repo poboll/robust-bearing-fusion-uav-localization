@@ -19,6 +19,7 @@ from run_observability import run_observability
 from run_active_selection import run_active_selection
 from run_selection_benefit_map import run_selection_benefit_map
 from run_story_benchmark import run_story_benchmark
+from run_public_dataset3_replay_validation import run_public_dataset3_replay_validation
 from run_pybullet_replay_validation import run_pybullet_replay_validation
 from summarize_results import summarize_ablation
 
@@ -53,6 +54,7 @@ def run_all() -> dict:
     active_selection_payload = run_active_selection(output_dir=EXP)
     story_payload = run_story_benchmark(output_dir=EXP)
     selection_map_payload = run_selection_benefit_map(output_dir=EXP)
+    public_replay_payload = run_public_dataset3_replay_validation(output_dir=EXP)
     pybullet_payload = run_pybullet_replay_validation(output_dir=EXP)
     significance_payload = run_significance(EXP / "ablation_result.json", EXP)
     runtime_payload = run_runtime(output_dir=EXP, repeats=100, warmup=10)
@@ -70,6 +72,7 @@ def run_all() -> dict:
         "figure_active_selection.png",
         "figure_story_regimes.png",
         "figure_selection_benefit_map.png",
+        "figure_public_real_replay.png",
         "figure_pybullet_replay.png",
     ]
     for figure_name in figure_names:
@@ -89,6 +92,8 @@ def run_all() -> dict:
         "active_selection_result.json",
         "story_benchmark_result.json",
         "selection_benefit_map.json",
+        "public_dataset3_replay_result.json",
+        "public_dataset3_replay_cases.json",
         "pybullet_replay_result.json",
         "pybullet_replay_traces.json",
         "significance_result.json",
@@ -113,6 +118,7 @@ def run_all() -> dict:
             "active_selection_result": str(EXP / "active_selection_result.json"),
             "story_benchmark_result": str(EXP / "story_benchmark_result.json"),
             "selection_benefit_map": str(EXP / "selection_benefit_map.json"),
+            "public_dataset3_replay_result": str(EXP / "public_dataset3_replay_result.json"),
             "pybullet_replay_result": str(EXP / "pybullet_replay_result.json"),
             "significance_result": str(EXP / "significance_result.json"),
             "runtime_result": str(EXP / "runtime_result.json"),
@@ -130,6 +136,7 @@ def run_all() -> dict:
         "active_selection_result": active_selection_payload,
         "story_benchmark_result": story_payload,
         "selection_benefit_map": selection_map_payload,
+        "public_dataset3_replay_result": public_replay_payload,
         "pybullet_replay_result": pybullet_payload,
         "significance_result": significance_payload,
         "runtime_result": runtime_payload,

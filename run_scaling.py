@@ -32,6 +32,7 @@ def run_scaling(output_dir: str | Path = "experiments", seeds: list[int] | None 
     uav_counts = [4, 6, 8, 10, 12]
     methods = [
         "least_squares_error",
+        "gnc_gm_error",
         "robust_bias_trimmed_error",
         "pso_error",
         "sa_error",

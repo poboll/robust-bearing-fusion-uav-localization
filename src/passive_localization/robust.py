@@ -201,7 +201,7 @@ def robust_bias_trimmed_refine(initial: Point2D, sensors: list[Sensor2D], bearin
 
     candidate_states: list[tuple[np.ndarray, list[int] | None]] = [(cand, None) for cand in _candidate_points(initial, sensors, bearings)]
     consensus_estimate: RefinedEstimate | None = None
-    if len(sensors) >= 4:
+    if config.use_consensus_seed and len(sensors) >= 4:
         consensus_estimate = ransac_refine(initial, sensors, bearings, config, seed=0)
         candidate_states.append((consensus_estimate.point.as_array(), consensus_estimate.removed_indices))
     smooth_candidates = [ls_estimate, gnc_estimate]

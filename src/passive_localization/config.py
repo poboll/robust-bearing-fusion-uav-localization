@@ -48,6 +48,7 @@ class MethodConfig:
     tukey_c: float = 0.18
     ransac_iterations: int = 72
     ransac_inlier_threshold: float = 0.12
+    use_consensus_seed: bool = True
     # GNC-GM baseline
     gnc_outer_iterations: int = 8
     gnc_inner_iterations: int = 15

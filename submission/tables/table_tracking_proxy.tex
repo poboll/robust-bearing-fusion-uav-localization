@@ -1,16 +1,16 @@
 \begin{table}[!htbp]
 \centering
-\caption{Downstream tracking proxy on PyBullet replay using a minimal Kalman filter with chi-square gating. Sequence break means at least one three-miss gating failure within a replay sequence.}
+\caption{Downstream tracking proxy on PyBullet replay using a minimal Kalman filter with chi-square gating. Sequence break means at least one three-miss gating failure within a replay sequence; the remaining columns are reported to bound downstream claims rather than to imply universal task-level superiority.}
 \label{tab:trackingproxy}
 \small
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{lrrrrr}
+\begin{tabular}{lrrrrrr}
 \toprule
-Method & Overall Break Rate & Overall P90 RMSE & Overall ROI P90 & Disturbed Break Rate & Disturbed P90 RMSE \\
+Method & Overall Break Rate & Overall P90 RMSE & Disturbed Break Rate & Disturbed P90 RMSE & Disturbed Rapid Reacq. & Disturbed ROI P90 \\
 \midrule
-Least Squares & 0.7083 & 28.8386 & 4.1488 & 0.8333 & 29.8760 \\
-RANSAC        & 0.6667 & 34.3885 & 5.5261 & 0.8333 & 36.5509 \\
-Proposed      & 0.6667 & 16.4994 & 5.7533 & 0.8333 & 13.6756 \\
+Least Squares & 0.7083 & 28.8386 & 0.8333 & 29.8760 & 0.6528 & 4.1488 \\
+RANSAC        & 0.6667 & 34.3885 & 0.8333 & 36.5509 & 0.4861 & 18.7335 \\
+Proposed      & 0.6667 & 16.4994 & 0.8333 & 13.6756 & 0.5833 & 9.8080 \\
 \bottomrule
 \end{tabular}}
 \end{table}

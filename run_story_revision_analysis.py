@@ -27,7 +27,28 @@ from passive_localization.scenario import generate_circular_scenario
 
 RADIUS = 10.0
 KEY_REGIMES = ["outlier", "mixed", "pose_uncertainty", "heterogeneous_bias"]
-FAILURE_CASE_REGIMES = ["mixed", "pose_uncertainty", "heterogeneous_bias"]
+FAILURE_CASE_SPECS = [
+    {
+        "regime": "outlier",
+        "label": "Gross outlier window (RANSAC strongest)",
+        "selector": "ransac_strong",
+    },
+    {
+        "regime": "mixed",
+        "label": "Mixed corruption (trimmed robust fusion strongest)",
+        "selector": "proposed_strong",
+    },
+    {
+        "regime": "pose_uncertainty",
+        "label": "Pose uncertainty with near-degenerate geometry",
+        "selector": "pose_stable",
+    },
+    {
+        "regime": "heterogeneous_bias",
+        "label": "Heterogeneous bias limitation case",
+        "selector": "limitation",
+    },
+]
 THRESHOLDS_R = [round(value, 2) for value in np.arange(0.10, 0.51, 0.05)]
 METHODS = {
     "least_squares_error": "LS",
@@ -97,6 +118,7 @@ def _reconstruct_case(row: dict, method_config: MethodConfig) -> dict:
         "regime": row["regime"],
         "formation": row["formation"],
         "seed": int(row["scenario"]["seed"]),
+        "case_role": row.get("case_role", ""),
         "target": {"x": float(target[0]), "y": float(target[1])},
         "scenario": row["scenario"],
         "valid_sensors": sensor_payload,
@@ -173,12 +195,45 @@ def run_story_revision_analysis(
             row["pso_error"] - row["robust_bias_trimmed_error"],
         )
 
+    def _select_failure_case(regime_rows: list[dict], selector: str) -> dict:
+        if selector == "ransac_strong":
+            return max(
+                regime_rows,
+                key=lambda row: (
+                    row["robust_bias_trimmed_error"] - row["ransac_error"],
+                    row["least_squares_error"] - row["ransac_error"],
+                    0.15 if row["formation"] == "degenerate" else 0.0,
+                ),
+            )
+        if selector == "proposed_strong":
+            return max(regime_rows, key=_case_priority)
+        if selector == "pose_stable":
+            return max(
+                regime_rows,
+                key=lambda row: (
+                    row["ransac_error"] - row["robust_bias_trimmed_error"],
+                    row["least_squares_error"] - row["robust_bias_trimmed_error"],
+                    0.15 if row["formation"] == "degenerate" else 0.0,
+                ),
+            )
+        if selector == "limitation":
+            return max(
+                regime_rows,
+                key=lambda row: (
+                    row["robust_bias_trimmed_error"] - row["least_squares_error"],
+                    row["ransac_error"] - row["least_squares_error"],
+                    0.15 if row["formation"] == "degenerate" else 0.0,
+                ),
+            )
+        raise ValueError(f"Unsupported failure-case selector: {selector}")
+
     failure_cases: list[dict] = []
-    for regime in FAILURE_CASE_REGIMES:
-        regime_rows = [row for row in rows if row["regime"] == regime]
+    for spec in FAILURE_CASE_SPECS:
+        regime_rows = [row for row in rows if row["regime"] == spec["regime"]]
         if not regime_rows:
             continue
-        selected_case = max(regime_rows, key=_case_priority)
+        selected_case = dict(_select_failure_case(regime_rows, spec["selector"]))
+        selected_case["case_role"] = spec["label"]
         failure_cases.append(_reconstruct_case(selected_case, MethodConfig()))
 
     result = {
@@ -186,7 +241,7 @@ def run_story_revision_analysis(
             "formation_radius": RADIUS,
             "thresholds_r": THRESHOLDS_R,
             "threshold_note": "Thresholds are reported in normalized units of R and absolute units with R=10.",
-            "failure_case_note": "Failure cases are selected per regime by maximizing the advantage of the proposed estimator over RANSAC while preferring near-degenerate observer layouts when available.",
+            "failure_case_note": "Failure cases are selected to cover four distinct reviewer-facing narratives: a gross-outlier window where RANSAC is strongest, a mixed-corruption window where trimmed robust fusion is strongest, a pose-uncertainty window, and a heterogeneous-bias limitation case.",
         },
         "strict_thresholds": strict_thresholds,
         "threshold_sweep": threshold_sweep,

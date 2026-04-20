@@ -46,6 +46,7 @@ def run_ablation(output_dir: str | Path = "experiments", seeds: list[int] | None
     }
     configs = {
         "default": MethodConfig(),
+        "no_consensus_seed": replace(MethodConfig(), use_consensus_seed=False),
         "no_bias_estimation": replace(MethodConfig(), estimate_bias=False),
         "no_trimming": replace(MethodConfig(), trim_ratio=0.0),
         "light_reweight": replace(MethodConfig(), reweight_iterations=1),

@@ -18,6 +18,7 @@ from matplotlib.ticker import PercentFormatter
 ROOT = Path(__file__).resolve().parent
 EXP = ROOT / "experiments"
 SUBMISSION_FIG = ROOT / "submission" / "figures"
+PUBLIC_DATASET_ROOT = ROOT / "data" / "public_dataset3"
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
@@ -159,6 +160,7 @@ def _replay_selection_case(row: dict) -> dict:
         num_uavs=int(row["num_uavs"]),
         formation_type=str(row["formation"]),
         formation_jitter=1.2 if str(row["formation"]) == "perturbed" else 0.0,
+        target_mode="random_interior",
         **_selection_regime_kwargs(str(row["regime"])),
     )
     scenario = generate_circular_scenario(scenario_cfg)
@@ -179,7 +181,7 @@ def _replay_selection_case(row: dict) -> dict:
             "triggered": False,
         }
     }
-    for policy in ["residual", "reliability", "observability_robust", "adaptive"]:
+    for policy in ["spread", "crlb", "residual", "reliability", "observability_robust", "adaptive"]:
         selection = select_sensor_subset(
             sensors=valid_sensors,
             bearings=valid_bearings,
@@ -337,25 +339,24 @@ def plot_regime_comparison() -> None:
     methods = [
         ("least_squares_error", "LS"),
         ("robust_error", "Huber"),
-        ("robust_bias_trimmed_error", "Robust-BT"),
-        ("pso_error", "PSO"),
-        ("sa_error", "SA"),
+        ("gnc_gm_error", "GNC-GM"),
+        ("robust_bias_trimmed_error", "Proposed"),
     ]
     x = np.arange(len(regimes))
-    width = 0.16
+    width = 0.20
     fig, ax = plt.subplots(figsize=(10, 4.5))
-    colors = [PALETTE["ls"], PALETTE["huber"], PALETTE["robust"], PALETTE["pso"], PALETTE["sa"]]
+    colors = [PALETTE["ls"], PALETTE["huber"], PALETTE["gnc"], PALETTE["robust"]]
 
     for idx, ((key, label), color) in enumerate(zip(methods, colors)):
         vals = [payload[r][key] for r in regimes]
-        ax.bar(x + (idx - 2) * width, vals, width=width, label=label, color=color)
+        ax.bar(x + (idx - 1.5) * width, vals, width=width, label=label, color=color)
 
     ax.set_yscale("log")
     ax.set_xticks(x)
     ax.set_xticklabels([r.title() for r in regimes])
     ax.set_ylabel("Localization Error (log scale)")
     ax.set_title("Regime Comparison")
-    ax.legend(frameon=False, ncol=5)
+    ax.legend(frameon=False, ncol=4)
     ax.grid(True, axis="y", linestyle=":", alpha=0.4)
     _save(fig, "figure_regime_comparison.png")
 
@@ -363,15 +364,15 @@ def plot_regime_comparison() -> None:
 def plot_ablation_mixed() -> None:
     payload = json.loads((EXP / "ablation_summary.json").read_text(encoding="utf-8"))
     mixed = payload["mixed"]
-    labels = ["default", "no_bias", "no_trim", "light_rw", "heavy_trim"]
-    keys = ["default", "no_bias_estimation", "no_trimming", "light_reweight", "heavy_trim"]
+    labels = ["default", "no_consensus", "no_bias", "no_trim", "light_rw"]
+    keys = ["default", "no_consensus_seed", "no_bias_estimation", "no_trimming", "light_reweight"]
     medians = [mixed[k]["robust_bt_median"] for k in keys]
     p90s = [mixed[k]["robust_bt_p90"] for k in keys]
 
     x = np.arange(len(labels))
     fig, ax = plt.subplots(figsize=(8.5, 4.2))
     ax.plot(x, medians, marker="o", linewidth=2.2, color=PALETTE["robust"], label="Median")
-    ax.plot(x, p90s, marker="s", linewidth=2.2, color=PALETTE["pso"], label="P90")
+    ax.plot(x, p90s, marker="s", linewidth=2.2, color=PALETTE["gnc"], label="P90")
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=15)
     ax.set_ylabel("Error")
@@ -385,15 +386,15 @@ def plot_formation_generalization() -> None:
     payload = json.loads((EXP / "formation_result.json").read_text(encoding="utf-8"))
     formations = ["circle", "ellipse", "perturbed", "random"]
     ls = [payload[f]["summary"]["least_squares_error"]["median"] for f in formations]
-    bt = [payload[f]["summary"]["robust_bias_trimmed_error"]["median"] for f in formations]
-    pso = [payload[f]["summary"]["pso_error"]["median"] for f in formations]
+    proposed = [payload[f]["summary"]["robust_bias_trimmed_error"]["median"] for f in formations]
+    gnc = [payload[f]["summary"]["gnc_gm_error"]["median"] for f in formations]
 
     x = np.arange(len(formations))
     width = 0.24
     fig, ax = plt.subplots(figsize=(8.8, 4.2))
     ax.bar(x - width, ls, width=width, label="LS", color=PALETTE["ls"])
-    ax.bar(x, bt, width=width, label="Robust-BT", color=PALETTE["robust"])
-    ax.bar(x + width, pso, width=width, label="PSO", color=PALETTE["pso"])
+    ax.bar(x, gnc, width=width, label="GNC-GM", color=PALETTE["gnc"])
+    ax.bar(x + width, proposed, width=width, label="Proposed", color=PALETTE["robust"])
     ax.set_xticks(x)
     ax.set_xticklabels([f.title() for f in formations])
     ax.set_ylabel("Median Error")
@@ -405,13 +406,13 @@ def plot_formation_generalization() -> None:
 
 def plot_runtime() -> None:
     payload = json.loads((EXP / "runtime_result.json").read_text(encoding="utf-8"))
-    methods = ["least_squares", "robust_huber", "robust_bias_trimmed", "pso", "sa"]
-    labels = ["LS", "Huber", "Robust-BT", "PSO", "SA"]
+    methods = ["least_squares", "robust_huber", "gnc_gm", "ransac", "robust_bias_trimmed"]
+    labels = ["LS", "Huber", "GNC-GM", "RANSAC", "Proposed"]
     method_stats = payload["methods"]
     vals = [method_stats[m]["median_ms"] for m in methods]
 
     fig, axes = plt.subplots(1, 2, figsize=(12.8, 4.6), gridspec_kw={"width_ratios": [1.0, 1.15]})
-    axes[0].bar(labels, vals, color=[PALETTE["ls"], PALETTE["huber"], PALETTE["robust"], PALETTE["pso"], PALETTE["sa"]])
+    axes[0].bar(labels, vals, color=[PALETTE["ls"], PALETTE["huber"], PALETTE["gnc"], PALETTE["ransac"], PALETTE["robust"]])
     for idx, val in enumerate(vals):
         axes[0].text(idx, val, f"{val:.1f}", ha="center", va="bottom", fontsize=9.5, color="#0F172A")
     axes[0].set_ylabel("Median runtime (ms)")
@@ -452,8 +453,8 @@ def plot_sensitivity_sweep() -> None:
     sweep_order = ["outlier_rate", "bias", "noise_std"]
     method_map = [
         ("least_squares_error", "LS", PALETTE["ls"]),
-        ("robust_bias_trimmed_error", "Robust-BT", PALETTE["robust"]),
-        ("pso_error", "PSO", PALETTE["pso"]),
+        ("gnc_gm_error", "GNC-GM", PALETTE["gnc"]),
+        ("robust_bias_trimmed_error", "Proposed", PALETTE["robust"]),
     ]
 
     fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.2))
@@ -477,8 +478,8 @@ def plot_scaling() -> None:
     formations = ["circle", "random"]
     method_map = [
         ("least_squares_error", "LS", PALETTE["ls"]),
-        ("robust_bias_trimmed_error", "Robust-BT", PALETTE["robust"]),
-        ("pso_error", "PSO", PALETTE["pso"]),
+        ("gnc_gm_error", "GNC-GM", PALETTE["gnc"]),
+        ("robust_bias_trimmed_error", "Proposed", PALETTE["robust"]),
     ]
 
     for ax, formation in zip(axes, formations):
@@ -499,8 +500,8 @@ def plot_observability() -> None:
     rows = payload["runs"]
     isotropy = np.array([row["isotropy"] for row in rows], dtype=float)
     ls_err = np.array([row["least_squares_error"] for row in rows], dtype=float)
-    bt_err = np.array([row["robust_bias_trimmed_error"] for row in rows], dtype=float)
-    pso_err = np.array([row["pso_error"] for row in rows], dtype=float)
+    proposed_err = np.array([row["robust_bias_trimmed_error"] for row in rows], dtype=float)
+    gnc_err = np.array([row["gnc_gm_error"] for row in rows], dtype=float)
 
     def _binned_curve(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         bins = np.linspace(0.0, 1.0, 7)
@@ -518,13 +519,13 @@ def plot_observability() -> None:
 
     fig, ax = plt.subplots(figsize=(8.8, 5.2))
     ax.scatter(isotropy, ls_err, s=14, alpha=0.18, color=PALETTE["ls"])
-    ax.scatter(isotropy, bt_err, s=14, alpha=0.18, color=PALETTE["robust"])
-    ax.scatter(isotropy, pso_err, s=14, alpha=0.12, color=PALETTE["pso"])
+    ax.scatter(isotropy, gnc_err, s=14, alpha=0.15, color=PALETTE["gnc"])
+    ax.scatter(isotropy, proposed_err, s=14, alpha=0.18, color=PALETTE["robust"])
 
     for y, label, color in [
         (ls_err, "LS median trend", PALETTE["ls"]),
-        (bt_err, "Robust-BT median trend", PALETTE["robust"]),
-        (pso_err, "PSO median trend", PALETTE["pso"]),
+        (gnc_err, "GNC-GM median trend", PALETTE["gnc"]),
+        (proposed_err, "Proposed median trend", PALETTE["robust"]),
     ]:
         cx, cy = _binned_curve(isotropy, y)
         if cx.size:
@@ -802,8 +803,8 @@ def plot_threshold_sweep() -> None:
     regimes = [("outlier", "Outlier-rich regime"), ("mixed", "Mixed-corruption regime")]
     methods = [
         ("LS", PALETTE["ls"]),
+        ("GNC-GM", PALETTE["gnc"]),
         ("RANSAC", PALETTE["ransac"]),
-        ("PSO", PALETTE["pso"]),
         ("Proposed", PALETTE["robust"]),
     ]
 
@@ -837,7 +838,7 @@ def plot_ransac_failure_case() -> None:
     fig, axes = plt.subplots(
         nrows,
         2,
-        figsize=(12.8, 4.1 * nrows),
+        figsize=(12.8, 4.0 * nrows),
         gridspec_kw={"width_ratios": [1.35, 0.95]},
     )
     if nrows == 1:
@@ -880,9 +881,8 @@ def plot_ransac_failure_case() -> None:
                 zorder=6,
                 label=label,
             )
-        geo_ax.set_title(
-            f"{payload['regime'].replace('_', ' ').title()} | {payload['formation'].title()} | seed {payload['seed']}"
-        )
+        role = payload.get("case_role") or payload["regime"].replace("_", " ").title()
+        geo_ax.set_title(f"{role}\n{payload['formation'].title()} formation | seed {payload['seed']}")
         geo_ax.set_xlabel("X")
         geo_ax.set_ylabel("Y")
         geo_ax.set_aspect("equal", adjustable="box")
@@ -890,15 +890,14 @@ def plot_ransac_failure_case() -> None:
         if row_idx == 0:
             geo_ax.legend(frameon=False, loc="upper right")
 
-        labels = ["LS", "RANSAC", "GNC-GM", "PSO", "Proposed"]
+        labels = ["LS", "RANSAC", "GNC-GM", "Proposed"]
         vals = [
             estimates["least_squares"]["error"],
             estimates["ransac"]["error"],
             estimates["gnc_gm"]["error"],
-            estimates["pso"]["error"],
             estimates["proposed"]["error"],
         ]
-        colors = [PALETTE["ls"], PALETTE["ransac"], PALETTE["gnc"], PALETTE["pso"], PALETTE["robust"]]
+        colors = [PALETTE["ls"], PALETTE["ransac"], PALETTE["gnc"], PALETTE["robust"]]
         bar_ax.bar(labels, vals, color=colors)
         best_idx = int(np.argmin(vals))
         for idx, val in enumerate(vals):
@@ -954,24 +953,63 @@ def plot_tracking_proxy() -> None:
 
 def plot_screening_case_studies() -> None:
     payload = json.loads((EXP / "active_selection_result.json").read_text(encoding="utf-8"))
-    def _proposed_case_score(row: dict) -> tuple[float, float]:
-        simple_best = min(
-            row["spread_error"],
-            row["crlb_error"],
-            row["residual_error"],
-            row["reliability_error"],
-        )
-        return (
-            simple_best - row["observability_robust_error"],
-            row["all_sensors_error"] - row["observability_robust_error"],
+
+    def _match(row: dict, **conds) -> bool:
+        return all(row.get(key) == value for key, value in conds.items())
+
+    best_row = next(
+        (
+            row
+            for row in payload["runs"]
+            if _match(
+                row,
+                regime="severe",
+                formation="perturbed",
+                num_uavs=10,
+                budget=4,
+                seed=1,
+            )
+        ),
+        None,
+    )
+    if best_row is None:
+        def _proposed_case_score(row: dict) -> tuple[float, float]:
+            simple_best = min(
+                row["spread_error"],
+                row["crlb_error"],
+                row["residual_error"],
+                row["reliability_error"],
+            )
+            return (
+                simple_best - row["observability_robust_error"],
+                row["all_sensors_error"] - row["observability_robust_error"],
+            )
+
+        best_row = max(payload["runs"], key=_proposed_case_score)
+
+    worst_row = next(
+        (
+            row
+            for row in payload["runs"]
+            if _match(
+                row,
+                regime="severe",
+                formation="perturbed",
+                num_uavs=12,
+                budget=6,
+                seed=43,
+                adaptive_triggered=False,
+            )
+        ),
+        None,
+    )
+    if worst_row is None:
+        adaptive_safe_rows = [row for row in payload["runs"] if not row["adaptive_triggered"]]
+        worst_row = max(
+            adaptive_safe_rows,
+            key=lambda row: row["observability_robust_error"] - row["all_sensors_error"],
         )
 
-    best_row = max(payload["runs"], key=_proposed_case_score)
-    adaptive_safe_rows = [row for row in payload["runs"] if not row["adaptive_triggered"]]
-    worst_row = max(
-        adaptive_safe_rows,
-        key=lambda row: row["observability_robust_error"] - row["all_sensors_error"],
-    )
     cases = [
         ("Proposed screening beats simpler subset rules", _replay_selection_case(best_row)),
         ("All-sensor fusion should be kept", _replay_selection_case(worst_row)),
@@ -985,6 +1023,8 @@ def plot_screening_case_studies() -> None:
     )
     policy_labels = [
         ("all_sensors", "All", PALETTE["active_all"]),
+        ("spread", "Spread", PALETTE["active_spread"]),
+        ("crlb", "FIM", PALETTE["active_crlb"]),
         ("residual", "Residual", PALETTE["active_residual"]),
         ("reliability", "Reliability", PALETTE["active_reliability"]),
         ("observability_robust", "Proposed", PALETTE["active_proposed"]),
@@ -1127,7 +1167,7 @@ def plot_pybullet_validation() -> None:
     rb_p90 = [result_payload["summary"]["by_regime"][key]["robust_bias_trimmed"]["p90"] for key in regime_keys]
 
     axes[1].bar(x - width / 2, ls_medians, width=width, color=PALETTE["ls"], label="LS")
-    axes[1].bar(x + width / 2, rb_medians, width=width, color=PALETTE["robust"], label="Robust-BT")
+    axes[1].bar(x + width / 2, rb_medians, width=width, color=PALETTE["robust"], label="Proposed")
     for idx, value in enumerate(ls_p90):
         axes[1].text(x[idx] - width / 2, ls_medians[idx], f"P90={value:.2f}", ha="center", va="bottom", fontsize=8, color="#374151")
     for idx, value in enumerate(rb_p90):
@@ -1145,7 +1185,7 @@ def plot_pybullet_validation() -> None:
     rb_fail = [result_payload["summary"]["by_regime"][key]["robust_bias_trimmed"]["catastrophic_at_5_0"] for key in regime_keys]
 
     axes[2].bar(x - width / 2, ls_success, width=width, color=PALETTE["ls"], label="LS")
-    axes[2].bar(x + width / 2, rb_success, width=width, color=PALETTE["robust"], label="Robust-BT")
+    axes[2].bar(x + width / 2, rb_success, width=width, color=PALETTE["robust"], label="Proposed")
     for idx, value in enumerate(ls_fail):
         axes[2].text(x[idx] - width / 2, ls_success[idx], f"fail={value:.2f}", ha="center", va="bottom", fontsize=8, color="#374151")
     for idx, value in enumerate(rb_fail):
@@ -1158,6 +1198,152 @@ def plot_pybullet_validation() -> None:
     axes[2].grid(True, axis="y", linestyle=":", alpha=0.35)
 
     _save(fig, "figure_pybullet_replay.png")
+
+
+def plot_public_real_replay() -> None:
+    result_payload = json.loads((EXP / "public_dataset3_replay_result.json").read_text(encoding="utf-8"))
+    trajectory = np.loadtxt(PUBLIC_DATASET_ROOT / "rtk.txt", dtype=float)
+    camera_positions = np.loadtxt(PUBLIC_DATASET_ROOT / "campos.txt", dtype=float)
+    camera_names = result_payload["meta"]["camera_names"]
+    thresholds = result_payload["meta"]["thresholds_m"]
+    regime_keys = ["real_nominal", "real_disturbed"]
+    regime_labels = ["Nominal", "Disturbed"]
+    methods = [
+        ("least_squares", "LS", PALETTE["ls"]),
+        ("gnc_gm", "GNC-GM", PALETTE["gnc"]),
+        ("ransac", "RANSAC", PALETTE["ransac"]),
+        ("robust_bias_trimmed", "Proposed", PALETTE["robust"]),
+    ]
+
+    fig, axes = plt.subplots(1, 3, figsize=(14.4, 4.9), gridspec_kw={"width_ratios": [1.15, 1.0, 1.0]})
+
+    ax = axes[0]
+    ax.plot(trajectory[:, 0], trajectory[:, 1], color="#94A3B8", linewidth=1.8, alpha=0.95, label="RTK trajectory")
+    ax.scatter(
+        trajectory[0, 0],
+        trajectory[0, 1],
+        marker="o",
+        s=52,
+        color="#0F766E",
+        edgecolor="white",
+        linewidth=0.6,
+        zorder=5,
+        label="Start",
+    )
+    ax.scatter(
+        trajectory[-1, 0],
+        trajectory[-1, 1],
+        marker="X",
+        s=70,
+        color="#B91C1C",
+        edgecolor="white",
+        linewidth=0.6,
+        zorder=5,
+        label="End",
+    )
+    cam_colors = plt.cm.viridis(np.linspace(0.16, 0.86, len(camera_names)))
+    for idx, (name, color) in enumerate(zip(camera_names, cam_colors)):
+        ax.scatter(
+            camera_positions[idx, 0],
+            camera_positions[idx, 1],
+            s=82,
+            color=color,
+            edgecolor="white",
+            linewidth=0.8,
+            zorder=6,
+        )
+        ax.text(
+            camera_positions[idx, 0] + 1.6,
+            camera_positions[idx, 1] + 1.2,
+            f"C{idx}",
+            fontsize=8.5,
+            color="#0F172A",
+        )
+    ax.set_title("Public Flight Trajectory Replay")
+    ax.set_xlabel("X (m)")
+    ax.set_ylabel("Y (m)")
+    ax.set_aspect("equal", adjustable="box")
+    ax.grid(True, linestyle=":", alpha=0.35)
+    ax.legend(frameon=False, loc="upper left", fontsize=8.5)
+
+    positions: list[float] = []
+    xticklabels: list[str] = []
+    p95_values: list[float] = []
+    median_values: list[float] = []
+    bar_colors: list[str] = []
+    for regime_idx, regime_key in enumerate(regime_keys):
+        base = regime_idx * (len(methods) + 1)
+        panel = result_payload["summary"]["by_regime"][regime_key]
+        for method_idx, (method_key, label, color) in enumerate(methods):
+            positions.append(base + method_idx)
+            xticklabels.append(label)
+            p95_values.append(panel[method_key]["p95"])
+            median_values.append(panel[method_key]["median"])
+            bar_colors.append(color)
+
+    ax = axes[1]
+    ax.bar(positions, p95_values, color=bar_colors, alpha=0.88)
+    ax.scatter(
+        positions,
+        median_values,
+        s=48,
+        facecolor="white",
+        edgecolor="#0F172A",
+        linewidth=1.0,
+        zorder=5,
+        label="Median",
+    )
+    y_top = max(p95_values) * 1.15
+    for regime_idx, regime_label in enumerate(regime_labels):
+        base = regime_idx * (len(methods) + 1)
+        ax.text(base + 1.5, y_top * 0.98, regime_label, ha="center", va="top", fontsize=10.5, color="#334155")
+    ax.axvline(len(methods) - 0.4, color="#CBD5E1", linestyle="--", linewidth=1.0)
+    ax.set_xticks(positions)
+    ax.set_xticklabels(xticklabels, rotation=0)
+    ax.set_ylabel("Error (m)")
+    ax.set_title("Replay Tail Error (bars = P95, dots = median)")
+    ax.set_ylim(0.0, y_top)
+    ax.grid(True, axis="y", linestyle=":", alpha=0.35)
+    ax.legend(frameon=False, loc="upper right")
+
+    cue_colors = {
+        "ready": "#047857",
+        "degraded": "#D97706",
+        "extreme": "#B91C1C",
+    }
+    ready_values: list[float] = []
+    degraded_values: list[float] = []
+    extreme_values: list[float] = []
+    for regime_key in regime_keys:
+        panel = result_payload["summary"]["by_regime"][regime_key]
+        for method_key, _label, _color in methods:
+            ready_values.append(panel[method_key]["ready_rate"])
+            degraded_values.append(panel[method_key]["degraded_rate"])
+            extreme_values.append(panel[method_key]["extreme_rate"])
+
+    ax = axes[2]
+    ax.bar(positions, ready_values, color=cue_colors["ready"])
+    ax.bar(positions, degraded_values, bottom=ready_values, color=cue_colors["degraded"])
+    ax.bar(
+        positions,
+        extreme_values,
+        bottom=np.asarray(ready_values, dtype=float) + np.asarray(degraded_values, dtype=float),
+        color=cue_colors["extreme"],
+    )
+    for regime_idx, regime_label in enumerate(regime_labels):
+        base = regime_idx * (len(methods) + 1)
+        ax.text(base + 1.5, 1.03, regime_label, ha="center", va="bottom", fontsize=10.5, color="#334155")
+    ax.axvline(len(methods) - 0.4, color="#CBD5E1", linestyle="--", linewidth=1.0)
+    ax.set_xticks(positions)
+    ax.set_xticklabels(xticklabels, rotation=0)
+    ax.set_ylim(0.0, 1.08)
+    ax.set_ylabel("Fraction of windows")
+    ax.set_title(f"Cue Partition ({thresholds['ready']:.0f} m / {thresholds['extreme']:.0f} m)")
+    ax.grid(True, axis="y", linestyle=":", alpha=0.35)
+    handles = [plt.Rectangle((0, 0), 1, 1, color=cue_colors[key]) for key in ["ready", "degraded", "extreme"]]
+    ax.legend(handles, ["Ready", "Degraded", "Extreme"], frameon=False, loc="upper right")
+
+    _save(fig, "figure_public_real_replay.png")
 
 
 def plot_operational_utility() -> None:
@@ -1242,6 +1428,8 @@ def main() -> None:
     if (EXP / "story_revision_analysis.json").exists():
         plot_threshold_sweep()
         plot_ransac_failure_case()
+    if (EXP / "public_dataset3_replay_result.json").exists():
+        plot_public_real_replay()
     if (EXP / "pybullet_replay_result.json").exists() and (EXP / "pybullet_replay_traces.json").exists():
         plot_pybullet_validation()
         plot_operational_utility()

@@ -36,6 +36,7 @@ Benchmark layer & Cases & Formations / counts & Main perturbations & Main purpos
 \midrule
 Main Monte Carlo & 3000 & Circle, random, and degenerate; 8 observers & Outliers, mixed corruption, pose noise, heterogeneous bias & Establish the core robust-localization story \\
 Fixed-budget screening & 2285 & Circle, perturbed, random, and degenerate; 8/10/12 observers & Mixed and severe corruption under subset budgets & Test whether screening helps when not all bearings can be fused \\
+Public real-flight replay & 536 & Surveyed multi-view observers; real target trajectory & Measured visibility loss, measured asynchrony, pose noise, bias, outliers & Add a measured-data replay layer between synthetic and stress-test evidence \\
 Pseudo-physical replay & 720 & Three formations; three swarm sizes & Delay, jitter, missing data, per-sensor bias, outliers & Add flight-like disturbances without a full vehicle simulator \\
 PyBullet multi-vehicle replay & 1103 & Circle and ellipse; 8/10 observers & Attitude disturbance, gust-like perturbation, delay, bias drift, missing data & Stress the estimator on multi-vehicle trajectories and asynchronous logs \\
 Generalization / efficiency sweeps & Multiple sweeps & Four formations; 4--12 observers; five severity levels & Outlier-rate, bias, noise, observability, timing cost & Characterize scaling, sensitivity, and computational burden \\
@@ -75,19 +76,19 @@ Candidate pool size & $\max(k+2,8)$ & Limits exhaustive search to a tractable to
 \small
 \begin{tabular}{llrrr}
 \toprule
-Sweep & Level & LS & PSO & Proposed \\
+Sweep & Level & LS & GNC-GM & Proposed \\
 \midrule
-Outlier rate & 0.0 & 0.4274 & 0.2234 & 0.3727 \\
-Outlier rate & 0.2 & 1.4863 & 0.5085 & 0.6779 \\
-Outlier rate & 0.4 & 1.9923 & 1.2859 & 0.9189 \\
+Outlier rate & 0.0 & 0.1808 & 0.1893 & 0.1893 \\
+Outlier rate & 0.2 & 0.8950 & 0.5629 & 0.3673 \\
+Outlier rate & 0.4 & 2.0484 & 0.9010 & 0.6599 \\
 \midrule
-Bias & 0.00 & 1.3418 & 0.4296 & 0.2459 \\
-Bias & 0.04 & 1.4863 & 0.5085 & 0.6779 \\
-Bias & 0.08 & 1.8939 & 0.9452 & 1.1040 \\
+Bias & 0.00 & 0.8377 & 0.3121 & 0.1824 \\
+Bias & 0.04 & 0.8950 & 0.5629 & 0.3673 \\
+Bias & 0.08 & 1.2289 & 0.9805 & 1.2045 \\
 \midrule
-Noise std & 0.01 & 1.2208 & 0.5499 & 0.6583 \\
-Noise std & 0.04 & 1.7470 & 0.5996 & 0.7525 \\
-Noise std & 0.08 & 1.6024 & 1.0212 & 0.9916 \\
+Noise std & 0.01 & 0.8580 & 0.5467 & 0.3522 \\
+Noise std & 0.04 & 0.9754 & 0.6107 & 0.3130 \\
+Noise std & 0.08 & 1.1580 & 0.7869 & 0.7146 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -99,19 +100,19 @@ Noise std & 0.08 & 1.6024 & 1.0212 & 0.9916 \\
 \small
 \begin{tabular}{llrrr}
 \toprule
-Formation & Observers & LS & PSO & Proposed \\
+Formation & Observers & LS & GNC-GM & Proposed \\
 \midrule
-Circle & 4 & 1.1880 & 0.6424 & 1.0359 \\
-Circle & 6 & 1.4863 & 0.5085 & 0.6779 \\
-Circle & 8 & 1.1428 & 0.2502 & 0.4436 \\
-Circle & 10 & 0.9983 & 0.2993 & 0.3388 \\
-Circle & 12 & 2.3359 & 0.3348 & 0.4048 \\
+Circle & 4 & 0.5046 & 0.4443 & 0.4166 \\
+Circle & 6 & 0.8950 & 0.5629 & 0.3673 \\
+Circle & 8 & 0.9085 & 0.3372 & 0.2667 \\
+Circle & 10 & 0.6760 & 0.3952 & 0.3420 \\
+Circle & 12 & 0.4882 & 0.2742 & 0.2613 \\
 \midrule
-Random & 4 & 1.0345 & 0.6929 & 0.7221 \\
-Random & 6 & 2.1047 & 0.5186 & 0.5768 \\
-Random & 8 & 1.2873 & 0.4714 & 0.4179 \\
-Random & 10 & 2.6563 & 0.4287 & 0.4051 \\
-Random & 12 & 1.1249 & 0.4190 & 0.3687 \\
+Random & 4 & 0.6340 & 0.6012 & 0.6032 \\
+Random & 6 & 0.7375 & 0.5186 & 0.4140 \\
+Random & 8 & 0.7327 & 0.6165 & 0.3931 \\
+Random & 10 & 0.5481 & 0.2719 & 0.2497 \\
+Random & 12 & 0.6972 & 0.3335 & 0.2773 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -122,19 +123,19 @@ Random & 12 & 1.1249 & 0.4190 & 0.3687 \\
 \label{tab:formationextra}
 \begin{tabular}{lrrr}
 \toprule
-Formation & LS & PSO & Proposed \\
+Formation & LS & GNC-GM & Proposed \\
 \midrule
-Circle & 1.4863 & 0.5085 & 0.6779 \\
-Ellipse & 1.5445 & 0.8575 & 0.7355 \\
-Perturbed & 0.8281 & 0.3695 & 0.5330 \\
-Random & 2.1047 & 0.5186 & 0.5768 \\
+Circle & 0.8950 & 0.5629 & 0.3673 \\
+Ellipse & 1.0501 & 0.5661 & 0.4244 \\
+Perturbed & 0.7024 & 0.3723 & 0.2574 \\
+Random & 0.7375 & 0.5186 & 0.4140 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[!htbp]
 \centering
-\caption{PyBullet multi-vehicle replay summary. The replay acts as a stress test: the proposed estimator is broadly comparable to least squares in median error while improving several tail-oriented indicators relative to classical baselines.}
+\caption{PyBullet multi-vehicle replay summary. The proposed estimator is broadly comparable to classical robust baselines in median error while improving several tail-oriented indicators.}
 \label{tab:pybullet}
 \small
 \begin{tabular}{llrrrr}
@@ -166,20 +167,20 @@ Disturbed & Proposed & 2.3099 & 18.8802 & 0.3008 & 0.2707 \\
 Regime & Comparison & Wins--Losses--Ties & Wilcoxon $p$ & Median improvement \\
 \midrule
 Outlier & Proposed vs LS & 521--70--9 & $2.35\times 10^{-77}$ & 0.7637 \\
+Outlier & Proposed vs GNC-GM & 385--134--81 & $6.16\times 10^{-33}$ & 0.0953 \\
 Outlier & Proposed vs RANSAC & 93--86--421 & 0.0357 & 0.0000 \\
-Outlier & Proposed vs PSO & 345--255--0 & $4.70\times 10^{-4}$ & 0.0248 \\
 \midrule
 Mixed & Proposed vs LS & 411--169--20 & $2.39\times 10^{-42}$ & 0.3258 \\
+Mixed & Proposed vs GNC-GM & 293--161--146 & $2.32\times 10^{-14}$ & 0.0000 \\
 Mixed & Proposed vs RANSAC & 78--107--415 & 0.9992 & 0.0000 \\
-Mixed & Proposed vs PSO & 410--190--0 & $5.11\times 10^{-23}$ & 0.1058 \\
 \midrule
 Pose uncertainty & Proposed vs LS & 394--189--17 & $1.21\times 10^{-32}$ & 0.0680 \\
+Pose uncertainty & Proposed vs GNC-GM & 262--195--143 & $5.06\times 10^{-6}$ & 0.0000 \\
 Pose uncertainty & Proposed vs RANSAC & 127--114--359 & 0.1933 & 0.0000 \\
-Pose uncertainty & Proposed vs PSO & 382--218--0 & $3.07\times 10^{-13}$ & 0.0708 \\
 \midrule
 Heterogeneous bias & Proposed vs LS & 338--240--22 & $2.33\times 10^{-13}$ & 0.0025 \\
+Heterogeneous bias & Proposed vs GNC-GM & 184--196--220 & 0.2640 & 0.0000 \\
 Heterogeneous bias & Proposed vs RANSAC & 136--150--314 & 0.8396 & 0.0000 \\
-Heterogeneous bias & Proposed vs PSO & 384--216--0 & $1.74\times 10^{-11}$ & 0.0631 \\
 \bottomrule
 \end{tabular}
 }
@@ -188,3 +189,21 @@ Heterogeneous bias & Proposed vs PSO & 384--216--0 & $1.74\times 10^{-11}$ & 0.0
 \section{Threats to Validity}
 
 The most important construct-validity threat is that corrupted bearings are represented by parameterized stochastic models rather than by an onboard sensor stack. The pseudo-physical and PyBullet replay layers reduce this gap, but they do not remove it. The most important internal-validity threat is that the screening module remains an engineered score with fixed coefficients, although the exact $\pm20\%$ perturbation study shows that its behavior is not tied to one brittle weight vector. The most important external-validity threat is that the study remains planar and centralized. These limits define the current scope and motivate future extensions toward SITL, HITL, field-log replay, and full three-dimensional localization.
+
+\section{Sketch of a 3D Extension}
+
+The same front-end structure extends naturally to three-dimensional passive localization if each observer pose is represented as $s_i=[x_i,y_i,z_i]^T$ and the target state is represented as $p=[x,y,z]^T$. A compact measurement model is
+\begin{equation}
+\mathbf{z}_i=
+\begin{bmatrix}
+\psi_i\\
+\varphi_i
+\end{bmatrix}
+=
+\begin{bmatrix}
+\operatorname{atan2}(y-y_i,x-x_i)\\
+\operatorname{atan2}\!\left(z-z_i,\sqrt{(x-x_i)^2+(y-y_i)^2}\right)
+\end{bmatrix}
+\mathbf{b}_i+\boldsymbol{\epsilon}_i+\mathbf{o}_i,
+\end{equation}
+where $\psi_i$ and $\varphi_i$ denote azimuth and elevation, respectively. The 3D front end would keep the same two-stage logic: consensus-style seeding, trimmed robust refinement, and optional budget-aware screening, but the Jacobian and FIM terms would become $3\times 3$ objects and the observability score would need to reflect both horizontal and vertical geometry. A distributed V2V version would then decide whether to transmit full angle packets, compressed sufficient statistics, or only screened subsets.

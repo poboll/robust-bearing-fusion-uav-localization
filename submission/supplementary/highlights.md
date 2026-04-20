@@ -1,5 +1,4 @@
-- An uncertainty-aware passive-localization framework is proposed for unreliable bearing measurements.
-- The method couples robust geometric estimation with credibility-guided measurement selection.
-- The robust core sharply improves degraded-regime stability over least squares in outlier-rich and mixed settings.
-- The selection layer outperforms random, spread-based, and FIM-only subset policies under fixed sensing budgets.
-- The study provides a reproducible benchmark and an honest scope boundary for passive UAV sensing research.
+- A corruption-aware robust front end is developed for one-shot bearing-only localization with missing, biased, and grossly corrupted cues.
+- In strict synthetic tail-risk tests, the catastrophic failure rate drops sharply relative to least squares in outlier-rich and mixed-corruption regimes.
+- Under fixed subset budgets, adaptive screening improves over simpler residual-only, reliability-only, and geometry-only selection rules while preserving all-sensor fusion as the default.
+- The validation chain combines Monte Carlo analysis, public real-flight replay, pseudo-physical replay, and multi-vehicle PyBullet stress testing.

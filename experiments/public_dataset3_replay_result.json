@@ -1,0 +1,331 @@
+{
+  "meta": {
+    "source": "CenekAlbl/drone-tracking-datasets dataset3",
+    "reference_camera": 0,
+    "sample_count_requested": 450,
+    "camera_names": [
+      "gopro3",
+      "mate7",
+      "mate10",
+      "sony5n_1440x1080",
+      "sony5100",
+      "sonyG"
+    ],
+    "camera_positions_xy": [
+      [
+        44.535,
+        11.56253333
+      ],
+      [
+        4.3962,
+        -54.27346667
+      ],
+      [
+        -42.5242,
+        -21.00086667
+      ],
+      [
+        40.1912,
+        44.79053333
+      ],
+      [
+        -34.8458,
+        -44.00906667
+      ],
+      [
+        -11.7524,
+        62.93033333
+      ]
+    ],
+    "trajectory_length": 3305,
+    "trajectory_xy_bounds": {
+      "min": [
+        -8.334103920488747,
+        -34.364381293557294
+      ],
+      "max": [
+        86.9359393824831,
+        73.46312940800496
+      ]
+    },
+    "visibility_rates": {
+      "cam0": 0.9410479704797048,
+      "cam1": 0.41808617234468937,
+      "cam2": 0.6184317837585925,
+      "cam3": 0.44857706396167935,
+      "cam4": 0.6621693121693122,
+      "cam5": 0.46385327635327633
+    },
+    "retained_case_counts": {
+      "real_nominal": 257,
+      "real_disturbed": 279
+    },
+    "bearing_generation_note": "Bearings are replayed from surveyed observer positions and the public RTK target trajectory, while visibility masks and synchronization offsets come from the real multi-camera dataset; additional pose noise, bias, and outliers are injected to emulate passive-bearing front-end corruption.",
+    "thresholds_m": {
+      "ready": 20.0,
+      "extreme": 80.0
+    },
+    "regimes": {
+      "real_nominal": {
+        "noise_std": 0.01,
+        "common_bias": 0.01,
+        "sensor_bias_std": 0.008,
+        "outlier_rate": 0.04,
+        "outlier_scale": 0.18,
+        "pose_noise_std": 0.35,
+        "extra_time_jitter": 3.0
+      },
+      "real_disturbed": {
+        "noise_std": 0.018,
+        "common_bias": 0.02,
+        "sensor_bias_std": 0.015,
+        "outlier_rate": 0.1,
+        "outlier_scale": 0.35,
+        "pose_noise_std": 0.7,
+        "extra_time_jitter": 8.0
+      }
+    },
+    "num_cases_total": 536
+  },
+  "summary": {
+    "overall": {
+      "initial": {
+        "mean": 98.36190070407244,
+        "median": 42.08580157552152,
+        "p90": 166.2060559817466,
+        "p95": 314.13063046822003,
+        "ready_rate": 0.19776119402985073,
+        "degraded_rate": 0.5839552238805971,
+        "extreme_rate": 0.21828358208955223
+      },
+      "least_squares": {
+        "mean": 81.65313565519595,
+        "median": 33.792556864315245,
+        "p90": 102.26572783583188,
+        "p95": 288.68388580864917,
+        "ready_rate": 0.2537313432835821,
+        "degraded_rate": 0.6194029850746268,
+        "extreme_rate": 0.12686567164179105
+      },
+      "robust_huber": {
+        "mean": 88.08780373861067,
+        "median": 35.16298727714964,
+        "p90": 147.85725314131327,
+        "p95": 313.03767497964327,
+        "ready_rate": 0.25,
+        "degraded_rate": 0.5951492537313433,
+        "extreme_rate": 0.15485074626865672
+      },
+      "tukey_irls": {
+        "mean": 99.13569177769008,
+        "median": 42.68544275100419,
+        "p90": 165.7365865075298,
+        "p95": 314.0985601794864,
+        "ready_rate": 0.1791044776119403,
+        "degraded_rate": 0.6026119402985075,
+        "extreme_rate": 0.21828358208955223
+      },
+      "gnc_gm": {
+        "mean": 78.91779131965586,
+        "median": 33.756759578667165,
+        "p90": 92.20876421632912,
+        "p95": 282.5776738767311,
+        "ready_rate": 0.26492537313432835,
+        "degraded_rate": 0.625,
+        "extreme_rate": 0.11007462686567164
+      },
+      "ransac": {
+        "mean": 60.85582356749747,
+        "median": 34.914726679807195,
+        "p90": 80.10721958621461,
+        "p95": 109.45832415251077,
+        "ready_rate": 0.22201492537313433,
+        "degraded_rate": 0.6772388059701493,
+        "extreme_rate": 0.10074626865671642
+      },
+      "robust_bias_trimmed": {
+        "mean": 42.71582935129433,
+        "median": 36.10798291180878,
+        "p90": 70.64077319928768,
+        "p95": 90.26044748735875,
+        "ready_rate": 0.22761194029850745,
+        "degraded_rate": 0.6977611940298507,
+        "extreme_rate": 0.07462686567164178
+      }
+    },
+    "by_regime": {
+      "real_nominal": {
+        "initial": {
+          "mean": 89.395694780775,
+          "median": 42.08143839187008,
+          "p90": 178.84143435972635,
+          "p95": 313.43028432130956,
+          "ready_rate": 0.1867704280155642,
+          "degraded_rate": 0.5875486381322957,
+          "extreme_rate": 0.22568093385214008
+        },
+        "least_squares": {
+          "mean": 71.43247179686614,
+          "median": 32.17931709132809,
+          "p90": 110.39596853441275,
+          "p95": 241.78622679396273,
+          "ready_rate": 0.25680933852140075,
+          "degraded_rate": 0.6108949416342413,
+          "extreme_rate": 0.13229571984435798
+        },
+        "robust_huber": {
+          "mean": 78.83979540994683,
+          "median": 34.77655309500187,
+          "p90": 162.36962777844653,
+          "p95": 309.8019030460419,
+          "ready_rate": 0.24124513618677043,
+          "degraded_rate": 0.5953307392996109,
+          "extreme_rate": 0.16342412451361868
+        },
+        "tukey_irls": {
+          "mean": 90.34190635410567,
+          "median": 43.166171159708306,
+          "p90": 179.06154628028224,
+          "p95": 313.4046280903227,
+          "ready_rate": 0.16731517509727625,
+          "degraded_rate": 0.6070038910505837,
+          "extreme_rate": 0.22568093385214008
+        },
+        "gnc_gm": {
+          "mean": 67.15928442271054,
+          "median": 32.63260753657194,
+          "p90": 91.0450500319204,
+          "p95": 218.99951405885744,
+          "ready_rate": 0.2607003891050584,
+          "degraded_rate": 0.6264591439688716,
+          "extreme_rate": 0.11284046692607004
+        },
+        "ransac": {
+          "mean": 42.6834517159145,
+          "median": 32.85954695427576,
+          "p90": 75.60327965612663,
+          "p95": 102.99088603867168,
+          "ready_rate": 0.23346303501945526,
+          "degraded_rate": 0.6731517509727626,
+          "extreme_rate": 0.0933852140077821
+        },
+        "robust_bias_trimmed": {
+          "mean": 36.78391288783244,
+          "median": 34.66336737332895,
+          "p90": 66.12371343274114,
+          "p95": 78.89955631815852,
+          "ready_rate": 0.23346303501945526,
+          "degraded_rate": 0.715953307392996,
+          "extreme_rate": 0.05058365758754864
+        }
+      },
+      "real_disturbed": {
+        "initial": {
+          "mean": 106.6210939739199,
+          "median": 42.092210227432226,
+          "p90": 152.5058708308771,
+          "p95": 311.95537054496714,
+          "ready_rate": 0.2078853046594982,
+          "degraded_rate": 0.5806451612903226,
+          "extreme_rate": 0.2114695340501792
+        },
+        "least_squares": {
+          "mean": 91.06786903007321,
+          "median": 35.05407881477665,
+          "p90": 91.3798215383135,
+          "p95": 287.8497045630038,
+          "ready_rate": 0.25089605734767023,
+          "degraded_rate": 0.6272401433691757,
+          "extreme_rate": 0.12186379928315412
+        },
+        "robust_huber": {
+          "mean": 96.60657843562362,
+          "median": 35.583590763464095,
+          "p90": 126.20042331335156,
+          "p95": 311.38925577550583,
+          "ready_rate": 0.25806451612903225,
+          "degraded_rate": 0.5949820788530467,
+          "extreme_rate": 0.14695340501792115
+        },
+        "tukey_irls": {
+          "mean": 107.23606042952233,
+          "median": 42.569160022823866,
+          "p90": 152.5058708308771,
+          "p95": 312.26414873804976,
+          "ready_rate": 0.18996415770609318,
+          "degraded_rate": 0.5985663082437276,
+          "extreme_rate": 0.2114695340501792
+        },
+        "gnc_gm": {
+          "mean": 89.74910412436896,
+          "median": 34.446043434066524,
+          "p90": 92.19615675850386,
+          "p95": 283.9845929067191,
+          "ready_rate": 0.26881720430107525,
+          "degraded_rate": 0.6236559139784946,
+          "extreme_rate": 0.10752688172043011
+        },
+        "ransac": {
+          "mean": 77.59524853472621,
+          "median": 36.32140290965463,
+          "p90": 82.54412638831597,
+          "p95": 111.371398226309,
+          "ready_rate": 0.2114695340501792,
+          "degraded_rate": 0.6810035842293907,
+          "extreme_rate": 0.10752688172043011
+        },
+        "robust_bias_trimmed": {
+          "mean": 48.179996129465316,
+          "median": 36.88004514554032,
+          "p90": 77.28612129196786,
+          "p95": 105.28533348463755,
+          "ready_rate": 0.2222222222222222,
+          "degraded_rate": 0.6810035842293907,
+          "extreme_rate": 0.0967741935483871
+        }
+      }
+    },
+    "paired": {
+      "overall_proposed_vs_ls": {
+        "wins": 248,
+        "losses": 277,
+        "ties": 11,
+        "median_improvement": -0.0031893646009955035,
+        "mean_improvement": 38.937306303901615,
+        "sign_test_p_value": 0.221663945975705
+      },
+      "overall_proposed_vs_gnc": {
+        "wins": 157,
+        "losses": 191,
+        "ties": 188,
+        "median_improvement": 0.0,
+        "mean_improvement": 36.20196196836153,
+        "sign_test_p_value": 0.07674557973863473
+      },
+      "overall_proposed_vs_ransac": {
+        "wins": 176,
+        "losses": 179,
+        "ties": 181,
+        "median_improvement": 0.0,
+        "mean_improvement": 18.13999421620313,
+        "sign_test_p_value": 0.9154837777519929
+      },
+      "nominal_proposed_vs_ls": {
+        "wins": 121,
+        "losses": 131,
+        "ties": 5,
+        "median_improvement": -7.628035881168671e-05,
+        "mean_improvement": 34.64855890903371,
+        "sign_test_p_value": 0.570837567200976
+      },
+      "disturbed_proposed_vs_ls": {
+        "wins": 127,
+        "losses": 146,
+        "ties": 6,
+        "median_improvement": -0.006225031798034575,
+        "mean_improvement": 42.88787290060789,
+        "sign_test_p_value": 0.27594658076675066
+      }
+    }
+  }
+}

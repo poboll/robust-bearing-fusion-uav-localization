@@ -47,6 +47,7 @@ def run_formations(output_dir: str | Path = "experiments", seeds: list[int] | No
                 for key in [
                     "least_squares_error",
                     "robust_error",
+                    "gnc_gm_error",
                     "robust_bias_trimmed_error",
                     "pso_error",
                     "sa_error",

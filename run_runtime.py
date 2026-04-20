@@ -16,8 +16,10 @@ import numpy as np
 from passive_localization.config import MethodConfig, ScenarioConfig
 from passive_localization.geometry import geometric_initialization
 from passive_localization.robust import (
+    gnc_geman_mcclure_refine,
     least_squares_refine,
     pso_refine,
+    ransac_refine,
     robust_bias_trimmed_refine,
     robust_refine,
     simulated_annealing_refine,
@@ -80,6 +82,8 @@ def run_runtime(output_dir: str | Path = "experiments", repeats: int = 50, warmu
     methods = {
         "least_squares": lambda: least_squares_refine(initial, valid_sensors, valid_bearings, method_config),
         "robust_huber": lambda: robust_refine(initial, valid_sensors, valid_bearings, method_config),
+        "gnc_gm": lambda: gnc_geman_mcclure_refine(initial, valid_sensors, valid_bearings, method_config),
+        "ransac": lambda: ransac_refine(initial, valid_sensors, valid_bearings, method_config, seed=0),
         "robust_bias_trimmed": lambda: robust_bias_trimmed_refine(initial, valid_sensors, valid_bearings, method_config),
         "pso": lambda: pso_refine(initial, valid_sensors, valid_bearings, method_config, seed=0),
         "sa": lambda: simulated_annealing_refine(initial, valid_sensors, valid_bearings, method_config, seed=0),
