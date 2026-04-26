@@ -1,0 +1,21 @@
+\begin{table}[!htbp]
+\centering
+\caption{基于公开 \texttt{drone-tracking-datasets} 数据集构建的实测多视角重放 surrogate。其利用测绘观测者位置、实测跨相机同步、可见性掩码与 RTK 目标轨迹。Least Squares 在 nominal replay 中取得最低中位数，GNC-GM 在 disturbed replay 中取得最低中位数，而本文前端在两类 replay 中都给出更小的上尾误差。}
+\label{tab:publicrealreplay}
+\small
+\begin{tabular}{llrrrr}
+\toprule
+场景 & 方法 & Median (m) & P95 (m) & Ready@20 m & Extreme@80 m \\
+\midrule
+Nominal Replay   & Least Squares & 32.1793 & 241.7862 & 0.2568 & 0.1323 \\
+Nominal Replay   & GNC-GM        & 32.6326 & 218.9995 & 0.2607 & 0.1128 \\
+Nominal Replay   & RANSAC        & 32.8595 & 102.9909 & 0.2335 & 0.0934 \\
+Nominal Replay   & 本文方法       & 34.6634 &  78.8996 & 0.2335 & 0.0506 \\
+\midrule
+Disturbed Replay & Least Squares & 35.0541 & 287.8497 & 0.2509 & 0.1219 \\
+Disturbed Replay & GNC-GM        & 34.4460 & 283.9846 & 0.2688 & 0.1075 \\
+Disturbed Replay & RANSAC        & 36.3214 & 111.3714 & 0.2115 & 0.1075 \\
+Disturbed Replay & 本文方法       & 36.8800 & 105.2853 & 0.2222 & 0.0968 \\
+\bottomrule
+\end{tabular}
+\end{table}

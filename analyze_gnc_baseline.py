@@ -1,4 +1,4 @@
-"""Summarize Robust-BT vs GNC-GM from replay or benchmark result files."""
+"""Summarize Proposed vs GNC-GM from replay or benchmark result files."""
 
 from __future__ import annotations
 

@@ -59,6 +59,27 @@ METHODS = {
 }
 
 
+def _cliffs_delta(left: np.ndarray, right: np.ndarray) -> float:
+    comparisons = np.subtract.outer(left, right)
+    gt = float(np.sum(comparisons > 0.0))
+    lt = float(np.sum(comparisons < 0.0))
+    denom = float(left.size * right.size)
+    if denom == 0.0:
+        return 0.0
+    return (gt - lt) / denom
+
+
+def _effect_label(delta: float) -> str:
+    magnitude = abs(delta)
+    if magnitude < 0.147:
+        return "negligible"
+    if magnitude < 0.33:
+        return "small"
+    if magnitude < 0.474:
+        return "medium"
+    return "large"
+
+
 def _paired_report(rows: list[dict], left: str, right: str) -> dict[str, float | int]:
     left_vals = np.asarray([row[left] for row in rows], dtype=float)
     right_vals = np.asarray([row[right] for row in rows], dtype=float)
@@ -66,6 +87,7 @@ def _paired_report(rows: list[dict], left: str, right: str) -> dict[str, float |
     wins = int(np.sum(diff > 1e-9))
     losses = int(np.sum(diff < -1e-9))
     ties = int(diff.size - wins - losses)
+    cliffs_delta = _cliffs_delta(right_vals, left_vals)
     try:
         _, p_value = wilcoxon(diff, alternative="greater", zero_method="wilcox", method="auto")
     except ValueError:
@@ -84,6 +106,8 @@ def _paired_report(rows: list[dict], left: str, right: str) -> dict[str, float |
         "baseline_p95": float(np.percentile(right_vals, 95)),
         "proposed_p99": float(np.percentile(left_vals, 99)),
         "baseline_p99": float(np.percentile(right_vals, 99)),
+        "cliffs_delta": float(cliffs_delta),
+        "effect_size": _effect_label(cliffs_delta),
     }
 
 

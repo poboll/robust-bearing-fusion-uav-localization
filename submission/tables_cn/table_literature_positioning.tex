@@ -1,0 +1,18 @@
+\begin{table}[!htbp]
+\centering
+\caption{本文与代表性近年文献簇之间的定位关系。}
+\label{tab:litposition}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.02}
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.18\linewidth}>{\RaggedRight\arraybackslash}p{0.25\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}X}
+\toprule
+主题 & 代表性文献 & 主要关注点 & 与本文的差异 \\
+\midrule
+集成导航与协同定位 & \cite{yang2020tightly,dai2022uav,yang2024distributed,qian2025cooperative,li2025tcdrl} & 集成导航与协同状态估计 & 范围比当前周期 bearing 分诊更宽；受污染融合通常只是次要议题 \\
+纯方位几何与可观测性设计 & \cite{kang2024aoa,zou2024revisit,chen2025variable,dogancay2024bayesian,xing2025node} & 轨迹设计、节点选择与几何塑形 & 关注的是如何获得更优 bearing，而不是如何融合一组已经到达且受污染的 bearing \\
+动态无源定位与滤波 & \cite{chen2025error,luo2025dynamicbearing,yin2025dual,dou2025moving,wu2026bearing} & 时序滤波与动态无源定位 & 时间维估计占主导，可复用的单次前端鲁棒性通常不是首要目标 \\
+本文工作 & -- & 带可选预算筛选的单次鲁棒 bearing 融合 & 将离群点、混合污染、位姿不确定性与异构偏置统一纳入一个前端模块 \\
+\bottomrule
+\end{tabularx}
+\end{table}

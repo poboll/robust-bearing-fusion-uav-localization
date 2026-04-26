@@ -1,0 +1,24 @@
+\begin{table}[!htbp]
+\centering
+\caption{Deadline-aware measured-data replay built on the same surveyed geometry, measured visibility masks, and synchronization tables as Table~\ref{tab:publicrealreplay}, but with an additional cycle-level arrival filter that discards stale or late bearings before localization. The nominal deadline layer retains 152/257 windows with 2.78 on-time bearings on average, while the disturbed layer retains 75/279 windows with 1.97 on-time bearings on average. The proposed front end remains comparable in median accuracy and yields the smallest upper tail in both deadline regimes.}
+\label{tab:deadlinereplay}
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\small
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Regime & Method & Median (m) & P95 (m) & Ready@20 m & Extreme@80 m \\
+\midrule
+Nominal Deadline   & Least Squares & 32.8007 & 343.7387 & 0.2303 & 0.1316 \\
+Nominal Deadline   & GNC-GM        & 33.7005 & 332.0415 & 0.2500 & 0.1184 \\
+Nominal Deadline   & RANSAC        & 33.7950 & 139.6508 & 0.2500 & 0.1316 \\
+Nominal Deadline   & Proposed      & 33.9664 &  82.7327 & 0.2566 & 0.0592 \\
+\midrule
+Disturbed Deadline & Least Squares & 33.6946 & 121.6554 & 0.2933 & 0.0933 \\
+Disturbed Deadline & GNC-GM        & 33.8389 & 108.2326 & 0.2800 & 0.0667 \\
+Disturbed Deadline & RANSAC        & 36.5773 & 104.9651 & 0.2933 & 0.1200 \\
+Disturbed Deadline & Proposed      & 33.8389 &  86.0841 & 0.2800 & 0.0800 \\
+\bottomrule
+\end{tabular}
+\endgroup
+\end{table}

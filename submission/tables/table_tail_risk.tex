@@ -1,20 +1,20 @@
 \begin{table}[!htbp]
 \centering
-\caption{Paired tail-risk and significance summary in the two most demanding synthetic regimes. Positive $\Delta$ indicates lower error for the proposed front-end.}
+\caption{Paired tail-risk, significance, and effect-size summary in the two most demanding synthetic regimes. Positive $\Delta$ indicates lower error for the proposed front-end; positive Cliff's $\delta$ means the baseline error is larger than the proposed error more often than the reverse.}
 \label{tab:tailrisk}
 \small
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{llrrrrr}
+\begin{tabular}{llrrrrrr}
 \toprule
-Regime & Comparison & Wins--Losses--Ties & Wilcoxon $p$ & Median $\Delta$ & P95 Baseline / Proposed & P99 Baseline / Proposed \\
+Regime & Comparison & Wins--Losses--Ties & Wilcoxon $p$ & Median $\Delta$ & Cliff's $\delta$ & P95 Baseline / Proposed & P99 Baseline / Proposed \\
 \midrule
-Outlier & Proposed vs LS     & 521--70--9   & $2.35\times 10^{-77}$ & 0.7637 & 6.9637 / 1.7526 & 159.7861 / 3.8781 \\
-Outlier & Proposed vs GNC-GM & 385--134--81 & $6.16\times 10^{-33}$ & 0.0953 & 4.1850 / 1.7526 & 150.1139 / 3.8781 \\
-Outlier & Proposed vs RANSAC & 93--86--421  & 0.0357                & 0.0000 & 1.7049 / 1.7526 & 3.8781 / 3.8781 \\
+Outlier & Proposed vs LS     & 521--70--9   & $2.35\times 10^{-77}$ & 0.7637 & 0.656 (large) & 6.9637 / 1.7526 & 159.7861 / 3.8781 \\
+Outlier & Proposed vs GNC-GM & 385--134--81 & $6.16\times 10^{-33}$ & 0.0953 & 0.333 (medium) & 4.1850 / 1.7526 & 150.1139 / 3.8781 \\
+Outlier & Proposed vs RANSAC & 93--86--421  & 0.0357                & 0.0000 & -0.007 (negligible) & 1.7049 / 1.7526 & 3.8781 / 3.8781 \\
 \midrule
-Mixed   & Proposed vs LS     & 411--169--20 & $2.39\times 10^{-42}$ & 0.3258 & 5.5785 / 2.5071 & 76.1232 / 6.7965 \\
-Mixed   & Proposed vs GNC-GM & 293--161--146 & $2.32\times 10^{-14}$ & 0.0000 & 4.5027 / 2.5071 & 62.6256 / 6.7965 \\
-Mixed   & Proposed vs RANSAC & 78--107--415 & 0.9992                & 0.0000 & 2.3245 / 2.5071 & 6.4788 / 6.7965 \\
+Mixed   & Proposed vs LS     & 411--169--20 & $2.39\times 10^{-42}$ & 0.3258 & 0.403 (medium) & 5.5785 / 2.5071 & 76.1232 / 6.7965 \\
+Mixed   & Proposed vs GNC-GM & 293--161--146 & $2.32\times 10^{-14}$ & 0.0000 & 0.133 (negligible) & 4.5027 / 2.5071 & 62.6256 / 6.7965 \\
+Mixed   & Proposed vs RANSAC & 78--107--415 & 0.9992                & 0.0000 & -0.007 (negligible) & 2.3245 / 2.5071 & 6.4788 / 6.7965 \\
 \bottomrule
 \end{tabular}}
 \end{table}

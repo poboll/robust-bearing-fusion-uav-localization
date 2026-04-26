@@ -774,10 +774,11 @@
 				}%
 			}%
 		}{
-		\fancypagestyle{plain}{
-		\renewcommand{\footrulewidth}{0.4pt}
-			\fancyhead{\null\vspace{8pt}}
-			\fancyfoot[L]{
+			\fancypagestyle{plain}{
+			\renewcommand{\headrulewidth}{0pt}
+			\renewcommand{\footrulewidth}{0.4pt}
+				\fancyhead{\null\vspace{8pt}}
+				\fancyfoot[L]{
 			\fontsize{8}{8}\selectfont
 			\ifthenelse{\equal{\@status}{submit}}{%
 				%
@@ -792,8 +793,8 @@
 			}
 			\fancyfoot[R]{
 			\fontsize{8}{8}\selectfont
-			{%
-			}{\url{https://doi.org/\@doinum}}}%
+			\ifthenelse{\equal{\@status}{submit}}{}{%
+			\url{https://doi.org/\@doinum}}}%
 		}
 	}
 }
@@ -968,15 +969,19 @@
 		\OR \equal{\@journal}{msf}
 		\OR \equal{\@journal}{psf}
 		\OR \equal{\@journal}{csmf}}{%
-			Published: \@datepublished\\\vspace{-16pt}
+			\ifthenelse{\equal{\@datepublished}{\@empty}}{}{%
+			Published: \@datepublished\\\vspace{-16pt}}
 			}{%
-			Received: \@datereceived\\
+			\ifthenelse{\equal{\@datereceived}{\@empty}}{}{%
+			Received: \@datereceived\\}
 			\ifthenelse{\equal{\@daterevised}{\@empty}}{%
 				}{%
 				Revised: \@daterevised\\%
 				}
-			Accepted: \@dateaccepted\\
-			Published: \@datepublished
+			\ifthenelse{\equal{\@dateaccepted}{\@empty}}{}{%
+			Accepted: \@dateaccepted\\}
+			\ifthenelse{\equal{\@datepublished}{\@empty}}{}{%
+			Published: \@datepublished}
 			\ifthenelse{\equal{\@datecorrected}{\@empty}}{%
 				}{%
 			\newline Corrected: \@datecorrected
@@ -1179,7 +1184,8 @@
 }
 %6
 \ifthenelse{\equal{\@addhighlights}{\@empty}}{}{
-	\noindent\textbf{Highlights\vspace{-6pt}\\}\addhighlights % redefined in .tex to use itemize
+	\vspace{12pt}
+	\noindent\textbf{Highlights\vspace{6pt}\\}\@addhighlights
 	\vspace{12pt}
 	\par
 }
@@ -1255,7 +1261,7 @@
 	\AfterEndPreamble{
 		\maketitle
 		\let\maketitle\relax
-		\ifthenelse{\equal{\@status}{submit}}{\linenumbers}{}
+		\ifthenelse{\equal{\@status}{submit}}{}{}
 		}%
 	}{
 	\AfterEndPreamble{
@@ -1263,7 +1269,7 @@
 		\let\maketitle\relax
 		\maketitlen
 		\let\maketitlen\relax
-		\ifthenelse{\equal{\@status}{submit}}{\linenumbers}{}
+		\ifthenelse{\equal{\@status}{submit}}{}{}
 		\abstractkeywords
 	}%
 }
@@ -1702,7 +1708,8 @@
       \isPreprints{}{%
         \rfoot{%
 	   \fontsize{8}{8}\selectfont%
-	  {\url{https://doi.org/\@doinum}}%
+	   \ifthenelse{\equal{\@status}{submit}}{}{%
+	  {\url{https://doi.org/\@doinum}}}%
      }
   }
 }
@@ -1789,8 +1796,6 @@
 		\ifthenelse{\equal{\@status}{submit}}{%
 		\fontdimen2\font=1.2pt
 			\raggedright\textbf{Copyright: }\copyright{} {\@ \the\year} by the \@authornum. %
-			Submitted to {\em\journalname} for possible open access publication under the terms and %
-                   conditions of the %
 			}{%
 			{\raggedright\textbf{Copyright:} \copyright \ {\@copyrightyear} by the \@authornum. %
                     \ifthenelse{\equal{\@societyowner}{}}{}{%

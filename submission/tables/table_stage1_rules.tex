@@ -1,0 +1,17 @@
+\begin{table}[!htbp]
+\centering
+\caption{Internal Stage-1 decision rules used by Algorithm~\ref{alg:frontend}. Here $\delta_H=0.08$ denotes the fixed Huber scale used throughout the reported experiments.}
+\label{tab:stagerules}
+\small
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.20\linewidth} >{\RaggedRight\arraybackslash}p{0.47\linewidth} >{\RaggedRight\arraybackslash}X}
+\toprule
+Rule & Quantitative trigger in the implementation & Purpose \\
+\midrule
+Coherence shortcut & $\operatorname{median}(|r_{\mathrm{LS}}|)\le 0.58\delta_H$, $\operatorname{MAD}(|r_{\mathrm{LS}}|)\le 0.32\delta_H$, $\operatorname{P90}(|r_{\mathrm{LS}}|)\le 1.65\delta_H$, and $\operatorname{mean}(|r_{\mathrm{LS}}|)\le 0.95\delta_H$ & Accept a low-cost smooth hypothesis directly when the current window already looks internally consistent. \\
+Bias activation & At least three active bearings and $\operatorname{std}(r_{\mathrm{active}})\le 1.8\delta_H$; otherwise the shared bias is forced to zero & Avoid fitting an unstable common bias when residuals are too dispersed. \\
+Severe residual flag & Trim $\lfloor 0.15N\rfloor$ largest residuals, then additionally flag any $|r_i|>\max(1.75\delta_H,Q_{0.78}(|r|))$, while always keeping at least three active bearings & Convert vague ``large residual'' wording into a reproducible rule for aggressive outlier suppression. \\
+Consensus rescue & Return the consensus candidate if the refined severe-residual fraction satisfies $\mathbb{E}[\mathbb{I}\{|r|>1.75\delta_H\}]\ge 0.12$, or the removed count is at least $\max(1,0.20N)$, or the refined point is more than $1.0$ away from the consensus point while the consensus residual is within $+0.03$ and either the removed count is at least $\max(2,0.25N)$ or $|b|\ge 0.08$ & Recover from heavy-tail windows in which the refined branch becomes suspicious despite a low nominal residual. \\
+Smooth rescue & Return the best smooth hypothesis if the refined branch removes at least $\max(2,0.22N)$ bearings, drifts more than $0.65$ from the smooth point, and fails to improve the residual by more than $0.010$; also rescue the smooth branch whenever the refined residual is within $+0.015$ of the smooth residual & Replace ambiguous phrases such as ``prunes too aggressively'' and ``not clearly better'' with explicit thresholds. \\
+\bottomrule
+\end{tabularx}
+\end{table}

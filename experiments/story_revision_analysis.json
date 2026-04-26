@@ -1269,7 +1269,9 @@
         "proposed_p95": 1.7526052035905986,
         "baseline_p95": 6.9636792641997305,
         "proposed_p99": 3.8780694090780417,
-        "baseline_p99": 159.78610074569985
+        "baseline_p99": 159.78610074569985,
+        "cliffs_delta": 0.6558416666666667,
+        "effect_size": "large"
       },
       "proposed_vs_ransac": {
         "wins": 93,
@@ -1283,7 +1285,9 @@
         "proposed_p95": 1.7526052035905986,
         "baseline_p95": 1.7048881878562365,
         "proposed_p99": 3.8780694090780417,
-        "baseline_p99": 3.8780694090780417
+        "baseline_p99": 3.8780694090780417,
+        "cliffs_delta": -0.006544444444444445,
+        "effect_size": "negligible"
       },
       "proposed_vs_gnc": {
         "wins": 385,
@@ -1297,7 +1301,9 @@
         "proposed_p95": 1.7526052035905986,
         "baseline_p95": 4.184998778002204,
         "proposed_p99": 3.8780694090780417,
-        "baseline_p99": 150.11390314563602
+        "baseline_p99": 150.11390314563602,
+        "cliffs_delta": 0.3328138888888889,
+        "effect_size": "medium"
       },
       "proposed_vs_pso": {
         "wins": 345,
@@ -1311,7 +1317,9 @@
         "proposed_p95": 1.7526052035905986,
         "baseline_p95": 3.642713853349579,
         "proposed_p99": 3.8780694090780417,
-        "baseline_p99": 663.2233918136759
+        "baseline_p99": 663.2233918136759,
+        "cliffs_delta": 0.08721666666666666,
+        "effect_size": "negligible"
       }
     },
     "mixed": {
@@ -1327,7 +1335,9 @@
         "proposed_p95": 2.5071183621795727,
         "baseline_p95": 5.578451437392927,
         "proposed_p99": 6.796505168237065,
-        "baseline_p99": 76.12316769573329
+        "baseline_p99": 76.12316769573329,
+        "cliffs_delta": 0.4027972222222222,
+        "effect_size": "medium"
       },
       "proposed_vs_ransac": {
         "wins": 78,
@@ -1341,7 +1351,9 @@
         "proposed_p95": 2.5071183621795727,
         "baseline_p95": 2.324468043548158,
         "proposed_p99": 6.796505168237065,
-        "baseline_p99": 6.478835589587437
+        "baseline_p99": 6.478835589587437,
+        "cliffs_delta": -0.006886111111111111,
+        "effect_size": "negligible"
       },
       "proposed_vs_gnc": {
         "wins": 293,
@@ -1355,7 +1367,9 @@
         "proposed_p95": 2.5071183621795727,
         "baseline_p95": 4.502726383362184,
         "proposed_p99": 6.796505168237065,
-        "baseline_p99": 62.62555695402839
+        "baseline_p99": 62.62555695402839,
+        "cliffs_delta": 0.13282777777777777,
+        "effect_size": "negligible"
       },
       "proposed_vs_pso": {
         "wins": 410,
@@ -1369,7 +1383,9 @@
         "proposed_p95": 2.5071183621795727,
         "baseline_p95": 4.156668382193624,
         "proposed_p99": 6.796505168237065,
-        "baseline_p99": 1334.801475371247
+        "baseline_p99": 1334.801475371247,
+        "cliffs_delta": 0.2378,
+        "effect_size": "small"
       }
     },
     "pose_uncertainty": {
@@ -1385,7 +1401,9 @@
         "proposed_p95": 1.553076996035502,
         "baseline_p95": 3.7918151090156544,
         "proposed_p99": 3.2049143560497724,
-        "baseline_p99": 27.378991982732522
+        "baseline_p99": 27.378991982732522,
+        "cliffs_delta": 0.31224722222222223,
+        "effect_size": "small"
       },
       "proposed_vs_ransac": {
         "wins": 127,
@@ -1399,7 +1417,9 @@
         "proposed_p95": 1.553076996035502,
         "baseline_p95": 1.5384897138284488,
         "proposed_p99": 3.2049143560497724,
-        "baseline_p99": 3.2049143560497724
+        "baseline_p99": 3.2049143560497724,
+        "cliffs_delta": 0.0018416666666666666,
+        "effect_size": "negligible"
       },
       "proposed_vs_gnc": {
         "wins": 262,
@@ -1413,7 +1433,9 @@
         "proposed_p95": 1.553076996035502,
         "baseline_p95": 2.1537658021665056,
         "proposed_p99": 3.2049143560497724,
-        "baseline_p99": 26.103988451865337
+        "baseline_p99": 26.103988451865337,
+        "cliffs_delta": 0.06966944444444445,
+        "effect_size": "negligible"
       },
       "proposed_vs_pso": {
         "wins": 382,
@@ -1427,7 +1449,9 @@
         "proposed_p95": 1.553076996035502,
         "baseline_p95": 2.1279729508335152,
         "proposed_p99": 3.2049143560497724,
-        "baseline_p99": 71.84994618094461
+        "baseline_p99": 71.84994618094461,
+        "cliffs_delta": 0.14660555555555554,
+        "effect_size": "negligible"
       }
     },
     "heterogeneous_bias": {
@@ -1443,7 +1467,9 @@
         "proposed_p95": 1.723438674636015,
         "baseline_p95": 2.521569528912565,
         "proposed_p99": 3.171377086983254,
-        "baseline_p99": 5.788913623382821
+        "baseline_p99": 5.788913623382821,
+        "cliffs_delta": 0.17051944444444445,
+        "effect_size": "small"
       },
       "proposed_vs_ransac": {
         "wins": 136,
@@ -1457,7 +1483,9 @@
         "proposed_p95": 1.723438674636015,
         "baseline_p95": 1.723959828574334,
         "proposed_p99": 3.171377086983254,
-        "baseline_p99": 3.7417341738265666
+        "baseline_p99": 3.7417341738265666,
+        "cliffs_delta": -0.004736111111111111,
+        "effect_size": "negligible"
       },
       "proposed_vs_gnc": {
         "wins": 184,
@@ -1471,7 +1499,9 @@
         "proposed_p95": 1.723438674636015,
         "baseline_p95": 1.8974372856794361,
         "proposed_p99": 3.171377086983254,
-        "baseline_p99": 3.4405403010520748
+        "baseline_p99": 3.4405403010520748,
+        "cliffs_delta": 0.009277777777777777,
+        "effect_size": "negligible"
       },
       "proposed_vs_pso": {
         "wins": 384,
@@ -1485,7 +1515,9 @@
         "proposed_p95": 1.723438674636015,
         "baseline_p95": 2.0771931627055142,
         "proposed_p99": 3.171377086983254,
-        "baseline_p99": 164.9923937694037
+        "baseline_p99": 164.9923937694037,
+        "cliffs_delta": 0.10849444444444445,
+        "effect_size": "negligible"
       }
     }
   },

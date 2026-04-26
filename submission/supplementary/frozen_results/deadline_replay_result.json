@@ -1,0 +1,439 @@
+{
+  "meta": {
+    "source": "CenekAlbl/drone-tracking-datasets dataset3 deadline replay",
+    "reference_camera": 0,
+    "sample_count_requested": 450,
+    "camera_names": [
+      "gopro3",
+      "mate7",
+      "mate10",
+      "sony5n_1440x1080",
+      "sony5100",
+      "sonyG"
+    ],
+    "camera_positions_xy": [
+      [
+        44.535,
+        11.56253333
+      ],
+      [
+        4.3962,
+        -54.27346667
+      ],
+      [
+        -42.5242,
+        -21.00086667
+      ],
+      [
+        40.1912,
+        44.79053333
+      ],
+      [
+        -34.8458,
+        -44.00906667
+      ],
+      [
+        -11.7524,
+        62.93033333
+      ]
+    ],
+    "trajectory_length": 3305,
+    "trajectory_xy_bounds": {
+      "min": [
+        -8.334103920488747,
+        -34.364381293557294
+      ],
+      "max": [
+        86.9359393824831,
+        73.46312940800496
+      ]
+    },
+    "visibility_rates": {
+      "cam0": 0.9410479704797048,
+      "cam1": 0.41808617234468937,
+      "cam2": 0.6184317837585925,
+      "cam3": 0.44857706396167935,
+      "cam4": 0.6621693121693122,
+      "cam5": 0.46385327635327633
+    },
+    "retained_case_counts": {
+      "deadline_nominal": 152,
+      "deadline_disturbed": 75
+    },
+    "bearing_generation_note": "Bearings are first replayed from surveyed observer positions, the public RTK target trajectory, and measured multi-camera visibility and synchronization. A second deadline-replay filter then drops bearings that become stale, miss the front-end deadline, or are lost by simulated link drop.",
+    "deadline_regimes": {
+      "deadline_nominal": {
+        "base_regime": {
+          "noise_std": 0.01,
+          "common_bias": 0.01,
+          "sensor_bias_std": 0.008,
+          "outlier_rate": 0.04,
+          "outlier_scale": 0.18,
+          "pose_noise_std": 0.35,
+          "extra_time_jitter": 3.0
+        },
+        "front_end_deadline_ms": 170.0,
+        "processing_guard_ms": 28.0,
+        "network_latency_mean_ms": 16.0,
+        "network_latency_std_ms": 5.0,
+        "queue_burst_ms": 7.0,
+        "packet_drop_rate": 0.02,
+        "max_measurement_age_ms": 125.0,
+        "age_jitter_ms": 3.0,
+        "frame_rate_hz": 30.0
+      },
+      "deadline_disturbed": {
+        "base_regime": {
+          "noise_std": 0.018,
+          "common_bias": 0.02,
+          "sensor_bias_std": 0.015,
+          "outlier_rate": 0.1,
+          "outlier_scale": 0.35,
+          "pose_noise_std": 0.7,
+          "extra_time_jitter": 8.0
+        },
+        "front_end_deadline_ms": 300.0,
+        "processing_guard_ms": 40.0,
+        "network_latency_mean_ms": 28.0,
+        "network_latency_std_ms": 10.0,
+        "queue_burst_ms": 14.0,
+        "packet_drop_rate": 0.055,
+        "max_measurement_age_ms": 240.0,
+        "age_jitter_ms": 6.0,
+        "frame_rate_hz": 30.0
+      }
+    },
+    "deadline_summary": {
+      "overall": {
+        "total_cases": 536,
+        "retained_cases": 227,
+        "retention_rate": 0.42350746268656714,
+        "mean_original_valid": 3.667910447761194,
+        "mean_on_time": 2.360074626865672,
+        "mean_on_time_ratio": 0.6425995024875621,
+        "mean_late_ratio": 0.3269589552238806,
+        "mean_packet_drop_ratio": 0.030441542288557222,
+        "mean_arrival_ms": 185.74448480716634,
+        "mean_sync_age_ms": 153.3378481548852,
+        "usable_budget_ms": 142.0
+      },
+      "by_regime": {
+        "deadline_nominal": {
+          "total_cases": 257,
+          "retained_cases": 152,
+          "retention_rate": 0.5914396887159533,
+          "mean_original_valid": 3.6809338521400776,
+          "mean_on_time": 2.7782101167315174,
+          "mean_on_time_ratio": 0.7514267185473411,
+          "mean_late_ratio": 0.2348249027237354,
+          "mean_packet_drop_ratio": 0.013748378728923476,
+          "mean_arrival_ms": 104.92069029595056,
+          "mean_sync_age_ms": 82.04323736659836,
+          "usable_budget_ms": 142.0
+        },
+        "deadline_disturbed": {
+          "total_cases": 279,
+          "retained_cases": 75,
+          "retention_rate": 0.26881720430107525,
+          "mean_original_valid": 3.6559139784946235,
+          "mean_on_time": 1.974910394265233,
+          "mean_on_time_ratio": 0.5423536439665472,
+          "mean_late_ratio": 0.41182795698924735,
+          "mean_packet_drop_ratio": 0.045818399044205496,
+          "mean_arrival_ms": 260.195076883806,
+          "mean_sync_age_ms": 219.01066167671212,
+          "usable_budget_ms": 260.0
+        }
+      }
+    },
+    "thresholds_m": {
+      "ready": 20.0,
+      "extreme": 80.0
+    },
+    "num_cases_total": 227
+  },
+  "summary": {
+    "overall": {
+      "initial": {
+        "mean": 91.39893049493882,
+        "median": 43.513907037610686,
+        "p90": 161.5677428153511,
+        "p95": 311.20126461022323,
+        "ready_rate": 0.1894273127753304,
+        "degraded_rate": 0.6035242290748899,
+        "extreme_rate": 0.20704845814977973
+      },
+      "least_squares": {
+        "mean": 78.31813845014567,
+        "median": 33.28266842901769,
+        "p90": 103.5245005682935,
+        "p95": 282.9010384558383,
+        "ready_rate": 0.2511013215859031,
+        "degraded_rate": 0.6299559471365639,
+        "extreme_rate": 0.11894273127753303
+      },
+      "robust_huber": {
+        "mean": 83.22461837955902,
+        "median": 34.34742769020146,
+        "p90": 146.39055698703572,
+        "p95": 306.60257363526847,
+        "ready_rate": 0.2555066079295154,
+        "degraded_rate": 0.5991189427312775,
+        "extreme_rate": 0.14537444933920704
+      },
+      "tukey_irls": {
+        "mean": 91.7593463326373,
+        "median": 41.506875856043436,
+        "p90": 160.06016704928203,
+        "p95": 311.20126461022323,
+        "ready_rate": 0.1762114537444934,
+        "degraded_rate": 0.6299559471365639,
+        "extreme_rate": 0.19383259911894274
+      },
+      "gnc_gm": {
+        "mean": 75.13063232331741,
+        "median": 33.83886470446763,
+        "p90": 80.6265652432697,
+        "p95": 279.4493286900755,
+        "ready_rate": 0.2599118942731278,
+        "degraded_rate": 0.6387665198237885,
+        "extreme_rate": 0.1013215859030837
+      },
+      "ransac": {
+        "mean": 48.693453104548134,
+        "median": 34.31370456355414,
+        "p90": 85.57716319777693,
+        "p95": 140.5419788183395,
+        "ready_rate": 0.2643171806167401,
+        "degraded_rate": 0.6079295154185022,
+        "extreme_rate": 0.1277533039647577
+      },
+      "robust_bias_trimmed": {
+        "mean": 37.908476095709055,
+        "median": 33.83886470446763,
+        "p90": 69.43761905611288,
+        "p95": 84.17888752057792,
+        "ready_rate": 0.2643171806167401,
+        "degraded_rate": 0.6696035242290749,
+        "extreme_rate": 0.06607929515418502
+      }
+    },
+    "by_regime": {
+      "deadline_nominal": {
+        "initial": {
+          "mean": 100.98244827330794,
+          "median": 44.2754435645992,
+          "p90": 201.66587047502355,
+          "p95": 371.9834180664864,
+          "ready_rate": 0.17105263157894737,
+          "degraded_rate": 0.5986842105263158,
+          "extreme_rate": 0.23026315789473684
+        },
+        "least_squares": {
+          "mean": 86.77749927979144,
+          "median": 32.80071034311034,
+          "p90": 135.14690201550766,
+          "p95": 343.73872688189584,
+          "ready_rate": 0.23026315789473684,
+          "degraded_rate": 0.6381578947368421,
+          "extreme_rate": 0.13157894736842105
+        },
+        "robust_huber": {
+          "mean": 91.69199998073499,
+          "median": 32.08651312923111,
+          "p90": 189.1647673254165,
+          "p95": 370.08374848623095,
+          "ready_rate": 0.24342105263157895,
+          "degraded_rate": 0.5921052631578947,
+          "extreme_rate": 0.16447368421052633
+        },
+        "tukey_irls": {
+          "mean": 101.2579937749885,
+          "median": 43.38383410441621,
+          "p90": 201.71803907552152,
+          "p95": 372.1645811269076,
+          "ready_rate": 0.17105263157894737,
+          "degraded_rate": 0.611842105263158,
+          "extreme_rate": 0.21710526315789475
+        },
+        "gnc_gm": {
+          "mean": 82.70228685178654,
+          "median": 33.70045229541745,
+          "p90": 102.57176439424694,
+          "p95": 332.041467492494,
+          "ready_rate": 0.25,
+          "degraded_rate": 0.631578947368421,
+          "extreme_rate": 0.11842105263157894
+        },
+        "ransac": {
+          "mean": 49.844433780139674,
+          "median": 33.794994190976595,
+          "p90": 87.07560162309572,
+          "p95": 139.65083685498703,
+          "ready_rate": 0.25,
+          "degraded_rate": 0.618421052631579,
+          "extreme_rate": 0.13157894736842105
+        },
+        "robust_bias_trimmed": {
+          "mean": 36.93317222005102,
+          "median": 33.96639323319558,
+          "p90": 68.44298682609363,
+          "p95": 82.7326523941831,
+          "ready_rate": 0.2565789473684211,
+          "degraded_rate": 0.6842105263157895,
+          "extreme_rate": 0.05921052631578947
+        }
+      },
+      "deadline_disturbed": {
+        "initial": {
+          "mean": 71.97633446411074,
+          "median": 42.092210227432226,
+          "p90": 92.90085592542485,
+          "p95": 203.592958467396,
+          "ready_rate": 0.22666666666666666,
+          "degraded_rate": 0.6133333333333333,
+          "extreme_rate": 0.16
+        },
+        "least_squares": {
+          "mean": 61.17383383539686,
+          "median": 33.694628969843585,
+          "p90": 73.63014197769603,
+          "p95": 121.65537689389446,
+          "ready_rate": 0.29333333333333333,
+          "degraded_rate": 0.6133333333333333,
+          "extreme_rate": 0.09333333333333334
+        },
+        "robust_huber": {
+          "mean": 66.064058334509,
+          "median": 36.73756916218342,
+          "p90": 86.18707352664592,
+          "p95": 197.51624028595285,
+          "ready_rate": 0.28,
+          "degraded_rate": 0.6133333333333333,
+          "extreme_rate": 0.10666666666666667
+        },
+        "tukey_irls": {
+          "mean": 72.50875418280559,
+          "median": 38.52148043471347,
+          "p90": 92.90085592542485,
+          "p95": 203.8716304117097,
+          "ready_rate": 0.18666666666666668,
+          "degraded_rate": 0.6666666666666667,
+          "extreme_rate": 0.14666666666666667
+        },
+        "gnc_gm": {
+          "mean": 59.7854124789533,
+          "median": 33.83886470446763,
+          "p90": 68.65899911666692,
+          "p95": 108.23257056386603,
+          "ready_rate": 0.28,
+          "degraded_rate": 0.6533333333333333,
+          "extreme_rate": 0.06666666666666667
+        },
+        "ransac": {
+          "mean": 46.36079893534925,
+          "median": 36.57731793859966,
+          "p90": 82.88591126096006,
+          "p95": 104.96511599390611,
+          "ready_rate": 0.29333333333333333,
+          "degraded_rate": 0.5866666666666667,
+          "extreme_rate": 0.12
+        },
+        "robust_bias_trimmed": {
+          "mean": 39.88509195037603,
+          "median": 33.83886470446763,
+          "p90": 68.65899911666692,
+          "p95": 86.08406000462963,
+          "ready_rate": 0.28,
+          "degraded_rate": 0.64,
+          "extreme_rate": 0.08
+        }
+      }
+    },
+    "paired": {
+      "overall_proposed_vs_ls": {
+        "wins": 110,
+        "losses": 106,
+        "ties": 11,
+        "median_improvement": 0.0,
+        "mean_improvement": 40.40966235443661,
+        "sign_test_p_value": 0.8383158696331667
+      },
+      "overall_proposed_vs_gnc": {
+        "wins": 66,
+        "losses": 69,
+        "ties": 92,
+        "median_improvement": 0.0,
+        "mean_improvement": 37.22215622760835,
+        "sign_test_p_value": 0.8634152303019917
+      },
+      "overall_proposed_vs_ransac": {
+        "wins": 83,
+        "losses": 85,
+        "ties": 59,
+        "median_improvement": 0.0,
+        "mean_improvement": 10.784977008839068,
+        "sign_test_p_value": 0.9385334053887997
+      },
+      "nominal_proposed_vs_ls": {
+        "wins": 78,
+        "losses": 68,
+        "ties": 6,
+        "median_improvement": 0.0005141557066554725,
+        "mean_improvement": 49.84432705974043,
+        "sign_test_p_value": 0.45648223496512574
+      },
+      "disturbed_proposed_vs_ls": {
+        "wins": 32,
+        "losses": 38,
+        "ties": 5,
+        "median_improvement": -0.002925572887804151,
+        "mean_improvement": 21.28874188502083,
+        "sign_test_p_value": 0.5504125118224712
+      }
+    },
+    "availability": {
+      "overall": {
+        "total_cases": 536,
+        "retained_cases": 227,
+        "retention_rate": 0.42350746268656714,
+        "mean_original_valid": 3.667910447761194,
+        "mean_on_time": 2.360074626865672,
+        "mean_on_time_ratio": 0.6425995024875621,
+        "mean_late_ratio": 0.3269589552238806,
+        "mean_packet_drop_ratio": 0.030441542288557222,
+        "mean_arrival_ms": 185.74448480716634,
+        "mean_sync_age_ms": 153.3378481548852,
+        "usable_budget_ms": 142.0
+      },
+      "by_regime": {
+        "deadline_nominal": {
+          "total_cases": 257,
+          "retained_cases": 152,
+          "retention_rate": 0.5914396887159533,
+          "mean_original_valid": 3.6809338521400776,
+          "mean_on_time": 2.7782101167315174,
+          "mean_on_time_ratio": 0.7514267185473411,
+          "mean_late_ratio": 0.2348249027237354,
+          "mean_packet_drop_ratio": 0.013748378728923476,
+          "mean_arrival_ms": 104.92069029595056,
+          "mean_sync_age_ms": 82.04323736659836,
+          "usable_budget_ms": 142.0
+        },
+        "deadline_disturbed": {
+          "total_cases": 279,
+          "retained_cases": 75,
+          "retention_rate": 0.26881720430107525,
+          "mean_original_valid": 3.6559139784946235,
+          "mean_on_time": 1.974910394265233,
+          "mean_on_time_ratio": 0.5423536439665472,
+          "mean_late_ratio": 0.41182795698924735,
+          "mean_packet_drop_ratio": 0.045818399044205496,
+          "mean_arrival_ms": 260.195076883806,
+          "mean_sync_age_ms": 219.01066167671212,
+          "usable_budget_ms": 260.0
+        }
+      }
+    }
+  }
+}

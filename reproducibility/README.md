@@ -16,7 +16,10 @@ This directory prepares the manuscript assets for an anonymized public release.
 /opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_pseudo_physical_validation.py
 /opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_pybullet_replay_validation.py
 /opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_story_revision_analysis.py
-/opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_screening_weight_grid.py
+/opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_screening_weight_sensitivity.py
+/opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_ransac_incremental_ablation.py
+/opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_public_dataset3_replay_validation.py
+/opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_deadline_replay_validation.py
 /opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python run_tracking_proxy.py
 /opt/homebrew/Caskroom/miniconda/base/envs/uu/bin/python plot_results.py
 ```

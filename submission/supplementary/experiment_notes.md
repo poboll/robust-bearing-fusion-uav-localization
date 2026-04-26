@@ -2,12 +2,13 @@
 
 ## Freeze Date
 
-April 18, 2026
+April 25, 2026
 
-## Execution Command
+## Execution Commands
 
 ```bash
 PYTHONPATH=src /opt/homebrew/Caskroom/miniconda/base/bin/python3 run_all_experiments.py
+PYTHONPATH=src /opt/homebrew/Caskroom/miniconda/base/bin/python3 run_deadline_replay_validation.py
 ```
 
 ## What This Pipeline Does
@@ -17,9 +18,10 @@ PYTHONPATH=src /opt/homebrew/Caskroom/miniconda/base/bin/python3 run_all_experim
 3. Reruns sensor-count scaling experiments for circular and random formations.
 4. Recomputes paired sign-test style statistical summaries for key regime comparisons.
 5. Recomputes oracle observability metrics for interpretation of geometry effects.
-2. Rebuilds `experiments/*.json` and `experiments/figure_*.png`.
-3. Copies the latest figures into `submission/figures/`.
-4. Archives the JSON outputs used in the manuscript tables into `submission/supplementary/frozen_results/`.
+6. Rebuilds the measured-data replay, pseudo-physical replay, and PyBullet-facing figures under `experiments/` and mirrors them into `submission/figures/`.
+7. Runs the deadline-aware replay validation, which starts from the measured-data replay windows and applies cycle-level arrival, staleness, packet-loss, and deadline filtering before localization.
+8. Archives the JSON outputs used in the manuscript tables and figures into `submission/supplementary/frozen_results/`.
+9. Packages the curated result-data subset as `submission/supplementary/result_data_bundle.zip` for portals that request a dataset-style upload separate from the full software archive.
 
 ## Runtime Measurement Policy
 
@@ -29,30 +31,25 @@ PYTHONPATH=src /opt/homebrew/Caskroom/miniconda/base/bin/python3 run_all_experim
 
 ## Seed Policy
 
-- Core ablation, formation, and significance analyses use 20 random seeds.
-- Sensitivity and scaling analyses also use 20 random seeds so that the supplementary evidence matches the main-study statistical scale.
+- The main story benchmark uses 3000 Monte Carlo cases across five corruption regimes and three formation families.
+- The fixed-budget screening benchmark uses 2285 retained cases across mixed and severe regimes.
+- The RANSAC-family incremental ablation uses 717 retained mixed-corruption cases.
+- The measured-data replay and deadline-aware replay layers retain 536 and 227 windows, respectively.
+- The PyBullet replay layer contains 1103 replayed localization cycles.
 
 ## Frozen Result Highlights
 
-- Outlier regime median: least squares `1.6290` vs robust bias-trimmed `0.3863`
-- Mixed regime median: least squares `1.4863` vs robust bias-trimmed `0.6779`
-- Random formation median: least squares `2.1047` vs robust bias-trimmed `0.5768`
-- Runtime median: robust bias-trimmed `18.9879 ms` vs PSO `18.9073 ms`
-- Outlier-rate sweep at `0.40`: least squares `1.9923` vs robust bias-trimmed `0.9189`
-- Noise sweep at `0.08`: least squares `1.6024` vs robust bias-trimmed `0.9916`
-- Circular 12-UAV scaling: least squares `2.3359` vs robust bias-trimmed `0.4048`
-- Outlier paired sign test vs least squares: `17` wins, `3` losses, `p=0.0026`
-- Observability isotropy median: `0.6938` for circle vs `0.3358` for random formation
+- Outlier-regime median: least squares `1.1186` vs proposed `0.2108`
+- Mixed-regime median: least squares `1.0015` vs proposed `0.4346`
+- Strict `0.2R` catastrophic-failure rate: outlier `0.2933 -> 0.0400`, mixed `0.2733 -> 0.0683` for least squares vs proposed
+- RANSAC-family incremental ablation: `P95 = 2.4951` for Pure RANSAC, `2.2843` for RANSAC+LM, and `2.2740` for the proposed full pipeline
+- Fixed-budget screening: all-sensor robust median `0.4981`, adaptive screening median `0.5518`
+- Screening-weight sensitivity: default median `0.5586`, pooled 5--95% interval `0.5479--0.5742`, median Jaccard overlap `0.9685`
+- Measured-data replay: proposed `P95 = 78.8996 m` in nominal replay and `105.2853 m` in disturbed replay
+- Deadline-aware replay retained windows: `227 / 536`; proposed `P95 = 82.7327 m` in nominal deadline replay and `86.0841 m` in disturbed deadline replay
+- PyBullet replay: proposed overall median `2.0611`, disturbed-replay `P90 = 18.1859`
+- Runtime median: proposed `23.8160 ms`, least squares `1.3987 ms`, and RANSAC `2.6141 ms`
 
 ## Archived Files
 
-- `submission/supplementary/frozen_results/regime_comparison.json`
-- `submission/supplementary/frozen_results/ablation_result.json`
-- `submission/supplementary/frozen_results/ablation_summary.json`
-- `submission/supplementary/frozen_results/formation_result.json`
-- `submission/supplementary/frozen_results/sensitivity_result.json`
-- `submission/supplementary/frozen_results/scaling_result.json`
-- `submission/supplementary/frozen_results/significance_result.json`
-- `submission/supplementary/frozen_results/observability_result.json`
-- `submission/supplementary/frozen_results/runtime_result.json`
-- `submission/supplementary/frozen_results/manifest.json`
+The final frozen subset contains 26 experiment JSON files plus `manifest.json`. The manifest lists every archived file path and is the authoritative inventory for `submission/supplementary/result_data_bundle.zip`.

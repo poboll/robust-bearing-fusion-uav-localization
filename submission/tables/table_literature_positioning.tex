@@ -1,17 +1,18 @@
 \begin{table}[!htbp]
 \centering
-\caption{Positioning of the present study relative to representative recent literature clusters. The target gap is current-cycle corrupted-bearing fusion rather than integrated navigation, long-horizon geometry control, or full cooperative autonomy.}
+\caption{Study positioning against representative recent literature clusters.}
 \label{tab:litposition}
 \footnotesize
-\renewcommand{\arraystretch}{1.05}
-\begin{tabularx}{\linewidth}{p{2.2cm}p{3.0cm}p{3.0cm}X}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.02}
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.18\linewidth}>{\RaggedRight\arraybackslash}p{0.25\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}X}
 \toprule
 Theme & Representative references & Primary emphasis & Gap relative to this work \\
 \midrule
-Integrated navigation and cooperative localization & \cite{yang2020tightly,dai2022uav,yang2024distributed,qian2025cooperative,li2025tcdrl} & Cooperative state estimation and navigation-stack fusion & Usually broader than fixed-set bearing triage; corrupted current-cycle fusion is not the main object \\
-Bearing-only geometry and observability design & \cite{kang2024aoa,zou2024revisit,chen2025variable,dogancay2024bayesian,xing2025node} & FIM/CRLB trajectory design, node selection, and geometry shaping & Emphasizes how to create good measurements, not how to robustly fuse a corrupted set already received \\
-Dynamic passive localization and filtering & \cite{chen2025error,luo2025dynamicbearing,yin2025dual,dou2025moving,wu2026bearing} & Sequential filtering, error analysis, and dynamic passive localization & Typically focuses on temporal estimation rather than a reusable one-shot front end with optional budgeted screening \\
-This work & -- & Robust current-cycle bearing fusion with optional budget-aware screening & Targets outliers, mixed corruption, pose uncertainty, and heterogeneous bias under a single front-end interface \\
+Integrated navigation and cooperative localization & \cite{yang2020tightly,dai2022uav,yang2024distributed,qian2025cooperative,li2025tcdrl} & Integrated navigation and cooperative state estimation & Broader than current-cycle bearing triage; corrupted fusion is usually a secondary concern \\
+Bearing-only geometry and observability design & \cite{kang2024aoa,zou2024revisit,chen2025variable,dogancay2024bayesian,xing2025node} & Trajectory design, node selection, and geometry shaping & Focuses on how to acquire stronger bearings, not how to fuse a corrupted set that has already arrived \\
+Dynamic passive localization and filtering & \cite{chen2025error,luo2025dynamicbearing,yin2025dual,dou2025moving,wu2026bearing} & Sequential filtering and dynamic passive localization & Temporal estimation dominates; reusable one-shot front-end robustness is usually not the primary target \\
+This work & -- & Robust one-shot bearing fusion with optional budgeted screening & Targets outliers, mixed corruption, pose uncertainty, and heterogeneous bias in one front-end block \\
 \bottomrule
 \end{tabularx}
 \end{table}

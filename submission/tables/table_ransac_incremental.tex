@@ -1,0 +1,16 @@
+\begin{table}[!htbp]
+\centering
+\caption{Incremental RANSAC-family ablation in the mixed-corruption regime. The table separates the sampled consensus hypothesis, LM polishing on the consensus inliers, and the complete proposed front end.}
+\label{tab:ransacincremental}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Method & Median & Mean & P90 & P95 & Cat. $>0.2R$ \\
+\midrule
+Pure RANSAC & 0.5241 & 0.8195 & 1.4238 & 2.4951 & 0.0628 \\
+RANSAC + LM & 0.4233 & 0.7665 & 1.2817 & 2.2843 & 0.0628 \\
+Proposed full pipeline & 0.4267 & 0.7490 & 1.2889 & 2.2740 & 0.0614 \\
+\bottomrule
+\end{tabular}}
+\end{table}

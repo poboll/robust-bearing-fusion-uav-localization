@@ -1,0 +1,698 @@
+\documentclass[drones,article,submit,moreauthors]{Definitions/mdpi}
+
+\firstpage{1}
+\makeatletter
+\setcounter{page}{\@firstpage}
+\makeatother
+\pubvolume{1}
+\issuenum{1}
+\articlenumber{0}
+\pubyear{2026}
+\copyrightyear{2026}
+\datereceived{}
+\daterevised{}
+\dateaccepted{}
+\datepublished{}
+\setlength{\headheight}{20pt}
+\renewcommand{\leftcolDates}{\mbox{}}
+\renewcommand{\cright}{\mbox{}}
+\makeatletter
+\gdef\@arttype{}
+\makeatother
+\rfoot{}
+
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{newunicodechar}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Menlo}
+\setCJKmainfont[ItalicFont=PingFang SC,BoldFont=PingFang SC]{PingFang SC}
+\setCJKsansfont[ItalicFont=PingFang SC,BoldFont=PingFang SC]{PingFang SC}
+\setCJKmonofont{PingFang SC}
+\newunicodechar{‐}{-}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{tabularx}
+\makeatletter
+\providecommand{\theHALG@line}{\thealgorithm.\arabic{ALG@line}}
+\makeatother
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{2pt}
+
+\Title{面向多无人机无源感知的鲁棒单次纯方位定位前端}
+
+\Author{Zengye Su $^{1,*}$, Yudan Nie $^{1}$ and Zilu Zhou $^{2}$}
+\AuthorNames{Zengye Su, Yudan Nie and Zilu Zhou}
+
+\address{%
+$^{1}$ \quad School of Information Technology and Engineering, Guangzhou College of Commerce, Guangzhou 511363, China; szy@xs.gcc.edu.cn (Z.S.); nyd@xs.gcc.edu.cn (Y.N.) \\
+$^{2}$ \quad School of Modern Information Industry, Guangzhou College of Commerce, Guangzhou 511363, China}
+
+\corres{Correspondence: Zengye Su; szy@xs.gcc.edu.cn}
+\addhighlights{
+\textbf{主要发现是什么？}\\
+- 所提受污染感知鲁棒前端在离群点场景中将 $0.2R$ 严格灾难性失败率从 0.293 降到 0.040，在混合污染场景中从 0.273 降到 0.068。\\
+- 在 536 个实测数据重放窗口和 227 个 deadline 过滤窗口中，该方法能够反复压缩重放误差的上尾，尽管部分子集的最佳中位误差仍由更强基线保持。\\[2pt]
+\textbf{这些发现意味着什么？}\\
+- 对无源多无人机感知链路而言，该方法可以作为当前周期的鲁棒前端，在下游跟踪、交接和重规划之前先降低灾难性线索偏移。\\
+- 固定预算筛选是面向带宽或时延受限窗口的可选工程扩展；当全量 bearing 可用且一致性较高时，全量鲁棒融合仍然是默认路径。
+}
+
+\abstract{本文研究多无人机无源感知中的单次纯方位鲁棒定位问题，重点关注当前观测周期的角度集合存在缺失、偏置或粗大污染时的前端失稳。本文假设观测平台位姿由外部导航模块提供，方法上将共识风格几何初始化、修剪式迭代重加权 Levenberg--Marquardt 精化、条件共享偏置修正，以及面向时限受限窗口的可选固定预算筛选模块整合为一个鲁棒前端。3000 组蒙特卡洛结果表明：相较于最小二乘，离群点场景下 $0.2R$ 严格灾难性失败率由 0.293 降至 0.040，混合污染场景下由 0.273 降至 0.068；在 536 个实测多视角重放窗口和 227 个 deadline 过滤窗口中，该方法虽然并非所有子场景的中位误差冠军，但能够持续压缩 95 分位误差尾部。本文因此给出一条可复现的工程化基线，用于在受污染纯方位融合中抑制极端错误线索。}
+
+\keyword{纯方位定位；无源目标定位；鲁棒估计；固定预算筛选；多无人机感知；受污染测量}
+
+\begin{document}
+
+\section{引言}
+
+纯方位无源感知在多无人机任务中始终具有吸引力，因为它兼顾低可观测性、轻载荷和较低的外部依赖，在无法稳定获取主动测距或基础设施支撑时，仍然可能提供可用的目标线索 \cite{avola2024uav,liu2025survey,kramaric2025comprehensive,gao2023scalable,li2025bearing}。但在工程上，真正危险的问题往往不是几何稍差，而是当前单个定位周期内混入了少量坏 bearing。只要这些异常测量直接进入融合过程，就可能把目标估计推离本地有效区域，进而让下游搜索、跟踪或交接模块在错误区域内浪费整轮任务窗口。
+
+近年的无人机定位研究在系统层面发展很快。代表性方向包括紧耦合集成导航、分布式协同定位、因子图或测量平差建模、多条件约束融合，以及学习辅助的协同推断 \cite{yang2020tightly,dai2022uav,yang2024distributed,qian2025cooperative,li2025tcdrl,li2026formation,liu2026high,ding2026set,jia2024composite}。另一条研究线关注纯方位感知本身，包括基于 AOA 的编队定位、轨迹优化、可观测性增强、CRLB 驱动路径设计，以及无源节点选择 \cite{kang2024aoa,huang2025emcompat,xing2025node,zou2024revisit,chen2025variable,wang2025bio,dogancay2024bayesian}。这些工作仍留下一个当前周期的前端问题：当一组 bearing 已经产生，且其中一部分已经受污染时，前端应如何尽可能稳健地给出可消费的定位结果？
+
+这个问题并不简单。关于误差界、动态 bearing 处理、双无人机滤波、bearing-only 环绕控制、水下无源定位和分布式无源感知的最新研究都表明，受污染角度信息对最终定位质量具有主导影响 \cite{chen2025error,luo2025dynamicbearing,yin2025dual,dou2025moving,mei2024bearing,zong2025distributed,yu2025passive,wu2026bearing,zhou2026direct,liu2026sensing}。但现有应对路径往往是重新规划轨迹、重塑观测几何，或者交给更重的协同后端去平滑。它们都值得做，却没有解决一个前端层面的现实空白：在一轮感知周期之内，系统往往需要先拿到一个“现在就能用”的鲁棒答案，而不是等待新的轨迹、图优化或后端协同重新收敛。
+
+从无人机系统视角看，这个前端空白非常具体。实际无源感知中的 bearing 可能来自云台光电载荷、测向天线或轻量级角度感知模块，其输出天然受到视场、异步触发、位姿质量波动和链路上传预算的共同约束 \cite{chen2025research,peng2024trajectory,zhou2026target,zhang2026multi}。在低空快速转弯、阵风扰动或城市遮挡条件下，云台振动、瞬时非视距遮挡以及跨机延迟包，都可能让角度误差远离“小高斯”假设。若定位前端在少量坏 bearing 出现时就整体崩塌，下游规划器和跟踪器即便设计得再强，也无法从当前周期拿到可信 cue。本文因此把问题收缩为一个更诚实也更有应用价值的命题：在受污染 bearing 条件下，单次多观测者融合前端究竟还能恢复多少鲁棒性？
+
+另一个动机来自验证方式。大量定位论文要么强调几何优化，要么默认使用时序估计器，把坏测量在时间维度上摊平。这些方向当然重要，但并不能替代“当前周期先给一个稳健结果”的需求。与此同时，无人机自主系统的 sim-to-real 研究反复表明，即便只是姿态扰动、同步偏差和小延迟，若前端脆弱，也会给整条任务链带来明显退化 \cite{panerati2021learning,perezsegui2023bridging}。基于这一点，本文不把验证停留在静态蒙特卡洛，而是进一步加入基于实测轨迹与真实可见性的多视角重放 surrogate、deadline-aware 重放层、伪物理动态回放，以及 PyBullet 多机回放。
+
+本文研究的是\textbf{受污染测量下的平面单次多观测者 pure bearing-only localization}。其目标是无源感知系统内部的一个前端模块：Stage~1 负责在坏 bearing 进入当前窗口时抑制极端定位失败；Stage~2 则仅在预算受限或当前可信度异质性较高时，作为可选筛选模块被触发。
+
+围绕这个问题，本文有三个明确设计要求。第一，当前周期的一次性融合在少数 bearing 失真时仍要保持数值稳定，因为战术无人机系统常常来不及等待新的轨迹或完整图优化。第二，当通信、算力或时限预算迫使系统只能保留部分 bearing 时，筛选模块应被理解为条件触发的预算管理工具，而不是全量融合的普适替代。第三，验证层不能只停留在抽象静态几何，因为真正决定 cue 能否被下游消费的，是加入时间抖动、姿态扰动和导航误差后它是否仍然可用。本文后续的方法与实验链，正是围绕这三个要求展开。
+
+本文的主要贡献可概括为三点：
+\begin{itemize}
+\item 提出一个共识辅助的鲁棒纯方位估计器，将多起点几何初始化、修剪式迭代重加权精化、条件共享偏置修正与共识回退整合到统一前端内；
+\item 提出一个面向固定预算场景的可选工程筛选扩展，并用 residual-only、reliability-only、geometry-only、adaptive 等基线明确说明“何时该筛、何时不该筛”；
+\item 构建一条可复现实验链，覆盖 3000 组五种污染机制的蒙特卡洛基准、2285 组固定预算筛选实验、536 个实测多视角重放窗口、227 个 deadline 过滤窗口、720 组伪物理动态重放，以及 1103 个 PyBullet 多机重放窗口。
+\end{itemize}
+
+本文余下部分安排如下：第 2 节综述相关工作；第 3 节给出问题建模与适用边界；第 4 节介绍所提鲁棒估计与筛选框架；第 5 节说明实验协议；第 6 节报告结果；第 7 节讨论系统意义与局限；第 8 节给出结论。
+
+\section{相关工作}
+
+\subsection{纯方位与无源定位}
+
+纯方位与无源目标定位仍是无人机和分布式感知中的活跃方向，因为它支持低发射、低暴露的观测方式，并能够与多机协同编队自然结合 \cite{li2025bearing,kang2024aoa,huang2025emcompat,xing2025node}。近期研究主要围绕 D-optimality 或 Bayesian-FIM 轨迹规划 \cite{zou2024revisit,dogancay2024bayesian}、CRLB 驱动的变速路径设计 \cite{chen2025variable,peng2024trajectory}、包含偏置估计的可观测性增强 \cite{wang2025bio}，以及带有实验扰动处理的 bearing-only 控制 \cite{sui2024adaptive,dou2025moving} 展开。相似问题也出现在水下无源定位、宽带阵列定位、直接目标定位和其他域的无源源定位中 \cite{mei2024bearing,zong2025distributed,yu2025passive,wu2026bearing,zeng2026three,zhou2026direct,chen2025research}。这些工作共同说明：几何当然重要，但在真实系统里，受污染 bearing 常常比名义几何更能决定最终定位误差。
+
+\subsection{受污染角度测量下的鲁棒估计}
+
+越来越多文献承认 bearing 质量天然是异质的。无论是误差界研究、动态 bearing 角处理、多阵列似然处理，还是双无人机滤波，都表明在现实扰动下，不确定性处理的重要性至少不低于名义几何优化 \cite{chen2025error,luo2025dynamicbearing,hu2025cyclic,yin2025dual}。传统最小二乘对离群点、位姿误差和混合污染都过于脆弱，而通用随机搜索又往往计算代价高、可解释性差。因此，Huber 估计 \cite{huber1964robust}、redescending M-estimation \cite{beaton1974fitting}、RANSAC 共识筛选 \cite{fischler1981ransac}、阻尼 Gauss--Newton / Levenberg--Marquardt \cite{levenberg1944method,marquardt1963algorithm} 以及 GNC \cite{yang2020gnc} 都是自然的鲁棒参考。但在多无人机无源感知中，针对“固定一批 bearing 已经到达、当前窗口如何稳健融合”的显式前端封装仍然相对不足。
+
+\subsection{传感器选择、可观测性与预算感知感知}
+
+与本文第二阶段最相关的是节点选择与 budgeted sensing。无源节点选择、可观测性感知规划以及基于 FIM / CRLB 的轨迹设计都已经相对成熟 \cite{xing2025node,chen2025variable,wang2025bio,zou2024revisit,dogancay2024bayesian,peng2024trajectory}。系统层面，多无人机协同定位也通过因子图、分布式推断、相对定位和群体协同框架取得了明显进展 \cite{yang2020tightly,yang2024distributed,qian2025cooperative,li2025tcdrl,li2026formation,ding2026set,zhang2026multi}。本文瞄准的是这些系统框架中的前端测量分诊层：已经产生的一组 bearing 是否应全部融合，还是在预算受限或可信度差异很大时，只保留其中一部分。这个 framing 更接近前端测量分诊，而不是长时规划。
+
+\subsection{验证层缺口}
+
+另一个与投稿期刊强相关的缺口在于验证风格。越来越多无人机系统论文被期待从理想化静态几何，转向能体现时间、姿态和协同效应的验证链 \cite{panerati2021learning,perezsegui2023bridging}。尤其在面向 \textit{Drones} 这样的期刊时，审稿人往往会区分“一个泛化算法”与“一个真正面向 UAV sensing 的研究”，其关键不只是问题本身，更在于是否加入了多机轨迹、通信约束或部署形态的干扰。本文虽然仍然没有走到 SITL / HIL / 真机外场，但通过 measured-data replay、pseudo-physical replay 和 PyBullet multi-vehicle replay，把验证层向真实系统推进了一步。
+
+表~\ref{tab:litposition} 对本文与邻近研究的定位做了更紧凑的总结。本文试图填补的不是“集成导航”或“分布式协同估计”本身，而是当前周期前端行为问题：在已经到达的一组 bearing 中，若一部分是坏的，前端应该如何稳住。
+
+\input{../tables_cn/table_literature_positioning.tex}
+
+\section{问题建模}
+
+我们考虑单个定位周期内存在 $N$ 个观测平台。真实平面观测者位置记为
+\begin{equation}
+\bar{s}_i = [\bar{x}_i,\bar{y}_i]^T,\qquad i=1,\dots,N,
+\end{equation}
+目标位置记为
+\begin{equation}
+p = [x,y]^T.
+\end{equation}
+本文不假设前端自身完成平台导航，而是假设其接收来自外部导航模块的位姿输入
+\begin{equation}
+s_i = \bar{s}_i + n_{s,i},
+\end{equation}
+其中 $n_{s,i}$ 表示来自 VIO、INS、SLAM 等外部导航模块的位姿误差。这样做是为了明确本文范围：我们研究的是定位前端，而不是上游自定位模块本身。
+
+每个有效观测者贡献一条 bearing 测量：
+\begin{equation}
+\theta_i = \operatorname{atan2}(y-\bar{y}_i, x-\bar{x}_i) + b_c + b_i + \epsilon_i + o_i,
+\end{equation}
+其中 $b_c$ 表示共享坐标系级偏置，$b_i$ 表示传感器个体偏置，$\epsilon_i$ 是名义噪声，$o_i$ 则表示偶发粗大污染。测量还可能因为遮挡、检测失败或链路丢包而缺失。给定候选目标位置 $p$，前端利用报告位姿计算预测 bearing：
+\begin{equation}
+\hat{\theta}_i(p;s_i)=\operatorname{atan2}(y-y_i,x-x_i).
+\end{equation}
+对应的环绕残差为
+\begin{equation}
+r_i(p,b_c)=\operatorname{wrap}\!\left(\hat{\theta}_i(p;s_i)-\theta_i-b_c\right),
+\end{equation}
+其中 $\operatorname{wrap}(\cdot)$ 将角度映射到 $(-\pi,\pi]$。
+
+本文采用 one-shot、二维平面、集中式建模，并明确给出三个范围边界。第一，估计器仅使用当前周期信息，不是时序跟踪器，也不是分布式融合协议。第二，观测者位姿被当作输入，但基准实验中显式注入位姿不确定性。第三，几何假设是二维平面；本文面向同高度或高度差较小的局部场景，完整三维扩展留待后续工作。
+
+实验阈值均用编队半径 $R$ 归一化。在主蒙特卡洛实验中，$R=10$，因此 $0.1R$ 成功阈值对应绝对误差 $\leq 1.0$，而 $0.5R$ 灾难性失败对应绝对误差 $>5.0$。更严格的 $0.2R$ 边界被单独作为尾部风险诊断指标，而不是替代主文的成功/失败阈值。这样的设置既区分了“局部仍可用的 cue”和“已经明显误导系统的 cue”，也能暴露重尾行为。
+
+\subsection{运行约束模型}
+
+本文把测量筛选理解为对受限融合预算的工程响应，而不是“永远优于全量融合”的一般规律。令 $z_i\in\{0,1\}$ 表示 bearing $i$ 是否被上传或融合，则预算受限前端问题可写为
+\begin{equation}
+\sum_{i=1}^{N} z_i \leq k,\qquad 3 \leq k < N,
+\end{equation}
+其中 $k$ 表示当前周期内固定的通信、算力或时间预算。在工程上，它对应这样的情形：部分飞行器上传延迟过大、机载处理时间受限，或者前端在一轮定位周期内只能保留有限条 bearing 再传递给下游。一个典型例子是 10 机观测轮中，TDMA 风格上传窗口只能在当前定位周期内返回 5 到 6 条 bearing，因此本文实验把预算设在有效测量的约 55\%。由此，筛选模块真正需要回答的问题不是“筛选是否普遍优于全量鲁棒融合”，而是“当必须选子集时，能否比简单启发式更聪明地选”。
+
+\subsection{污染类型与适用边界}
+
+扩展后的基准实验区分了四类在实际中重要的误差来源。第一，\emph{离群点} 用于描述虚警检测、局部杂波或瞬时载荷故障带来的 gross corruption。第二，\emph{缺失观测} 用于表示遮挡、视场截断或通信中断。第三，\emph{共享或异构偏置} 则对应航向参考失配、平台坐标系误差或传感器个体方向偏差。第四，\emph{观测者位姿不确定性} 表示定位前端依赖上游导航模块，而导航误差会直接传播进当前定位周期。这些仍然是抽象化建模，但它们比单一各向同性噪声假设更贴近无人机感知链路。
+
+图~\ref{fig:passivescenario} 直观勾勒了本文关注的无源多无人机感知场景，图~\ref{fig:systempipeline} 则进一步固定了全文统一使用的算法边界。观测者位姿和 bearing cue 进入受污染感知前端，前端再把单周期目标线索输出给下游跟踪、交接和重规划模块。
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_passive_scenario}
+\caption{本文考虑的无源多无人机 bearing-only 定位场景。图中突出展示了局部遮挡、异步上报与受污染 line-of-bearing cue；定量假设仍以后续数学模型与图~\ref{fig:systempipeline} 所定义的系统边界为准。}
+\label{fig:passivescenario}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_system_pipeline}
+\caption{所提方法在无源多无人机感知链中的系统位置。本文聚焦于上游自定位与下游跟踪 / 交接 / 重规划之间的受污染感知前端。}
+\label{fig:systempipeline}
+\end{figure}
+
+\subsection{应用场景与用户痛点}
+
+第一个典型应用场景是电磁静默或低辐射协同观测，多架无人机在不依赖主动测距的情况下共同观察非合作目标 \cite{li2025bearing,huang2025emcompat}。在这种场景中，操作者真正的痛点不只是“全局可观测性是否足够”，而是少量坏 bearing 是否会把当前融合 cue 拖到错误区域，使下游确认载荷或拦截机在错误区域内搜索。也就是说，在讨论长期编队控制之前，先抑制单次灾难性失败本身就有价值。
+
+第二个应用场景是通信受限的群体 cueing。在很多实际系统里，不可能每架飞行器都以满速上传全部测量，尤其当边缘算力、带宽或同步预算有限时。这正是可选筛选模块的动机来源。这里的关键并不是宣称 subset selection 全面优于 all-sensor fusion，而是在“必须保留子集”的前提下，系统能否避免明显糟糕的分诊决策。
+
+第三个应用场景是退化导航与异步载荷运行。无源 bearing 往往来自视觉、云台或测向模块，它们的时间戳、航向参考和内部质量天然不完全一致。同时，来自 GNSS、VIO、INS 或 SLAM 的观测者位姿本身也不完美。位姿不确定性与 bearing 污染的耦合，正是最小二乘前端最容易失稳的地方。因此，本文聚焦的是一个前端恢复问题：在 tracker、planner 或人工操作者接收到线索之前，当前周期内到底还能从这组带污染的 bearing 中恢复出多少可靠信息。
+
+\input{../tables_cn/table_deployment_map.tex}
+
+表~\ref{tab:deploymain} 总结了为什么本文的污染类型划分并非纯粹抽象噪声菜单。每种场景都对应着多无人机无源感知中的一个现实问题：航向偏差下 cue 是否仍可用、受限上传时是否需要 subset triage、异步载荷与位姿漂移是否会拖垮当前估计，以及纯仿真研究是否至少在往更接近系统部署的验证链迈进。把这些对应关系写清楚，有助于让论文始终保持“前端 sensing problem with operational consequences”的主线，而不是变成一个抽象优化练习。
+
+\section{材料与方法}
+
+\subsection{框架概览}
+
+所提框架分为两个阶段。Stage~1 是鲁棒定位核心。它接收当前所有有效 bearing，生成多个候选目标假设，在修剪式迭代重加权估计下进行精化，并保留最终残差最小的候选。Stage~2 是可选模块。当系统只能融合或上传有限数量 bearing 时，它基于几何与残差可信度对当前集合做筛选；如果自适应门控认为当前集合足够一致，则直接绕过筛选，保留全量鲁棒融合。
+
+这种分解方式把定位明确看成一个工程前端问题。估计器位于导航 / 测角模块与下游规划或跟踪模块之间，设计目标不是“证明某个新优化器理论最优”，而是在当前感知周期内足够轻量、足够稳定，并且可被重复调用。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_frontend_flow}
+\caption{前端处理流程。全量鲁棒融合是默认路径；只有在通信限制或可信度离散度较高时，才激活可选筛选模块。}
+\label{fig:frontendflow}
+\end{figure}
+
+\subsection{共识辅助的鲁棒估计}
+
+\paragraph{几何候选生成。}
+对观测者 $i$，其 bearing 射线表示为
+\begin{equation}
+\ell_i(\tau_i)=s_i+\tau_i
+\begin{bmatrix}
+\cos\theta_i\\
+\sin\theta_i
+\end{bmatrix}.
+\end{equation}
+由两两射线交点形成初始候选池。实现中保留了多个共识风格代表点，包括质心、坐标中值和修剪质心。同时，还额外抽取一个 sampled-consensus prior，以保证在严重污染窗口下迭代精化开始前就存在明确的回退锚点。
+
+\paragraph{鲁棒目标函数与 Jacobian。}
+对活跃测量，估计器求解
+\begin{equation}
+\min_{p,b_c}\sum_{i=1}^{N} w_i\,\rho\!\left(r_i(p,b_c)\right),
+\end{equation}
+其中 $\rho(\cdot)$ 通过迭代重加权最小二乘实现，权重在每轮修剪大残差后更新。令
+\begin{equation}
+d_i^2=(x-x_i)^2+(y-y_i)^2.
+\end{equation}
+则目标位置的 bearing Jacobian 为
+\begin{equation}
+\mathbf{J}_i(p)=
+\begin{bmatrix}
+-\dfrac{y-y_i}{d_i^2} &
+\dfrac{x-x_i}{d_i^2}
+\end{bmatrix}.
+\end{equation}
+本文实现使用带阻尼的 Gauss--Newton / Levenberg--Marquardt 步，而不是有限差分梯度下降。当激活共享偏置修正时，记 $A_i=[\mathbf{J}_i\;\;-1]$，线性化更新满足
+\begin{equation}
+\Delta = -\left(A^TWA+\lambda I\right)^{-1}A^TWr,
+\end{equation}
+其中 $W$ 为当前鲁棒权重对角阵，$\lambda$ 为小阻尼项。
+
+\paragraph{修剪式迭代重加权精化。}
+鲁棒核心根据残差模式更新权重、修剪最大残差，再以数轮阻尼 Gauss--Newton 步精化估计。修剪之后使用 redescending downweighting，使重尾残差被更激进地抑制，而不是停留在普通 Huber IRLS 水平。共享偏置项仅在活跃残差足够集中时才更新；否则算法会主动退回零偏置，而不是强行对异构测量套用不稳定的共享修正。精化后，若残差尾部仍然过重，或修剪解相对共识假设发生了无明显收益的漂移，则保留共识回退结果。也就是说，Stage~1 不是单一 robustifier，而是把几何候选、修剪、重加权和共识救援压缩成一个紧凑鲁棒前端。
+
+\paragraph{算法总结。}
+Stage~1 的流程可以概括为：首先由两两交点生成候选池并提取共识代表点；然后额外构造 sampled-consensus fallback，使严重污染窗口也有初始锚点；接着对每个候选做数轮修剪式重加权 LM 精化，并在活跃残差足够集中时尝试共享偏置修正；最后保留鲁棒残差最小的候选，并在必要时退回共识结果。这个流程既足够紧凑，便于从代码库复现，又能覆盖受污染 bearing 集中最主要的几类失稳模式。
+
+\begin{algorithm}[!htbp]
+\caption{共识辅助鲁棒融合}
+\label{alg:frontend}
+\begin{algorithmic}
+\Require 报告位姿 $\{s_i\}_{i=1}^N$，当前有效 bearing $\{\theta_i\}_{i=1}^N$
+\Ensure 当前周期目标线索 $\hat{p}$
+\State 生成两两交点候选与若干共识汇总代表点
+\State 构造少量平滑候选以及一个共识回退初值
+\If{满足表~\ref{tab:stagerules}中的一致性捷径}
+    \State 返回残差最小的平滑候选
+\EndIf
+\ForAll{几何候选与共识候选}
+    \State 仅在满足表~\ref{tab:stagerules}中的偏置激活规则时启用共享偏置修正
+    \State 修剪大残差并更新 redescending 权重
+    \State 使用阻尼 Gauss--Newton / LM 步精化该候选
+\EndFor
+\State 保留最终鲁棒残差最小的候选
+\If{触发表~\ref{tab:stagerules}中的共识回退规则}
+    \State 返回共识候选
+\ElsIf{触发表~\ref{tab:stagerules}中的平滑回退规则}
+    \State 返回平滑候选
+\Else
+    \State 返回精化后的鲁棒候选
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\input{../tables_cn/table_stage1_rules.tex}
+
+\subsection{可信度自适应的测量筛选}
+
+Stage~2 从 Stage~1 给出的 pilot estimate 出发。前端先根据当前残差计算可靠性，再仅在固定预算窗口或自适应门控认为当前测量异质性过高时启用筛选。
+
+对于候选子集 $\mathcal{S}$，加权几何矩阵定义为
+\begin{equation}
+\mathbf{F}_{\mathcal{S}}=\sum_{i\in\mathcal{S}} w_i\,\mathbf{J}_i^T\mathbf{J}_i,
+\end{equation}
+对应的各向同性项为
+\begin{equation}
+\eta_{\mathcal{S}}=\frac{\lambda_{\min}(\mathbf{F}_{\mathcal{S}})}{\lambda_{\max}(\mathbf{F}_{\mathcal{S}})}.
+\end{equation}
+本文采用的归一化筛选得分写为
+\begin{equation}
+\operatorname{Score}(\mathcal{S})=
+0.34\,\phi_{\det}(\mathcal{S})
++0.18\,\eta_{\mathcal{S}}
++0.24\,\bar{w}_{\mathcal{S}}
++0.24\,\phi_{r}(\mathcal{S}),
+\end{equation}
+其中
+\begin{equation}
+\phi_{\det}(\mathcal{S}) = 1-\exp\!\left(-10^4\det(\mathbf{F}_{\mathcal{S}})\right),
+\qquad
+\phi_r(\mathcal{S}) = 1-\min\!\left(\frac{\bar{r}_{\mathcal{S}}}{0.25},1\right),
+\end{equation}
+$\bar{w}_{\mathcal{S}}$ 与 $\bar{r}_{\mathcal{S}}$ 分别表示子集上的平均可靠性和平均绝对残差。这个得分故意只保留四个归一化项，避免把多个强相关几何量堆叠在一起。
+
+两个几何项可以看作局部 FIM surrogate：$\phi_{\det}$ 近似归一化 D-optimality 指标，$\eta_{\mathcal{S}}$ 则近似归一化 E-optimality / isotropy 指标，它们都常见于可观测性感知轨迹与节点选择研究 \cite{zou2024revisit,dogancay2024bayesian,chen2025variable}。另外两个项则注入了当前周期的可信度信息，这是 geometry-only 规则无法覆盖的。
+
+理想化地看，筛选目标可写为
+\begin{equation}
+\mathcal{S}^{\star}=
+\arg\max_{|\mathcal{S}|=k}
+\Big[
+\alpha_1 \phi_{\det}(\mathcal{S})
++\alpha_2 \eta_{\mathcal{S}}
++\alpha_3 \bar{w}_{\mathcal{S}}
++\alpha_4 \phi_r(\mathcal{S})
+\Big],
+\end{equation}
+其中固定系数 $\alpha_1,\dots,\alpha_4$ 只在小规模验证集上确定一次，之后在本文所有实验中保持不变。实现上，该目标只在大小为 $m=\min(N,\max(k+2,8))$ 的 capped reliability-sorted pool 内进行搜索，使搜索规模在工程上保持可控。
+
+本文的策略是在 top-reliability 候选池中做小规模穷举。比较基线包括 random subset、angular-spread greedy、FIM-only greedy、residual-only top-$k$、reliability-only top-$k$，以及 all-sensor robust estimator。自适应策略在残差中位绝对偏差和可靠性离散度都较小时保留全量鲁棒融合；否则才激活筛选。换句话说，Stage~2 被设计成一个\textbf{条件性工具}，而不是一条默认必须执行的规则。第 6 节因此同时报告 score-term ablation 和显式的系数扰动实验，以避免用单一冻结权重向量来硬性证明 selector 的合理性。
+
+\begin{algorithm}[!htbp]
+\caption{自适应预算筛选}
+\label{alg:screening}
+\begin{algorithmic}
+\Require Pilot estimate $\hat{p}$、残差 $\{r_i\}$、可靠性 $\{w_i\}$、当前预算 $k$
+\Ensure 子集 $\mathcal{S}$ 或全量融合决策
+\State 计算当前窗口的残差离散度和可靠性离散度
+\If{窗口较为同质且当前允许全量融合}
+    \State 保留全部有效 bearing
+\Else
+    \State 按可靠性排序生成一个截断候选池
+    \State 枚举满足预算的子集
+    \State 使用几何、各向同性、可靠性和残差项对每个子集打分
+    \State 返回得分最高的子集
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Cue 可用性元数据。}
+除了坐标线索 $\hat{p}$ 之外，前端还向下游暴露三个轻量诊断量：残差中位绝对偏差、局部各向同性代理 $\eta$，以及修剪后活跃 bearing 比例。在部署中，这些量可以被组合为简单可用性分数，也可以直接交给 tracker 做 gating 或下权。它们并不是校准概率，而是工程化诊断，用来帮助下游区分“数值上有结果”与“几何很差或残差不一致”的线索。
+
+\subsection{复杂度与可复现性}
+
+几何候选生成依赖两两交点，因此复杂度为 $O(N^2)$。每次内层 Gauss--Newton 更新对活跃测量数线性，而外层重加权轮数由配置固定。筛选阶段的穷举搜索被限制在小规模高可靠性候选池内，因此实际代价受 $\binom{m}{k}$ 控制，而不是对全部传感器做全局穷举。误差放大也遵循相同几何逻辑：当有效信息矩阵病态时，小角度扰动会以大约 $1/\lambda_{\min}(\mathbf{F})$ 的比例放大为大位置误差。因此，前端同时监测 residual dispersion 与 isotropy，而不是只看几何或只看残差。
+
+在可复现性方面，所有实验复用统一 Python 接口，所有图均从冻结 JSON 结果生成，而不是手工编辑电子表格。本文本身试图贡献的不只是一个前端思路，也是一套可复用 benchmark baseline，因此附录中的基准矩阵、超参数表和补充结果也构成贡献的一部分。
+
+\subsection{实现细节与默认设置}
+
+实现默认参数包括：trim ratio 取 0.15，外层 reweighting 共 3 轮，Huber scale 为 0.08，Tukey cutoff 为 0.18，LM damping 为 $10^{-3}$。当残差中位绝对偏差低于 0.05 且可靠性离散度低于 0.12 时，自适应门控直接保留全量融合。四个筛选系数通过一个小规模验证 sweep 确定一次，随后固定，用作 budgeted geometry--credibility trade-off 的可操作 surrogate。固定预算筛选实验把预算设置为当前有效 bearing 的约 55\%，对应一个典型短 TDMA uplink window 中 10 个观测者只能有 5 到 6 个在一个定位周期内完成上传的情形。搜索本身也被限制在 capped top-reliability pool 中。所有这些设置都不会随不同 regime 重新调参，而是在扩展实验矩阵中统一使用。附录~\ref{app:hyperparams} 汇总了精确数值、工程含义以及被压力测试的实验层。
+
+During the preparation of this manuscript, ChatGPT was used exclusively for language polishing. All technical methodologies, numerical claims, and results were independently verified by the authors.
+
+\section{实验协议}
+
+\subsection{主蒙特卡洛基准}
+
+主 synthetic benchmark 共包含 3000 个 case。实验考察五类污染机制：clean、outlier、mixed、pose uncertainty 和 heterogeneous bias。每个 regime 在 200 个随机种子、三类编队几何（circle、random 与近退化窄弧布局）和 8 个观测者设置下运行。编队半径固定为 $R=10$，但目标位置不是固定在一个“方便坐标”，而是在编队覆盖区域中可复现地随机采样，以避免整个结论依赖单一名义几何。若把该归一化尺度映射到 100 m 观测半径，则本文中的 $0.1R$ 与 $0.5R$ 分别对应 10 m 与 50 m。
+
+在具体参数上，outlier regime 使用 0.28 的 outlier rate 和 0.42 的尺度；mixed regime 同时包含 $0.04$ 共享偏置、0.20 缺失率、0.22 离群率和 0.45 离群尺度；pose-uncertainty regime 对观测者位姿注入标准差 0.35 的噪声；heterogeneous-bias regime 则在小共享偏置基础上加入标准差 0.05 的传感器个体偏置。比较基线包括 nonlinear least squares、Huber IRLS、采用 Geman--McClure robustifier 的 GNC，以及 RANSAC。所提方法与这些基线使用相同的位姿输入与同一实验接口。主指标为 median、mean、P90、Success@0.1R 和 Cat.@0.5R，并额外报告更严格的 $0.2R$ 尾部失败率与 Bootstrap 95\% 中位数置信区间。
+
+\subsection{固定预算筛选基准}
+
+筛选基准共包含 2285 个有效 fixed-budget case，覆盖 mixed 与 severe 两种污染层、四类编队几何（circle、perturbed、random 和 near-degenerate），以及 8 / 10 / 12 个观测者设置。若污染后有效 bearing 少于 4 条，则该 case 被丢弃，因为此时 subset selection 已缺乏实际意义。预算被设为当前有效测量的约 55\%，并强制严格小于全量集合。用更直白的工程语言来说，这对应一个 10 机观测轮中只能在当前周期内保留 5 或 6 条 bearing 的情形。这个 benchmark 测试的是：在必须只保留子集时，geometry--reliability 策略是否优于 residual-only、reliability-only、geometry-only 或 random 等简单规则。
+
+\subsection{伪物理动态回放}
+
+为缩小静态几何与无人机动态之间的差距，本文引入 pseudo-physical replay 层。该回放器在当前融合周期评估前向 bearing 注入与运动相关的 delay、per-sensor bias、类似姿态抖动的扰动、缺失观测和离群点。40 个随机种子、3 种编队和 3 种群体规模组合成 720 组 mild / harsh 动态 case。它仍然属于仿真层，但比纯静态蒙特卡洛更接近飞行中的污染模式。
+
+\subsection{基于公开数据的实测轨迹重放}
+
+为让验证链包含 measured data source，本文使用 \texttt{drone-tracking-datasets} 中 dataset 3 构造 measured-data multi-view replay surrogate \cite{albl2020reconstruction}。该数据集提供了测绘后的观测者位置、人工多相机检测、跨相机同步参数以及 RTK 目标轨迹。本文并不把这些检测直接当作 onboard bearing measurement，而是利用实测轨迹、真实 visibility mask 和同步表，在真实多视角几何下重构当前周期角度 cue，再叠加合成 outlier、bias 与 pose perturbation 做前端压力测试。更具体地说，这一层中的真实输入是数据集给出的观测者测绘位置、可见性掩码、跨相机同步表以及 RTK 目标轨迹；每一条 replay bearing 都是在同步时间戳下，由观测者与目标的几何关系重新计算方位角得到，因此保留了真实几何与真实异步性，但不直接继承图像检测器自身的像素噪声。文中报告的离群点、偏置和位姿扰动，都是在 bearing 重建之后额外注入的压力测试项，用来保证污染机制可控且可复现，而不是把数据集原始标注误差与本文的 corruption model 混在一起。实验以 camera 0 为参考流，在全序列上抽取 450 个参考窗口，且只有在同步与可见性过滤后仍保留至少 3 个观察者时才保留当前窗口。
+
+该回放层包含 nominal 与 disturbed 两个 regime。Nominal regime 注入较轻的位姿不确定性、共享偏置、传感器偏置和低离群率；disturbed regime 则进一步提高位姿噪声、时间抖动和离群强度。最终得到 536 个有效 replay window。这个层的价值不在于宣称“等同于真实飞行试验”，而在于它比纯 synthetic 基准更接近实测目标运动、真实观测几何和真实异步可见性。
+
+\subsection{Deadline-aware 实测数据重放}
+
+为了让 measured-data replay 更像系统验证，本文在同一批 replay window 上再加入一层 deadline-aware 过滤：只有在当前融合周期内按时到达的 bearing 才允许进入估计器。具体做法是，每条有效 bearing 继承来自真实跨相机帧映射的同步 age，再叠加采样得到的链路与排队延迟。如果 bearing 在传输中丢失、超过 staleness budget，或在当前 front-end deadline 扣除 processing guard 后仍然迟到，则直接丢弃。
+
+Nominal deadline regime 使用 170 ms 的融合 deadline 与 28 ms 的 guard，因此可用预算为 142 ms；disturbed regime 使用 300 ms deadline 与 40 ms guard，因此可用预算为 260 ms。以原始 536 个 replay window 为起点，这个过滤层最终仅保留 227 个窗口，其中 nominal 为 152 / 257，disturbed 为 75 / 279；对应的平均 on-time bearing 数分别为 2.78 与 1.97，同时每一个被保留的窗口都满足估计器最少 3 条 bearing 的下限。该层测试的是一个更贴近系统的问题：当前周期只能融合“既可见又按时”的 bearing 时，前端还有多稳。
+
+\subsection{PyBullet 多机回放}
+
+为了进一步缩小静态几何与 UAV-like temporal disturbance 之间的差距，本文还基于 \texttt{gym-pybullet-drones} 生态构建了一个 multi-vehicle PyBullet replay 层 \cite{panerati2021learning}。该回放包含 circle 与 ellipse 两类编队、8 / 10 个飞行器设置、warm-up phase、时间采样轨迹、gust-like disturbance、延迟位姿、attitude-induced bearing perturbation、由 yaw 决定的 sensor field-of-view 及载荷安装偏置、soft FOV dropout、缺失观测以及缓慢漂移的共享偏置。它尚不足以等同 HIL，但能作为一个动态 synthetic replay 层，与 measured-data surrogate 互补 \cite{perezsegui2023bridging}。
+
+\subsection{附加泛化与效率分析}
+
+除主线 benchmark 外，本文还加入了五类补充分析。第一，formation generalization 比较 mixed corruption 下 circle、ellipse、perturbed 和 random 几何。第二，sensor-count scaling 评估 4 / 6 / 8 / 10 / 12 个观测者情形。第三，sensitivity sweep 分别扫描 outlier rate、common bias 和 nominal noise。第四，ablation、observability 与 runtime 研究用来隔离 trimming、bias estimation、reweighting、几何质量与计算代价的作用。第五，针对 selector 的两个诊断直接在主文中给出：score-term ablation 与归一化筛选系数的 mild/moderate/strong 随机扰动实验。它们不替代主 benchmark，但对界定方法的脆弱点、泛化边界和鲁棒性代价非常重要。
+
+\section{结果}
+
+\subsection{受污染 bearing 下的鲁棒定位}
+
+表~\ref{tab:mainregimes} 和图~\ref{fig:storyregimes} 给出主结果：一旦 bearing 受污染，Least Squares 会出现明显失稳，而鲁棒前端估计能够显著降低中位误差和失败风险。在 outlier regime 中，median error 从 Least Squares 的 1.1186 降到所提方法的 0.2108；在 mixed regime 中，从 1.0015 降到 0.4346。这不是边际改进，而是把 one-shot localization 从脆弱状态拉回到“当前周期仍可用”的范围。
+
+\input{../tables_cn/table_main_regimes.tex}
+
+与更强鲁棒基线的比较同样重要。Huber IRLS 和 GNC-GM 都明显优于 Least Squares，但在 mixed、pose uncertainty 与 heterogeneous bias 三类场景中仍整体落后于所提方法。RANSAC 是当前 benchmark 里最强的竞争者：在最难的几个 regime 中，所提方法与其在中位误差上往往接近，真正拉开差距的主要是上尾风险而不是中心误差的普适胜出。这一点与方法设计本身是一致的：gross corruption 下共识仍然极为重要，而修剪式重加权和 bias-aware fallback 的价值在于，当污染机制在不同窗口之间切换时，前端仍能用一套统一流程保持鲁棒。
+
+Pose uncertainty 与 heterogeneous bias 结果尤其关键，因为它们说明本文已不再建立在“观测者位姿理想已知、噪声完全共享”的理想假设上。在 pose uncertainty 下，中位误差从 0.6985 降到 0.4562；在 heterogeneous bias 下，从 0.5303 降到 0.4212。它们的提升幅度不如 outlier regime 那么夸张，但更接近真实无源感知中的难点。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_story_regimes}
+\caption{五类污染机制下的主基准结果。左图为中位定位误差，右图为灾难性失败率。所提估计器追求的是失败风险压制，而不是宣称所有指标都绝对最优。}
+\label{fig:storyregimes}
+\end{figure}
+
+图~\ref{fig:storycdf} 从分布层面补充了同样的结论。在前端故事最关键的 outlier-rich 与 mixed-corruption 两个 regime 中，所提方法相对于 Least Squares 和 GNC-GM 明显左移了整条误差分布，而与 RANSAC 在大部分区间内相近。Outlier regime 中，90 分位误差从 Least Squares 的 3.8429 降到 0.9506，Success@0.1R 从 0.4533 提高到 0.9050；Mixed regime 中，90 分位从 3.8537 降到 1.3820，Success@0.1R 从 0.4983 提高到 0.8517。这说明收益并不只来自少数极端失败样本，而是体现在整条经验分布的压缩上。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_story_cdf}
+\caption{离群点与混合污染两类关键 regime 的经验 CDF。所提估计器与最强鲁棒基线接近，但相对 Least Squares 与 GNC-GM 尤其压缩了上尾。}
+\label{fig:storycdf}
+\end{figure}
+
+图~\ref{fig:thresholdsweep} 与表~\ref{tab:tailrisk} 则在更严格阈值和配对统计下强化了这一点。主文依然把 $0.1R$ 与 $0.5R$ 作为标准 cue-quality boundary；额外的 $0.2R$ 只是为了暴露 heavy-tail sensitivity。按这个更严格的边界，outlier regime 下失败率从 Least Squares 的 0.2933 降到 0.0400，mixed regime 下从 0.2733 降到 0.0683。Wilcoxon 配对检验与 Cliff's $\delta$ 表明，相对 Least Squares 的收益不仅显著，而且具有中到大的工程效应量；相对 GNC-GM，outlier regime 中为中等效应，mixed regime 中则较小。至于 RANSAC，由于其本身在 gross-outlier 条件下已非常强，对应效应量接近 negligible。因此本文的价值不在于宣称“始终赢过 RANSAC”，而在于给出一条在 bias、missing data 与 pose uncertainty 叠加时仍可复用的统一鲁棒前端。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_threshold_sweep}
+\caption{更严格误差阈值下的成功率扫描。随着可接受 cue 半径从 $0.5R$ 缩小到 $0.1R$，所提前端依然相对 Least Squares 保持明显优势。}
+\label{fig:thresholdsweep}
+\end{figure}
+
+\input{../tables_cn/table_tail_risk.tex}
+
+\subsection{为什么不能直接用 RANSAC？}
+
+RANSAC 是必须正面回应的基线，因为它在纯 gross-outlier 条件下本来就很强。上面的结果已经说明，所提方法在纯 outlier benchmark 中并没有显著压过 RANSAC，这正是本文需要诚实保留的边界。继续保留所提前端的理由并不在于“否认 RANSAC 的价值”，而在于同一条前端管线还必须面对 heterogeneous bias、pose uncertainty 与 mixed corruption 共同存在的窗口。在这些场景里，所提方法虽然未必在中位数上压倒 RANSAC，但能够在统一 refinement-and-fallback 框架下保持稳定。
+
+需要强调的是，算法~\ref{alg:frontend} 在 Stage~1 内部确实使用了 sampled-consensus prior，但与外部 RANSAC 基线的比较并不循环。内部先验只是完整估计器中的一个候选分支，而外部基线是独立运行的 standalone competitor，具有自己的目标函数和停止规则。因此，本文比较的是完整前端对完整基线，而不是把 RANSAC 的一个内部子步骤包装成新方法。
+
+表~\ref{tab:ransacincremental} 进一步把这个问题拆开到 mixed-corruption regime 中。Pure RANSAC 的中位误差为 0.5241，P95 为 2.4951；在共识内点上加入 LM 抛光后，中位数降到 0.4233，P95 降到 2.2843。完整所提前端在中心误差上与 RANSAC+LM 非常接近，中位数为 0.4267，但在同一批 717 个保留 case 上给出了略低的均值、P95 和 $0.2R$ 灾难性失败率。因此，这个消融支持的是一个有边界的结论：完整管线明显优于未经抛光的 pure consensus hypothesis，并且在混合污染下至少与简单 RANSAC+LM 修补保持竞争力；最强 RANSAC 基线仍然是必须正面保留的参考。
+
+\input{../tables_cn/table_ransac_incremental.tex}
+
+图~\ref{fig:ransaccase} 将原来的单窗口示例扩展为四个 failure gallery。第一行展示 pure gross-outlier window，在这里 RANSAC 最强，说明本文并不回避它的优势；第二行展示 mixed corruption，此时修剪式鲁棒融合成为更平衡的选择；第三行展示 pose uncertainty 且几何接近退化的场景，仅靠共识不再稳定；第四行则是 heterogeneous bias limitation case，在这里所提方法不再支配最强竞争者。这样的展示方式比文字辩护更清楚地说明了本文真正的适用范围。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_ransac_failure_case}
+\caption{四个失败与边界案例。第一行展示 RANSAC 最占优的 gross-outlier 窗口；第二行展示 mixed corruption 窗口；第三行展示受 pose uncertainty 影响的困难几何；第四行展示 heterogeneous bias 下的方法边界。}
+\label{fig:ransaccase}
+\end{figure}
+
+\subsection{固定预算筛选是条件有效的，而不是普适更优}
+
+筛选 benchmark 清楚地支持一个条件性结论。All-sensor robust fusion 仍然是无约束上界，其 overall median error 为 0.4981。但在 fixed-budget 条件下，筛选仍然有价值。所提 geometry--reliability 策略把 overall median 从 residual-only 的 0.6118 和 reliability-only 的 0.6383 降到 0.5872；adaptive variant 则进一步降到 0.5518，并把 severe regime 中位数从 0.7774 降到 0.7487（表~\ref{tab:screening}）。
+
+\input{../tables_cn/table_screening.tex}
+
+配对计数也支持同样的解释。Always-on 几何可信度筛选相对 residual-only 在 779 个 case 中获胜，在 603 个 case 中失败，并有 903 个平局；但相对于 all-sensor robust estimator，却在 1370 个 case 中失败，仅在 661 个 case 中获胜。因此，Stage~2 并不应该被包装成“替代全量融合”的主角。Adaptive screening 更保守：它相对 always-on screening 在 604 个 case 中更好，在 318 个 case 中更差，并在 1363 个 case 中选择打平，因为当当前 bearing set 没有明显异质性时，它会直接拒绝筛选。图~\ref{fig:benefitmap} 对 outlier-rate / budget 平面上的结果做了可视化：筛选在预算紧、且 measurement credibility 很不均衡时最有帮助。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_active_selection}
+\caption{固定预算筛选实验。全量鲁棒融合仍然是无约束上界，而 adaptive 与 geometry--reliability 策略在固定预算下优于更简单的子集规则。}
+\label{fig:screening}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.86\linewidth]{../figures/figure_selection_benefit_map}
+\caption{筛选收益图。热图展示相对 all-sensor robust fusion 的中位误差差值；正值表示筛选后的中位误差低于全量鲁棒融合，从而说明筛选只应在预算紧且可信度异质性明显时被触发。}
+\label{fig:benefitmap}
+\end{figure}
+
+图~\ref{fig:screeningcases} 进一步把“条件有效”转化为两个具体案例。第一个案例是 severe perturbed 10-observer window 且预算 $k=4$，此时所提子集策略得到 0.2172 的误差，而 residual-only 与 reliability-only 都停留在 1.0680，FIM-only 为 1.0487，spread-only 甚至恶化到 3.9600；all-sensor robust estimate 在该窗口也只有 1.0677。第二个案例则表明 always-on screening 会做错事：在一个 severe perturbed 12-observer、预算 $k=6$ 的窗口里，全量鲁棒融合已经达到 0.0368，而 always-on 几何可信度策略退化到 1.0637；adaptive gate 正是通过“拒绝不必要筛选”保住了 0.0368 的结果。这两个案例说明 Stage~2 最合适的身份是 deadline- 或 uplink-limited cycle 下的可选工程扩展，而不是对 full-set fusion 的普遍替代。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_screening_cases}
+\caption{两个 fixed-budget screening 案例。上图展示 severe 10-observer 窗口中所提子集策略优于简单启发式；下图展示 severe 12-observer 窗口中 adaptive gate 正确地保留全量融合。}
+\label{fig:screeningcases}
+\end{figure}
+
+图~\ref{fig:screeningablation} 回答了第二个方法论问题：筛选得分是否需要每一项，还是被某个手工项单独主导。Geometry-only 是所有筛选变体中最弱的，overall median 为 0.5857；加入 residual 或 reliability 后，中位数分别改善到 0.5812 与 0.5641；完整得分达到 0.5790。它并不是“处处第一”的魔法 selector，但确实比单看几何更稳，也更符合本文对 Stage~2 的定位：一个工程折中，而不是理论最优。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{../figures/figure_screening_score_ablation}
+\caption{固定预算筛选的得分项消融。仅依赖几何的规则最弱，加入残差与可靠性后可缩小差距，而完整得分更像工程折中而非普适最优。}
+\label{fig:screeningablation}
+\end{figure}
+
+图~\ref{fig:screeningweights} 则回应了第三个问题：附近一组系数是否会完全改变结论。在四个归一化系数的 mild、moderate 与 strong 随机扰动中，最大扰动尺度为 16\%；默认设置的中位误差为 0.5586，合并样本的 5\%--95\% 区间仅为 0.5479--0.5742，所选子集与默认策略的合并 median Jaccard overlap 仍达到 0.9685。它不能证明该得分是全局最优，但至少说明本文报告的筛选行为不是某个脆弱人工权重向量偶然调出来的。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_screening_weight_sensitivity}
+\caption{筛选模块在 mild、moderate 与 strong 随机系数扰动下的敏感性。中位误差围绕默认值轻微波动，所选子集与默认策略保持较高一致性。}
+\label{fig:screeningweights}
+\end{figure}
+
+\subsection{伪物理动态回放}
+
+Pseudo-physical replay 结果表明，该前端的收益并不只存在于静态 synthetic benchmark 中。在 mild dynamic setting 下，中位误差由 Least Squares 的 0.1603 降到所提方法的 0.1343，Success@1.0 达到 1.0；在 harsh dynamic setting 下，中位误差由 0.4979 降到 0.3523，P90 由 1.5877 降到 0.6505（表~\ref{tab:pseudophysical}）。在 mild setting 下，所提方法与 RANSAC 非常接近；在 harsh setting 下则略优，这与主 benchmark 的结论相一致：共识在 gross corruption 下仍重要，但当多种污染源叠加时，修剪式精化会变得更有价值。
+
+\input{../tables_cn/table_pseudophysical.tex}
+
+\subsection{基于实测几何的多视角重放 surrogate}
+
+Measured-data multi-view replay surrogate 建立在公开多视角飞行数据的实测观测者位置、RTK 目标轨迹、跨相机同步与真实 visibility mask 之上 \cite{albl2020reconstruction}。对每一个同步且可见的 observer--target 配对，本文都先把观测者位置到 RTK 目标点的三维位移投影到局部地平面，再取其方位角，得到 surrogate bearing。也就是说，真实几何、可见性和同步关系先被确定性保留下来，而 outlier、bias 和位姿噪声污染只在这一 bearing 重建之后再额外注入，用以探查前端在 measured geometry 下的 tail behavior。因此，这一层位于“纯 synthetic benchmark”和“完整实飞系统验证”之间。
+
+表~\ref{tab:publicrealreplay} 与图~\ref{fig:publicrealreplay} 显示了一个清晰 trade-off。Least Squares 取得 nominal replay 最低中位数 32.1793 m，而 GNC-GM 取得 disturbed replay 最低中位数 34.4460 m。因此，所提方法并不是该层的 center-error winner。它的优势体现在 heavy tail 上：在 nominal replay 中，P95 从 Least Squares 的 241.7862 和 RANSAC 的 102.9909 降到 78.8996，超过 80 m 的 extreme-cue fraction 从 0.1323 和 0.0934 降到 0.0506；在 disturbed replay 中，同样的 pattern 依然存在，P95 从 287.8497 和 111.3714 降到 105.2853，Extreme@80 m 从 0.1219 和 0.1075 降到 0.0968。也就是说，即便 replay 中心误差仍与强基线接近甚至略逊，前端仍能在真实异步与 visibility loss 条件下压住部分极端失败。
+
+\input{../tables_cn/table_public_real_replay.tex}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_public_real_replay}
+\caption{基于公开数据集的实测多视角重放 surrogate。Least Squares 取得 nominal replay 最低中位数，GNC-GM 取得 disturbed replay 最低中位数，而所提前端在两类 replay 中都压缩了最明显的上尾。}
+\label{fig:publicrealreplay}
+\end{figure}
+
+\subsection{Deadline-aware 实测重放}
+
+Deadline-aware replay 层把上一层更进一步推向系统问题：若当前融合周期必须丢弃迟到或过旧的 bearing，前端还能否给出可用 cue？图~\ref{fig:deadlinereplay} 与表~\ref{tab:deadlinereplay} 表明，答案是有条件地可以。Deadline filter 在 disturbed regime 中移除了超过一半窗口，并把平均 on-time bearing 数压到 2 以下，因此它明显比 plain measured replay 更难。
+
+即便如此，所提前端仍保持相同的定性优势。在 nominal deadline replay 中，其中位误差 33.9664 m 略逊于 Least Squares 的 32.8007 m 与 GNC-GM 的 33.7005 m，但 P95 从 343.7387 和 332.0415 降到 82.7327，Extreme@80 m 也从 0.1316 和 0.1184 降到 0.0592。Disturbed deadline replay 中，所提方法与 GNC-GM 在中位数上打平，均为 33.8389 m，同时优于 RANSAC 的 36.5773，并把 P95 从 Least Squares 的 121.6554 和 RANSAC 的 104.9651 压到 86.0841。也就是说，在只允许融合按时 bearing 的窗口里，方法依然不是“普适中位数最优”，但能够有效减少上尾 cue failure。
+
+\input{../tables_cn/table_deadline_replay.tex}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_deadline_replay}
+\caption{Deadline-aware measured-data replay。左图展示经过 staleness、delay 和 packet-loss 过滤后仍可用的 bearing 数，右图显示只融合按时 bearing 时，所提前端仍能压缩 replay 上尾。}
+\label{fig:deadlinereplay}
+\end{figure}
+
+\subsection{消融与敏感性趋势}
+
+消融实验揭示了为什么所提方法更像一个前端管线，而不是单一 robustifier。在紧凑 mixed-regime ablation 中，去掉 consensus seed 会最明显地破坏稳定性：Success@0.1R 从 0.90 降到 0.80，P90 从 0.9997 扩张到 2.1329；而去掉 common-bias estimation 对该简化混合场景的整体影响较小，这与主 benchmark 中“共享偏置修正主要在更结构化偏置场景下体现价值”的结论一致。Trimming 与 reweighting 在此紧凑消融中的效果也弱于大规模主 benchmark，说明它们的作用本身就是 regime-dependent 的。图~\ref{fig:ablation} 总体说明：consensus seeding 负责把初始化从最坏情况下救回来，而其他组件则在更困难或更结构化的污染条件下继续提供额外稳健性。
+
+Sensitivity sweep 呈现出同样细致的边界。随着 outlier rate 从 0.0 增至 0.4，所提方法始终显著优于 Least Squares，并在最困难 outlier 设置下继续优于 GNC-GM。随着 common bias 增大，两者差距缩小，且在最大测试偏置下 GNC-GM 开始变得很有竞争力。随着 nominal noise 增大，所提方法再次明显好于 Least Squares，并在较高噪声处与 GNC-GM 持平或略优。因此，该前端最强的场景依然是 outlier-rich 和 mixed-corruption，而不是所有干扰模型下都绝对占优。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.82\linewidth]{../figures/figure_ablation_mixed}
+\caption{混合污染场景下的组件消融。最明显的性能退化来自移除共识初值，其余组件则表现出更强的 regime-dependent 作用。}
+\label{fig:ablation}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_sensitivity_sweep}
+\caption{离群率、偏置幅值与名义噪声的敏感性扫描。所提估计器始终明显强于 Least Squares，而相对 GNC-GM 的优势则依赖污染类型。}
+\label{fig:sensitivity}
+\end{figure}
+
+\subsection{编队、可观测性与观测者数量泛化}
+
+编队泛化实验表明，该前端并不依赖单一名义几何。在 circle、ellipse、perturbed 与 random 四类布局上，所提方法在所有测试 case 中都相对 Least Squares 降低了中位误差（附录~\ref{app:suppresults}，表~\ref{tab:formationextra}）。最大提升出现在 random formation，中位数从 2.1047 降到 0.5768。但相对更强基线的优势并不总是一致，尤其当几何已经较好时，GNC-GM 在某些编队中仍很有竞争力。这再次说明：所提方法的价值主要体现在受污染 bearing 破坏本来尚可的几何时。
+
+Sensor-count scaling 也支持这一点。所提估计器从 4 个观测者增加到 8 或 10 个时提升明显，特别是在 random formation 中，中位误差从 4 观测者时的 0.7221 降到 10 观测者时的 0.4051。Circle-formation 曲线同样很有意思：Least Squares 的中位数并不单调，甚至在 12 个观测者下因为污染而更差；而鲁棒前端在观测者数量达到 8 个及以上后基本稳定在 0.45 以下。这说明“多加几条 bearing”并不会自动改善结果，前提是融合规则本身必须足够鲁棒。
+
+Observability 分析补充了一个更细的点：更好的 isotropy 当然仍与更低误差相关，但 Least Squares 的失败并不能只用几何不好来解释。图~\ref{fig:observability} 显示，在较宽的 isotropy 区间内，所提前端都明显压缩了误差分布的垂直散布。这说明它解决的不是“只会利用好几何”，而是“在几何并不糟糕时也能抵抗污染 bearing”。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.82\linewidth]{../figures/figure_formation_generalization}
+\caption{混合污染下的编队泛化。所提估计器在 circle、ellipse、perturbed 与 random 四类几何中都明显优于 Least Squares。}
+\label{fig:formation}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_scaling}
+\caption{Circle 与 random 编队下的观测者数量扩展。观测者达到 8 个及以上后，鲁棒融合明显更稳定。}
+\label{fig:scaling}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.90\linewidth]{../figures/figure_observability}
+\caption{误差与几何 isotropy 的关系。即便在几何并不特别理想的区域，所提前端也能压缩误差分布。}
+\label{fig:observability}
+\end{figure}
+
+\subsection{PyBullet 多机回放}
+
+相较于纯 synthetic benchmark，PyBullet replay 更直接地暴露了 transfer gap。表~\ref{tab:pybulletparams} 汇总了其 replay 配置，包括 update rate、delay distribution、姿态诱导扰动和 gust disturbance 等。跨 1103 个 replayed localization cycle，Least Squares、GNC-GM、RANSAC 与所提方法的 overall median 分别为 1.7469、1.6967、2.0073 和 2.0611（附录~\ref{app:suppresults}，表~\ref{tab:pybullet}）。因此，所提前端在这层里并不主导 replay 中位精度，也不主导 catastrophic-failure rate。它在这一层最主要的信号仍然是 tail-oriented 的：mean 从 Least Squares 的 50.61 降到 21.20，overall P90 从 16.69 降到 13.11；在 disturbed replay 中，P90 从 Least Squares 的 36.53 和 RANSAC 的 23.71 降到 18.19。
+
+\input{../tables_cn/table_pybullet_parameters.tex}
+
+与 measured-data replay surrogate 结合起来看，PyBullet benchmark 把本文的证据从“纯静态算法研究”推向“更接近 UAV-like dynamics 的验证层”，因为它同时引入了多机轨迹、时间扰动、gust-like perturbation 和 bias drift。但本文并不把它包装成 field validation，而是更诚实地把它视为连接 synthetic geometry 与部署环境之间的一层动态 replay。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{../figures/figure_pybullet_replay}
+\caption{PyBullet 多机回放结果。所提前端并不主导中位 replay 精度，但在 disturbed flight-like window 中压缩了部分上尾。}
+\label{fig:pybullet}
+\end{figure}
+
+\subsection{Replay 下的 cue 质量分层}
+
+仅看 median error 并不能完整反映一个 replay 窗口对下游是否有用。为了把应用故事讲得更具体，图~\ref{fig:utility} 使用与第 3 节一致的误差阈值，把 replay window 分为三类：误差 $\leq 1.0$ 的 \emph{handoff-ready cue}，误差在 $(1.0, 5.0]$ 之间的 \emph{degraded cue}，以及误差 $> 5.0$ 的 \emph{unusable cue}。它仍只是代理指标，而不是完整闭环任务试验，但比单独一个 mean 或 median 更能描述 replay transfer。
+
+这种 cue-quality partition 也解释了为什么 PyBullet benchmark 即便不是“普适胜利”仍然有意义。在 overall replay pool 中，所提方法的 handoff-ready fraction 为 0.3028，unusable fraction 为 0.2584，与传统 robust baseline 整体上大致可比，而不是明显统治；在 disturbed replay 下，对应数值为 0.2546 与 0.2848。这个结果其实揭示了一个真实 transfer gap：静态 synthetic robustness 并不会自动转化成更好的 cue availability，一旦 delayed pose、attitude perturbation 与 FOV effect 被一起引入，前端依旧会暴露边界。
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.96\linewidth]{../figures/figure_operational_utility}
+\caption{PyBullet replay 下的 cue 质量分层。重放窗口被划分为 handoff-ready、degraded 与 unusable 三类，图中更强调 transfer gap，而不是宣称 replay 普适领先。}
+\label{fig:utility}
+\end{figure}
+
+\subsection{下游跟踪代理指标}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_tracking_proxy}
+\caption{由最简 Kalman filter 与卡方门控得到的 tracking proxy 结果。尽管 disturbed replay 下的 break-rate 改善已经趋于饱和，所提前端仍然相对 Least Squares 与 RANSAC 明显压缩了 tracking error 的上尾。}
+\label{fig:trackingproxy}
+\end{figure}
+
+\begin{samepage}
+为了给出一个轻量级的 downstream utility 检查，本文还把 replay 产生的 one-shot cue 输入到一个带卡方门控的最简 Kalman filter 中。目的不是构建完整 tracking system，而是观察更稳健的前端 cue 在被简单下游消费者使用后是否仍然有益。表~\ref{tab:trackingproxy} 先给出四种前端在同一 replay-to-tracker pipeline 下的数值结果，图~\ref{fig:trackingproxy} 再把同一比较可视化。总体 replay-sequence break rate 从 Least Squares 与 GNC-GM 的 0.7083 降到 RANSAC 与所提方法的 0.6667；在 overall replay 中，所提方法的 tracking RMSE P90 为 16.4994，GNC-GM 为 16.6907，两者都明显低于 Least Squares 的 28.8386 与 RANSAC 的 34.3885。到了 disturbed replay，四种方法的 break rate 都停留在 0.8333；其中 GNC-GM 的 tracking-error P90 最小，为 12.9715，所提方法紧随其后为 13.6756，二者都显著低于 Least Squares 与 RANSAC。
+\end{samepage}
+
+这些 operational proxy 本身也并非单向优势。例如在 disturbed replay 中，所提方法的 rapid reacquisition rate 为 0.5833，低于 Least Squares 的 0.6528 和 GNC-GM 的 0.6042，但高于 RANSAC 的 0.4861；Disturbed ROI-radius P90 为 9.8080，高于 Least Squares 的 4.1488 和 GNC-GM 的 4.1218，但远低于 RANSAC 的 18.7335。这说明本文前端确实能压住部分 downstream heavy tail，也可能缩短一部分坏 cue 后的恢复时间，但并不统治所有 tracking proxy。
+
+这个 tracking proxy 的结论仍然是收敛的。RANSAC 在 overall break rate 上与所提方法打平，而 GNC-GM 在部分 disturbed tracking proxy 上略优于所提方法。因而，这一层更合理的解读不是“下游全面胜出”，而是所提前端在保持最佳总体 break rate 的同时，在 overall tracking tail 上几乎追平 GNC-GM，并在 disturbed tracking-error P90 上继续明显优于 Least Squares 与 RANSAC。
+
+\input{../tables_cn/table_tracking_proxy.tex}
+
+\subsection{运行时与可复现性含义}
+
+运行时结果表明，本文的鲁棒性收益并不需要显然不可接受的计算预算，尽管它明显慢于简单最小二乘。本文报告的桌面测量均在 Apple M1 Pro CPU、10 logical cores、macOS 15.7.2 和 Python~3.11.11 环境下获得。在这一设置中，所提前端的 median runtime 为 23.82 ms，而 Least Squares、Huber IRLS、RANSAC 和 GNC-GM 分别为 1.40 ms、1.44 ms、2.61 ms 和 9.98 ms。图~\ref{fig:runtime} 进一步把“方法级单周期耗时”和“阶段级随观测者数量扩展趋势”拆开报告。Stage 分解也说明了这一点：鲁棒 Stage~1 核心中位耗时 23.65 ms，而 Stage~2 screening 额外增加 1.86 ms，自适应门控额外增加 1.58 ms。23.82 ms 对应大约 42 Hz 的串行执行能力，因此在桌面验证环境下支撑 10 Hz 前端融合频率是可行的。当然，这个结论仅适用于当前桌面平台；若要真正上板，还需要 C++ 重写或显式并行化。
+
+同样重要的是可复现性结构。所有图都从冻结 JSON 输出生成，主 benchmark、screening study、measured-data replay surrogate、pseudo-physical replay 和 PyBullet replay 的实验 runner 都已经归档在仓库中。由于本文被有意定位为一个 benchmark baseline，这种“可重跑、可复查”的结构本身也是贡献的一部分，而不只是附录包装。
+
+\begin{figure}[!b]
+\centering
+\includegraphics[width=0.98\linewidth]{../figures/figure_runtime_comparison}
+\caption{报告桌面 CPU 上的运行时剖面。上半部分给出不同方法的单周期中位耗时，下半部分展示各阶段随观测者数量增加时的扩展趋势。所提前端虽然慢于 Least Squares、Huber 与 RANSAC，但仍满足桌面环境下的周期级验证需求。}
+\label{fig:runtime}
+\end{figure}
+
+\section{讨论}
+
+\subsection{优势区间与尾部行为}
+
+本文最强的证据来自 outlier-rich、mixed-corruption 与 disturbed-replay 等场景。在这些窗口里，所提前端的主要价值并不是“所有 center-error 都更小”，而是重尾压制。对于 tracker、handoff module 或下游搜索过程而言，温和噪声往往比 catastrophic cue displacement 更容易承受。因此，本文方法的核心贡献是避免少量坏窗口把整条任务链拖垮。
+
+基线比较支持同样的解释。Least Squares 在污染稍微明显时就过于脆弱，而 GNC-GM 与 RANSAC 已经是很强的鲁棒参考。在这些强基线面前，所提方法在 center accuracy 上整体保持可比，并在 mixed corruption、heterogeneous bias 与 disturbed replay 的若干 tail-oriented 指标上更强。Stage~2 也应作相同理解：当可信度异质性很高，或系统只能融合一部分 bearing 时，budgeted screening 是有意义的；而当当前集合完整且一致时，all-sensor robust fusion 仍是正确默认项。
+
+\subsection{对无源多无人机感知系统的意义}
+
+综合图~\ref{fig:systempipeline}、图~\ref{fig:publicrealreplay}、图~\ref{fig:deadlinereplay}、图~\ref{fig:utility} 与图~\ref{fig:trackingproxy}，可以得到一个更清晰的系统解释：本文方法提升的是\textbf{当前周期目标线索}在进入下游前的可靠性。Measured-data multi-view replay surrogate 通过真实几何、visibility loss 与 synchronization offset 强化了这个说法；deadline-aware replay 层则进一步加入 arrival filter，模拟当前周期必须丢弃 stale 或 late bearing 的现实；PyBullet replay 再叠加多机运动、delay 和姿态诱导扰动。最后，最简 Kalman proxy 表明，前端尾部风险的缩小确实可能转化为下游 tracking tail 的收缩，即便 break-rate 指标本身未出现压倒性变化。
+
+这条验证链也更准确地界定了本文的贡献位置。本文隔离出了一个常在更重后端发挥作用之前就出现的前端失败模式：一批已到达的 bearing 中有一部分是坏的，但系统仍然必须在当前周期内把它们融合成一个可以交给下游消费的 cue。因此，本文的贡献更接近“一个带清晰输入输出接口的 current-cycle robust-localization block”，而不是“一个完整的 UAV autonomy stack”。
+
+\subsection{局限与后续工作}
+
+本文仍有若干清晰局限。首先，当前建模是平面且集中式的，观测者位姿被看作来自外部导航模块，而非与目标联合估计。虽然 benchmark 中已显式注入 pose uncertainty，但估计器本身尚未在精化阶段使用 covariance-aware weighting 或显式不确定性传播。其次，筛选得分仍然是固定工程 surrogate，而不是学习得到或具备更强理论最优性的 budgeted selector。再次，虽然验证链已扩展到 measured replay、deadline-aware replay、pseudo-physical replay 和 PyBullet replay，但仍然没有走到 SITL、HITL 或机载外场验证。
+
+这些局限也直接指出了下一步。最优先的扩展是把当前 pose-agnostic weighting 升级为 covariance-aware refinement，使导航不确定性不再只停留在 benchmark 层。第二个方向是从当前平面 formulation 扩展到完整三维 bearing fusion，显式纳入高度变化和载荷安装几何。第三个方向则是系统级整合：把前端与更强 tracker、显式通信调度以及机载 companion-computer 实现连接起来。当前 Python 原型已经足以支撑算法研究和桌面重放，但若面向真实空中部署，仍需要 C++ 重写或更强并行化。
+
+\section{结论}
+
+本文将研究对象重新界定为\textbf{受污染纯方位单次定位问题}，并围绕这一问题提出一个鲁棒前端。共识辅助估计器用于压制坏 bearing 造成的灾难性单次失败；可选的 adaptive screening 模块则在固定预算窗口中优于更简单的 subset policy，同时不把筛选包装成对全量融合的普适替代。跨 3000 组蒙特卡洛、536 个 measured-data replay 窗口、227 个 deadline-filtered replay 窗口，以及 720 个 pseudo-physical dynamic replay case，所提方法都相对 Least Squares 给出稳定改进。
+
+相对于最强鲁棒基线，本文证据是更收敛也更诚实的。在 measured-data replay 中，Least Squares 与 GNC-GM 仍在 nominal 与 disturbed 子集上拿到最佳中位数；在 deadline-aware replay 中，强基线仍能在若干 center-error 指标上占优；在 PyBullet replay 中，中位精度总体可比而非绝对领先。但与此同时，所提前端反复在 replay 上尾和 tracking 上尾指标中给出更小风险。因而，本文最核心的价值不是“平均意义上的全面最优”，而是提供了一条\textbf{可复现的尾部风险抑制基线}，用于无源纯方位定位在离群点、混合污染、观测者位姿不确定性与异构偏置条件下的鲁棒前端设计。
+
+未来工作应重点补足四个方向：引入 covariance-aware refinement、扩展到三维 localization、把前端输出连接到更丰富的 downstream task metric，以及通过 SITL、HITL 或机载实验进一步验证整条感知链。
+
+\appendix
+\input{../tables_cn/tables_appendix.tex}
+\clearpage
+
+\authorcontributions{概念设计，Z.S.; 方法设计，Z.S. 和 Y.N.; 软件实现，Z.S.; 实验验证，Z.S. 和 Y.N.; 形式分析，Z.S.、Y.N. 和 Z.Z.; 初稿撰写，Z.S.; 审阅与修改，Z.S.、Y.N. 和 Z.Z.。所有作者均已阅读并同意论文最终版本。}
+
+\funding{本研究未获得外部经费资助。}
+
+\institutionalreview{不适用。}
+
+\informedconsent{不适用。}
+
+\dataavailability{本文使用的归档软件与冻结结果快照已通过 Zenodo 发布：\url{https://doi.org/10.5281/zenodo.19657582}。实时开发仓库位于 \url{https://github.com/poboll/robust-bearing-fusion-uav-localization}。随稿补充材料包含 MDPI 源文件、绘图脚本、实验运行脚本、冻结 JSON 输出、配置文件，以及位于 \texttt{submission/supplementary/frozen\_results/} 的 result-data-only 数据包。该 Zenodo DOI 对应由 GitHub release 生成的软件/复现归档，而冻结 JSON 文件是用于重现本文表格与图形的整理后数据子集。}
+
+\acknowledgments{作者感谢在论文准备过程中参与无源定位与稿件结构讨论的同事。During the preparation of this manuscript, ChatGPT was used exclusively for language polishing. All technical methodologies, numerical claims, and results were independently verified by the authors.}
+
+\conflictsofinterest{作者声明不存在利益冲突。}
+
+\bibliography{references_curated}
+
+\end{document}

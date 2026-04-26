@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import json
+import shutil
+import subprocess
 import sys
+import tempfile
+import textwrap
 from pathlib import Path
 
 import matplotlib
@@ -11,8 +15,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+from matplotlib.lines import Line2D
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Patch, Polygon
 from matplotlib.ticker import PercentFormatter
+from matplotlib.colors import to_hex, to_rgb
 
 
 ROOT = Path(__file__).resolve().parent
@@ -29,65 +36,244 @@ from passive_localization.robust import robust_bias_trimmed_refine
 from passive_localization.scenario import generate_circular_scenario
 from passive_localization.schedule import select_sensor_subset
 
-TAB10 = list(plt.get_cmap("tab10").colors)
+def _mix(color: str | tuple[float, float, float] | tuple[float, float, float, float], base: str = "#FFFFFF", ratio: float = 0.25) -> str:
+    rgb = np.asarray(to_rgb(color), dtype=float)
+    base_rgb = np.asarray(to_rgb(base), dtype=float)
+    mixed = (1.0 - ratio) * rgb + ratio * base_rgb
+    return to_hex(np.clip(mixed, 0.0, 1.0))
+
+
+def _cw(position: float, mix: float = 0.22) -> str:
+    return _mix(plt.get_cmap("coolwarm")(position), ratio=mix)
+
+
 PALETTE = {
-    "ls": TAB10[7],
-    "huber": TAB10[9],
-    "robust": TAB10[2],
-    "tukey": TAB10[8],
-    "ransac": TAB10[3],
-    "gnc": TAB10[4],
-    "pso": TAB10[1],
-    "sa": TAB10[5],
-    "active_all": TAB10[7],
-    "active_random": TAB10[8],
-    "active_spread": TAB10[0],
-    "active_crlb": TAB10[4],
-    "active_residual": TAB10[3],
-    "active_reliability": TAB10[9],
-    "active_proposed": TAB10[2],
-    "active_adaptive": TAB10[5],
+    # Hybrid editorial palette inferred from Nature-style accessibility guidance
+    # plus Paul Tol categorical schemes and Crameri-style muted diverging ramps.
+    "ink": "#1F2C45",
+    "muted_ink": "#53627C",
+    "text_soft": "#6B7891",
+    "grid": "#E4EAF2",
+    "panel": "#FAFBFD",
+    "warm_panel": "#F6F1E7",
+    "soft_center": "#F6F2EA",
+    "note_fill": "#FCFDFE",
+    "line_light": "#D6DEE8",
+    "shadow": "#0F172A",
+    "ls": "#8F949C",
+    "huber": "#9FC8DB",
+    "robust": "#4477AA",
+    "tukey": "#72A79A",
+    "ransac": "#C06C7A",
+    "gnc": "#78A6D0",
+    "pso": "#C9B273",
+    "sa": "#9C7BA0",
+    "active_all": "#999999",
+    "active_random": "#E0E5EC",
+    "active_spread": "#78A6D0",
+    "active_crlb": "#C3D3E8",
+    "active_residual": "#C7A259",
+    "active_reliability": "#4FA69A",
+    "active_proposed": "#4477AA",
+    "active_adaptive": "#9C6C8E",
+    "ready": "#7B97C6",
+    "degraded": "#C8A15A",
+    "extreme": "#CA7B70",
+    "sensor_fill": "#E6EBF2",
+    "sensor_edge": "#7B8797",
+    "sensor_alert": "#E2D2AF",
+    "sensor_alert_edge": "#A68457",
+    "trajectory": "#9AADCB",
+    "target": "#C85F5C",
 }
 
 plt.rcParams.update(
     {
         "font.family": "STIXGeneral",
-        "axes.edgecolor": "#CBD5E1",
+        "mathtext.fontset": "stix",
+        "axes.edgecolor": PALETTE["line_light"],
         "axes.linewidth": 1.0,
         "axes.spines.top": False,
         "axes.spines.right": False,
-        "axes.facecolor": "#FCFCFD",
+        "axes.facecolor": "white",
         "figure.facecolor": "white",
         "axes.titleweight": "semibold",
-        "axes.labelsize": 12.5,
-        "axes.titlesize": 14.5,
-        "axes.labelcolor": "#0F172A",
-        "text.color": "#0F172A",
+        "axes.labelsize": 12.2,
+        "axes.titlesize": 14.0,
+        "axes.labelcolor": PALETTE["ink"],
+        "text.color": PALETTE["ink"],
         "legend.fontsize": 10.5,
         "xtick.labelsize": 10.5,
         "ytick.labelsize": 10.5,
-        "xtick.color": "#334155",
-        "ytick.color": "#334155",
-        "grid.color": "#CBD5E1",
-        "grid.linewidth": 0.7,
+        "xtick.color": PALETTE["muted_ink"],
+        "ytick.color": PALETTE["muted_ink"],
+        "grid.color": PALETTE["grid"],
+        "grid.linewidth": 0.62,
         "savefig.bbox": "tight",
+        "savefig.pad_inches": 0.04,
     }
 )
 
+EDITORIAL_DIVERGING = LinearSegmentedColormap.from_list(
+    "editorial_diverging",
+    [PALETTE["extreme"], PALETTE["soft_center"], PALETTE["robust"]],
+)
+EDITORIAL_MULTI = LinearSegmentedColormap.from_list(
+    "editorial_multi",
+    [PALETTE["active_all"], PALETTE["active_spread"], PALETTE["active_reliability"], PALETTE["robust"], PALETTE["active_adaptive"]],
+)
 
-def _save(fig: plt.Figure, name: str) -> None:
+
+def _editorial_series(count: int, start: float = 0.14, stop: float = 0.86):
+    if count <= 1:
+        return [EDITORIAL_MULTI((start + stop) / 2.0)]
+    return EDITORIAL_MULTI(np.linspace(start, stop, count))
+
+
+def _save(fig: plt.Figure, name: str, *, tight: bool = True) -> None:
     stem = Path(name).stem
-    fig.tight_layout()
+    if tight:
+        fig.tight_layout(pad=0.55)
     SUBMISSION_FIG.mkdir(parents=True, exist_ok=True)
     for suffix in [".png", ".pdf", ".svg"]:
         out = EXP / f"{stem}{suffix}"
         sub_out = SUBMISSION_FIG / f"{stem}{suffix}"
         save_kwargs = {"facecolor": "white"}
         if suffix == ".png":
-            save_kwargs["dpi"] = 400
+            save_kwargs["dpi"] = 450
         fig.savefig(out, **save_kwargs)
         fig.savefig(sub_out, **save_kwargs)
     plt.close(fig)
+
+
+def _hex_to_rgb_components(color: str) -> tuple[int, int, int]:
+    value = color.lstrip("#")
+    return tuple(int(value[i : i + 2], 16) for i in (0, 2, 4))
+
+
+def _tikz_color_block(names: list[str]) -> str:
+    lines = []
+    for name in names:
+        r, g, b = _hex_to_rgb_components(PALETTE[name])
+        lines.append(f"\\definecolor{{{name}}}{{RGB}}{{{r},{g},{b}}}")
+    return "\n".join(lines)
+
+
+def _render_tikz_figure(stem: str, tikz_body: str) -> None:
+    color_block = _tikz_color_block(
+        [
+            "ink",
+            "muted_ink",
+            "line_light",
+            "panel",
+            "huber",
+            "robust",
+            "gnc",
+            "active_adaptive",
+            "active_all",
+            "degraded",
+            "ransac",
+        ]
+    )
+    tex_source = textwrap.dedent(
+        rf"""
+        \documentclass[tikz,border=2pt]{{standalone}}
+        \usepackage[T1]{{fontenc}}
+        \usepackage{{mathpazo}}
+        \usepackage{{tikz}}
+        \usetikzlibrary{{arrows.meta,positioning,fit,calc,backgrounds,shapes.geometric}}
+        {color_block}
+        \begin{{document}}
+        {tikz_body}
+        \end{{document}}
+        """
+    ).strip() + "\n"
+
+    with tempfile.TemporaryDirectory() as tmpdir_str:
+        tmpdir = Path(tmpdir_str)
+        tex_path = tmpdir / f"{stem}.tex"
+        pdf_path = tmpdir / f"{stem}.pdf"
+        png_path = tmpdir / f"{stem}.png"
+        tex_path.write_text(tex_source, encoding="utf-8")
+
+        subprocess.run(
+            [
+                "pdflatex",
+                "-interaction=nonstopmode",
+                "-halt-on-error",
+                tex_path.name,
+            ],
+            cwd=tmpdir,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        subprocess.run(
+            [
+                "sips",
+                "-s",
+                "format",
+                "png",
+                str(pdf_path),
+                "--out",
+                str(png_path),
+            ],
+            cwd=tmpdir,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        subprocess.run(
+            ["sips", "-Z", "2600", str(png_path)],
+            cwd=tmpdir,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+
+        SUBMISSION_FIG.mkdir(parents=True, exist_ok=True)
+        for target_root in [EXP, SUBMISSION_FIG]:
+            shutil.copy2(pdf_path, target_root / f"{stem}.pdf")
+            shutil.copy2(png_path, target_root / f"{stem}.png")
+            stale_svg = target_root / f"{stem}.svg"
+            if stale_svg.exists():
+                stale_svg.unlink()
+
+
+def _style_axes(ax, *, grid_axis: str = "y") -> None:
+    ax.set_facecolor("white")
+    ax.tick_params(colors=PALETTE["muted_ink"])
+    for spine in ["top", "right"]:
+        ax.spines[spine].set_visible(False)
+    for spine in ["left", "bottom"]:
+        ax.spines[spine].set_color(PALETTE["line_light"])
+        ax.spines[spine].set_linewidth(1.0)
+    if grid_axis:
+        ax.grid(True, axis=grid_axis, linestyle=(0, (1.0, 3.1)), linewidth=0.62, alpha=0.72, color=PALETTE["grid"])
+
+
+def _light_panel(ax, color: str = PALETTE["panel"]) -> None:
+    ax.set_facecolor(color)
+
+
+def _style_legend(legend) -> None:
+    if legend is None:
+        return
+    frame = legend.get_frame()
+    frame.set_facecolor("white")
+    frame.set_edgecolor(PALETTE["line_light"])
+    frame.set_linewidth(0.8)
+
+
+def _range_handles() -> list[Line2D]:
+    return [
+        Line2D([0], [0], color=PALETTE["muted_ink"], linewidth=2.8, label="Median to P95"),
+        Line2D([0], [0], marker="o", markersize=7, markerfacecolor="white", markeredgecolor=PALETTE["ink"], linewidth=0, label="Median"),
+        Line2D([0], [0], marker="o", markersize=6, markerfacecolor=PALETTE["ink"], markeredgecolor=PALETTE["ink"], linewidth=0, label="P95"),
+    ]
 
 
 def _box(
@@ -96,15 +282,26 @@ def _box(
     wh: tuple[float, float],
     text: str,
     fc: str,
-    ec: str = "#334155",
+    ec: str = PALETTE["muted_ink"],
     lw: float = 1.2,
     fs: int = 10,
 ) -> FancyBboxPatch:
+    shadow = FancyBboxPatch(
+        (xy[0] + 0.004, xy[1] - 0.004),
+        wh[0],
+        wh[1],
+        boxstyle="round,pad=0.015,rounding_size=0.025",
+        facecolor=PALETTE["shadow"],
+        edgecolor="none",
+        alpha=0.05,
+        zorder=0,
+    )
+    ax.add_patch(shadow)
     patch = FancyBboxPatch(
         xy,
         wh[0],
         wh[1],
-        boxstyle="round,pad=0.02,rounding_size=0.025",
+        boxstyle="round,pad=0.015,rounding_size=0.025",
         facecolor=fc,
         edgecolor=ec,
         linewidth=lw,
@@ -117,13 +314,42 @@ def _box(
         ha="center",
         va="center",
         fontsize=fs,
-        color="#0F172A",
+        color=PALETTE["ink"],
         linespacing=1.15,
     )
     return patch
 
 
-def _arrow(ax, start: tuple[float, float], end: tuple[float, float], color: str = "#475569", lw: float = 1.6) -> None:
+def _diamond(
+    ax,
+    center: tuple[float, float],
+    wh: tuple[float, float],
+    text: str,
+    fc: str,
+    ec: str,
+    lw: float = 1.3,
+    fs: int = 9.8,
+) -> Polygon:
+    cx, cy = center
+    w, h = wh
+    shadow_pts = np.array(
+        [
+            (cx, cy + h / 2.0),
+            (cx + w / 2.0, cy),
+            (cx, cy - h / 2.0),
+            (cx - w / 2.0, cy),
+        ],
+        dtype=float,
+    )
+    shadow = Polygon(shadow_pts + np.array([0.004, -0.004]), closed=True, facecolor=PALETTE["shadow"], edgecolor="none", alpha=0.05)
+    ax.add_patch(shadow)
+    patch = Polygon(shadow_pts, closed=True, facecolor=fc, edgecolor=ec, linewidth=lw)
+    ax.add_patch(patch)
+    ax.text(cx, cy, text, ha="center", va="center", fontsize=fs, color=PALETTE["ink"], linespacing=1.12)
+    return patch
+
+
+def _arrow(ax, start: tuple[float, float], end: tuple[float, float], color: str = PALETTE["muted_ink"], lw: float = 1.6) -> None:
     ax.add_patch(
         FancyArrowPatch(
             start,
@@ -136,6 +362,25 @@ def _arrow(ax, start: tuple[float, float], end: tuple[float, float], color: str 
             shrinkB=4,
         )
     )
+
+
+def _orth_connector(
+    ax,
+    points: list[tuple[float, float]],
+    *,
+    color: str = PALETTE["muted_ink"],
+    lw: float = 1.8,
+    arrow_end: bool = True,
+) -> None:
+    if len(points) < 2:
+        return
+    if len(points) > 2:
+        xs = [p[0] for p in points[:-1]]
+        ys = [p[1] for p in points[:-1]]
+        ax.plot(xs, ys, color=color, linewidth=lw, solid_capstyle="round")
+    start = points[-2]
+    end = points[-1]
+    _arrow(ax, start, end, color=color, lw=lw)
 
 
 def _empirical_cdf(values: list[float] | np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -216,121 +461,98 @@ def _replay_selection_case(row: dict) -> dict:
 
 
 def plot_system_pipeline() -> None:
-    fig, ax = plt.subplots(figsize=(12.8, 4.2))
-    ax.set_xlim(0.0, 1.0)
-    ax.set_ylim(0.0, 1.0)
-    ax.axis("off")
+    tikz = r"""
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  >=Latex,
+  font=\fontsize{10.8}{12.6}\selectfont,
+  box/.style={rounded corners=7pt, draw=line_light, line width=0.9pt, align=center, text=ink, minimum height=1.85cm, inner sep=5.5pt},
+  stagebox/.style={rounded corners=8pt, draw=robust, line width=1.15pt, align=center, text=ink, minimum height=1.35cm, inner sep=5.5pt},
+  softarrow/.style={-Latex, draw=muted_ink, line width=1.2pt},
+  auxarrow/.style={-Latex, draw=active_adaptive, line width=1.0pt},
+  note/.style={text=muted_ink, font=\fontsize{10.2}{12.2}\selectfont}
+]
 
-    _box(
-        ax,
-        (0.03, 0.30),
-        (0.17, 0.40),
-        "Observer Pose Input\nGNSS / VIO / INS / SLAM\nreported with uncertainty",
-        "#E2E8F0",
-    )
-    _box(
-        ax,
-        (0.24, 0.30),
-        (0.17, 0.40),
-        "Bearing Extraction\nEO / DF payloads\nasynchronous angle cues",
-        "#DBEAFE",
-    )
-    _box(
-        ax,
-        (0.45, 0.16),
-        (0.28, 0.68),
-        "Corruption-Aware Front End",
-        "#ECFDF5",
-        ec="#047857",
-        lw=1.6,
-        fs=12,
-    )
-    _box(
-        ax,
-        (0.48, 0.48),
-        (0.22, 0.22),
-        "Stage 1\nConsensus-assisted\nrobust localization",
-        "#D1FAE5",
-        ec="#0F766E",
-        fs=10,
-    )
-    _box(
-        ax,
-        (0.48, 0.20),
-        (0.22, 0.18),
-        "Stage 2 (optional)\nAdaptive fixed-budget\nmeasurement screening",
-        "#DCFCE7",
-        ec="#166534",
-        fs=10,
-    )
-    _box(
-        ax,
-        (0.78, 0.42),
-        (0.18, 0.18),
-        "Downstream Target Cue\nposition estimate\nfor current cycle",
-        "#FEF3C7",
-        ec="#B45309",
-    )
-    _box(
-        ax,
-        (0.78, 0.14),
-        (0.18, 0.18),
-        "Consumers\ntracker / handoff /\nformation replanning",
-        "#FDE68A",
-        ec="#A16207",
-    )
+\node[box, fill=huber!18, minimum width=3.7cm] (pose) at (0,0)
+{Observer Pose Input\\GNSS / VIO / INS / SLAM\\reported with uncertainty};
 
-    _arrow(ax, (0.20, 0.50), (0.24, 0.50))
-    _arrow(ax, (0.41, 0.50), (0.45, 0.50))
-    _arrow(ax, (0.73, 0.50), (0.78, 0.50))
-    _arrow(ax, (0.87, 0.42), (0.87, 0.32), color="#A16207")
+\node[box, fill=robust!14, minimum width=3.85cm, right=1.0cm of pose] (bearing)
+{Bearing Extraction\\EO / DF payloads\\asynchronous angle cues};
 
-    ax.text(
-        0.59,
-        0.82,
-        "Corruption sources handled in this paper:\nmissing bearings, shared / heterogeneous bias, outliers, pose uncertainty",
-        ha="center",
-        va="center",
-        fontsize=10,
-        color="#065F46",
-    )
-    ax.text(
-        0.59,
-        0.08,
-        "Engineering gate: keep all-sensor robust fusion when credibility spread is low; screen only when budget or heterogeneity justifies pruning.",
-        ha="center",
-        va="center",
-        fontsize=9.5,
-        color="#14532D",
-    )
-    _save(fig, "figure_system_pipeline.png")
+\node[stagebox, fill=robust!16, minimum width=3.8cm, right=1.05cm of bearing, yshift=0.78cm] (stageone)
+{Always-on robust fusion\\(consensus + trimmed LM)};
+
+\node[stagebox, fill=active_adaptive!14, draw=active_adaptive, minimum width=3.8cm, below=0.58cm of stageone] (stagetwo)
+{Optional screening add-on\\(budget / heterogeneity only)};
+
+\node[draw=robust!40, rounded corners=10pt, line width=1.0pt, inner xsep=0.55cm, inner ysep=0.48cm, fit=(stageone)(stagetwo)] (module) {};
+
+\node[box, fill=degraded!18, draw=degraded!55!line_light, minimum width=3.35cm, right=1.1cm of module, yshift=0.48cm] (cue)
+{Downstream Target Cue\\position estimate\\for current cycle};
+
+\node[box, fill=ransac!15, draw=ransac!55!line_light, minimum width=3.35cm, below=0.6cm of cue] (consumer)
+{Consumers\\tracker / handoff /\\formation replanning};
+
+\draw[softarrow] (pose) -- (bearing);
+\draw[softarrow] (bearing) -- ($(module.west)+(0.0,0.0)$);
+\draw[softarrow] ($(module.east)+(0.0,0.0)$) -- (cue.west);
+\draw[auxarrow] (cue.south) -- (consumer.north);
+
+\node[note, below=0.7cm of module, align=center] {Engineering rule: keep all-sensor robust fusion by default; activate screening only when\\budget limits or cue heterogeneity justify pruning.};
+\end{tikzpicture}
+"""
+    _render_tikz_figure("figure_system_pipeline", tikz)
 
 
 def plot_frontend_flow() -> None:
-    fig, ax = plt.subplots(figsize=(12.6, 4.8))
-    ax.set_xlim(0.0, 1.0)
-    ax.set_ylim(0.0, 1.0)
-    ax.axis("off")
+    tikz = r"""
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  >=Latex,
+  font=\fontsize{10.8}{12.6}\selectfont,
+  box/.style={rounded corners=7pt, draw=line_light, line width=0.95pt, align=center, text=ink, minimum height=1.55cm, inner sep=5.5pt},
+  gate/.style={diamond, aspect=1.55, draw=degraded!65!line_light, line width=1.0pt, align=center, text=ink, inner sep=2.4pt, minimum width=2.4cm, fill=degraded!16},
+  softarrow/.style={-Latex, draw=muted_ink, line width=1.2pt},
+  yesarrow/.style={-Latex, draw=active_adaptive, line width=1.0pt},
+  noarrow/.style={-Latex, draw=active_all, line width=1.0pt},
+  note/.style={text=muted_ink, font=\fontsize{10.0}{12.0}\selectfont}
+]
 
-    _box(ax, (0.03, 0.34), (0.14, 0.28), "Current-cycle bearings\n+ reported poses", "#E0F2FE", ec="#0369A1")
-    _box(ax, (0.21, 0.34), (0.15, 0.28), "Pairwise intersections\n+ consensus seeds", "#DBEAFE", ec="#2563EB")
-    _box(ax, (0.40, 0.34), (0.16, 0.28), "Trimmed IRLS\nwith LM updates\nand optional bias", "#DCFCE7", ec="#15803D")
-    _box(ax, (0.60, 0.60), (0.17, 0.20), "Residual / reliability gate\nheterogeneous window?", "#FEF3C7", ec="#B45309")
-    _box(ax, (0.60, 0.14), (0.17, 0.20), "Keep all-sensor robust cue\n(default path)", "#E5E7EB", ec="#6B7280")
-    _box(ax, (0.81, 0.56), (0.16, 0.24), "Stage 2 optional\nbudgeted subset search\n(FIM surrogate + residuals)", "#FCE7F3", ec="#BE185D")
-    _box(ax, (0.81, 0.14), (0.16, 0.22), "Output cue for\ntracking / handoff /\nreplanning", "#FDE68A", ec="#A16207")
+\node[box, fill=huber!18, minimum width=3.35cm] (input) at (0,0)
+{Current-cycle bearings\\+ reported poses};
 
-    _arrow(ax, (0.17, 0.48), (0.21, 0.48))
-    _arrow(ax, (0.36, 0.48), (0.40, 0.48))
-    _arrow(ax, (0.56, 0.48), (0.60, 0.68))
-    _arrow(ax, (0.56, 0.48), (0.60, 0.24))
-    _arrow(ax, (0.77, 0.68), (0.81, 0.68))
-    _arrow(ax, (0.77, 0.24), (0.81, 0.24))
-    _arrow(ax, (0.89, 0.56), (0.89, 0.36), color="#A16207")
+\node[box, fill=gnc!16, draw=robust!45!line_light, minimum width=3.35cm, right=0.9cm of input] (seed)
+{Pairwise intersections\\+ consensus seeding};
 
-    ax.text(0.69, 0.86, "Stage 1 is the core contribution; Stage 2 is only activated when budget or credibility dispersion justifies pruning.", ha="center", va="center", fontsize=10.2, color="#78350F")
-    ax.text(0.69, 0.05, "Outputs are current-cycle localization cues, not a full autonomy stack or distributed swarm planner.", ha="center", va="center", fontsize=10.0, color="#475569")
-    _save(fig, "figure_frontend_flow.png")
+\node[box, fill=robust!16, draw=robust, line width=1.05pt, minimum width=3.75cm, right=0.95cm of seed] (irls)
+{Trimmed IRLS / LM\\optional common-bias\\correction};
+
+\node[gate, right=1.0cm of irls] (gate)
+{Gate:\\heterogeneous or\\budget-limited\\window?};
+
+\node[box, fill=active_adaptive!14, draw=active_adaptive, minimum width=3.0cm, above right=0.15cm and 1.05cm of gate] (screen)
+{Optional\\screening};
+
+\node[box, fill=active_all!16, draw=active_all, minimum width=3.0cm, below right=0.12cm and 1.05cm of gate] (keep)
+{Keep all-sensor cue\\(default path)};
+
+\node[box, fill=ransac!14, draw=ransac!60!line_light, minimum width=2.9cm, minimum height=2.05cm, right=1.0cm of gate] (output)
+{Output cue\\for tracking /\\handoff /\\replanning};
+
+\draw[softarrow] (input) -- (seed);
+\draw[softarrow] (seed) -- (irls);
+\draw[softarrow] (irls) -- (gate);
+\draw[softarrow] (gate) -- (output);
+
+\draw[yesarrow] (gate.north east) |- node[pos=0.24, right, text=active_adaptive, font=\fontsize{9.6}{10.5}\selectfont] {yes} (screen.west);
+\draw[yesarrow] (screen.east) |- (output.north);
+
+\draw[noarrow] (gate.south east) |- node[pos=0.25, right, text=active_all, font=\fontsize{9.6}{10.5}\selectfont] {no} (keep.west);
+\draw[noarrow] (keep.east) |- (output.south);
+
+\end{tikzpicture}
+"""
+    _render_tikz_figure("figure_frontend_flow", tikz)
 
 
 def plot_regime_comparison() -> None:
@@ -409,15 +631,40 @@ def plot_runtime() -> None:
     methods = ["least_squares", "robust_huber", "gnc_gm", "ransac", "robust_bias_trimmed"]
     labels = ["LS", "Huber", "GNC-GM", "RANSAC", "Proposed"]
     method_stats = payload["methods"]
-    vals = [method_stats[m]["median_ms"] for m in methods]
+    colors = [PALETTE["ls"], PALETTE["huber"], PALETTE["gnc"], PALETTE["ransac"], PALETTE["robust"]]
+    ranking = sorted(zip(labels, [method_stats[m]["median_ms"] for m in methods], colors), key=lambda item: item[1])
 
-    fig, axes = plt.subplots(1, 2, figsize=(12.8, 4.6), gridspec_kw={"width_ratios": [1.0, 1.15]})
-    axes[0].bar(labels, vals, color=[PALETTE["ls"], PALETTE["huber"], PALETTE["gnc"], PALETTE["ransac"], PALETTE["robust"]])
-    for idx, val in enumerate(vals):
-        axes[0].text(idx, val, f"{val:.1f}", ha="center", va="bottom", fontsize=9.5, color="#0F172A")
-    axes[0].set_ylabel("Median runtime (ms)")
-    axes[0].set_title("Method-wise runtime")
-    axes[0].grid(True, axis="y", linestyle=":", alpha=0.4)
+    fig, axes = plt.subplots(2, 1, figsize=(10.8, 7.2), gridspec_kw={"height_ratios": [0.92, 1.15]})
+    rank_labels = [item[0] for item in ranking]
+    rank_vals = [item[1] for item in ranking]
+    rank_colors = [item[2] for item in ranking]
+    y = np.arange(len(rank_labels))
+    axes[0].barh(
+        y,
+        rank_vals,
+        height=0.56,
+        color=[_mix(color, ratio=0.58) for color in rank_colors],
+        edgecolor=rank_colors,
+        linewidth=1.2,
+    )
+    for idx, val in enumerate(rank_vals):
+        axes[0].text(
+            val + 0.42,
+            idx,
+            f"{val:.2f} ms",
+            va="center",
+            ha="left",
+            fontsize=10.1,
+            color=PALETTE["ink"],
+        )
+    axes[0].set_yticks(y)
+    axes[0].set_yticklabels(rank_labels)
+    axes[0].invert_yaxis()
+    axes[0].set_xlabel("Median latency (ms)")
+    axes[0].set_title("Per-cycle latency by method", loc="left", fontsize=13.2)
+    axes[0].set_xlim(0.0, max(rank_vals) * 1.18)
+    _light_panel(axes[0], _mix(PALETTE["panel"], ratio=0.06))
+    _style_axes(axes[0], grid_axis="x")
 
     counts = payload["scaling"]["counts"]
     for key, label, color in [
@@ -427,12 +674,14 @@ def plot_runtime() -> None:
     ]:
         ys = [payload["scaling"][key][str(count)]["median_ms"] for count in counts if str(count) in payload["scaling"][key]]
         xs = [count for count in counts if str(count) in payload["scaling"][key]]
-        axes[1].plot(xs, ys, marker="o", linewidth=2.3, color=color, label=label)
+        axes[1].plot(xs, ys, marker="o", markersize=6.3, linewidth=2.45, color=color, label=label, alpha=0.96)
     axes[1].set_xlabel("Number of observers")
     axes[1].set_ylabel("Median runtime (ms)")
-    axes[1].set_title("Runtime scaling by stage")
-    axes[1].grid(True, linestyle=":", alpha=0.35)
-    axes[1].legend(frameon=False, loc="upper left")
+    axes[1].set_title("Stage-wise scaling vs. observer count", loc="left", fontsize=13.2)
+    _light_panel(axes[1], _mix(PALETTE["panel"], ratio=0.04))
+    _style_axes(axes[1], grid_axis="both")
+    legend = axes[1].legend(loc="upper left", ncol=1)
+    _style_legend(legend)
     hardware = payload["meta"]["hardware"]
     axes[1].text(
         0.98,
@@ -442,8 +691,8 @@ def plot_runtime() -> None:
         ha="right",
         va="bottom",
         fontsize=8.8,
-        color="#334155",
-        bbox={"boxstyle": "round,pad=0.22", "facecolor": "#F8FAFC", "edgecolor": "#CBD5E1"},
+        color=PALETTE["muted_ink"],
+        bbox={"boxstyle": "round,pad=0.24", "facecolor": "white", "edgecolor": PALETTE["line_light"]},
     )
     _save(fig, "figure_runtime_comparison.png")
 
@@ -562,25 +811,28 @@ def plot_active_selection() -> None:
     catastrophic = [summary["overall"][key]["catastrophic_at_5_0"] for key in policy_keys]
     counts = sorted(int(key) for key in summary["by_num_uavs"].keys())
 
-    fig, axes = plt.subplots(1, 2, figsize=(12.2, 4.6))
-    axes[0].bar(labels, overall_medians, color=colors)
-    axes[0].set_ylabel("Median Error")
-    axes[0].set_title("Measurement Screening Overall")
-    axes[0].grid(True, axis="y", linestyle=":", alpha=0.35)
-    axes[0].tick_params(axis="x", rotation=12)
+    fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.9), gridspec_kw={"width_ratios": [0.92, 1.08]})
+    summary_rows = sorted(zip(labels, overall_medians, catastrophic, colors), key=lambda item: item[1])
+    y = np.arange(len(summary_rows))
+    axes[0].barh(y, [row[1] for row in summary_rows], color=[row[3] for row in summary_rows], height=0.68)
+    for idx, (_label, median, fail, _color) in enumerate(summary_rows):
+        axes[0].text(median + 0.012, idx, f"{median:.2f} | fail={fail:.02f}", va="center", ha="left", fontsize=8.8, color=PALETTE["ink"])
+    axes[0].set_yticks(y)
+    axes[0].set_yticklabels([row[0] for row in summary_rows])
+    axes[0].invert_yaxis()
+    axes[0].set_xlabel("Median error")
+    axes[0].set_title("Budgeted screening summary", loc="left")
+    _style_axes(axes[0], grid_axis="x")
 
     for key, label, color in zip(policy_keys, labels, colors):
         ys = [summary["by_num_uavs"][str(count)][key]["median"] for count in counts]
-        axes[1].plot(counts, ys, marker="o", linewidth=2.0, label=label, color=color)
+        axes[1].plot(counts, ys, marker="o", markersize=6.4, linewidth=2.2, label=label, color=color)
     axes[1].set_xlabel("Number of UAVs")
-    axes[1].set_ylabel("Median Error")
-    axes[1].set_title("Scaling Under Measurement Screening")
-    axes[1].grid(True, linestyle=":", alpha=0.35)
-    axes[1].legend(frameon=False, loc="upper right")
-
-    # Add catastrophic-rate annotations to the first panel for quick paper reuse.
-    for idx, rate in enumerate(catastrophic):
-        axes[0].text(idx, overall_medians[idx], f"{rate:.2f}", ha="center", va="bottom", fontsize=9, color="#111827")
+    axes[1].set_ylabel("Median error")
+    axes[1].set_title("Observer-count scaling", loc="left")
+    _style_axes(axes[1], grid_axis="both")
+    legend = axes[1].legend(loc="upper right", ncol=2)
+    _style_legend(legend)
 
     _save(fig, "figure_active_selection.png")
 
@@ -590,36 +842,75 @@ def plot_story_benchmark() -> None:
     regimes = ["clean", "outlier", "mixed", "pose_uncertainty", "heterogeneous_bias"]
     regime_labels = ["Clean", "Outlier", "Mixed", "Pose Noise", "Het. Bias"]
     methods = [
-        ("least_squares_error", "LS", PALETTE["ls"]),
-        ("robust_error", "Huber", PALETTE["huber"]),
-        ("tukey_error", "Tukey", PALETTE["tukey"]),
-        ("ransac_error", "RANSAC", PALETTE["ransac"]),
-        ("gnc_gm_error", "GNC-GM", PALETTE["gnc"]),
-        ("robust_bias_trimmed_error", "Proposed", PALETTE["robust"]),
+        ("least_squares_error", "LS", PALETTE["ls"], "o"),
+        ("robust_error", "Huber", PALETTE["huber"], "s"),
+        ("ransac_error", "RANSAC", PALETTE["ransac"], "^"),
+        ("gnc_gm_error", "GNC-GM", PALETTE["gnc"], "D"),
+        ("robust_bias_trimmed_error", "Proposed", PALETTE["robust"], "o"),
     ]
 
-    fig, axes = plt.subplots(1, 2, figsize=(14.0, 4.8))
+    fig, axes = plt.subplots(1, 2, figsize=(13.8, 4.9), gridspec_kw={"width_ratios": [1.06, 0.94]})
     x = np.arange(len(regimes))
-    width = 0.13
-    for idx, (key, label, color) in enumerate(methods):
+    left_vals = []
+    right_vals = []
+    for key, label, color, marker in methods:
         medians = [payload["summary"]["by_regime"][regime][key]["median"] for regime in regimes]
-        axes[0].bar(x + (idx - 2.5) * width, medians, width=width, color=color, label=label)
+        left_vals.extend(medians)
+        axes[0].plot(
+            x,
+            medians,
+            marker=marker,
+            markersize=6.8,
+            linewidth=2.2,
+            color=color,
+            label=label,
+        )
+        cat = [payload["summary"]["by_regime"][regime][key]["catastrophic_at_0_5R"] for regime in regimes]
+        right_vals.extend(cat)
+        axes[1].plot(
+            x,
+            cat,
+            marker=marker,
+            markersize=6.8,
+            linewidth=2.2,
+            color=color,
+            label=label,
+        )
+    for ax in axes:
+        ax.axvspan(0.5, 2.5, color=PALETTE["warm_panel"], alpha=0.56, zorder=0)
+        ax.text(
+            1.5,
+            0.96,
+            "corruption-dominant cases",
+            transform=ax.get_xaxis_transform(),
+            ha="center",
+            va="top",
+            fontsize=9.3,
+            color=PALETTE["muted_ink"],
+        )
     axes[0].set_xticks(x)
     axes[0].set_xticklabels(regime_labels, rotation=10)
-    axes[0].set_ylabel("Median Localization Error")
-    axes[0].set_title("Robust Localization Across Corruption Regimes")
-    axes[0].grid(True, axis="y", linestyle=":", alpha=0.35)
+    axes[0].set_ylabel("Median error (normalized by $R$)")
+    axes[0].set_title("Localization error across corruption regimes", loc="left")
+    axes[0].set_ylim(0.0, max(left_vals) * 1.12)
+    _style_axes(axes[0], grid_axis="y")
 
-    for idx, (key, label, color) in enumerate(methods):
-        cat = [payload["summary"]["by_regime"][regime][key]["catastrophic_at_0_5R"] for regime in regimes]
-        axes[1].plot(x, cat, marker="o", linewidth=2.0, color=color, label=label)
     axes[1].set_xticks(x)
     axes[1].set_xticklabels(regime_labels, rotation=10)
-    axes[1].set_ylim(-0.01, 1.0)
-    axes[1].set_ylabel("Catastrophic Failure Rate")
-    axes[1].set_title("Failure-Risk Envelope")
-    axes[1].grid(True, linestyle=":", alpha=0.35)
-    axes[1].legend(frameon=False, ncol=2, loc="upper left")
+    axes[1].set_ylim(0.0, max(right_vals) * 1.24)
+    axes[1].set_ylabel("Failure rate ($>0.5R$)")
+    axes[1].set_title("Failure-risk envelope", loc="left")
+    _style_axes(axes[1], grid_axis="y")
+    handles, labels = axes[1].get_legend_handles_labels()
+    legend = axes[1].legend(
+        handles,
+        labels,
+        loc="upper right",
+        ncol=2,
+        columnspacing=1.1,
+        handlelength=2.0,
+    )
+    _style_legend(legend)
     _save(fig, "figure_story_regimes.png")
 
 
@@ -655,16 +946,25 @@ def plot_selection_benefit_map() -> None:
     outlier_rates = payload["meta"]["outlier_rates"]
     budget_fracs = payload["meta"]["budget_fracs"]
     policies = ["observability_robust", "adaptive"]
-    titles = ["Proposed Screening vs All-Sensor", "Adaptive Screening vs All-Sensor"]
+    titles = ["Proposed Screening vs. All-Sensor Robust Fusion", "Adaptive Screening vs. All-Sensor Robust Fusion"]
 
-    fig, axes = plt.subplots(1, 2, figsize=(11.8, 4.6), sharey=True)
-    for ax, policy, title in zip(axes, policies, titles):
+    cmap = EDITORIAL_DIVERGING
+    benefit_grids = []
+    for policy in policies:
         grid = np.zeros((len(outlier_rates), len(budget_fracs)), dtype=float)
         for i, outlier_rate in enumerate(outlier_rates):
             for j, budget_frac in enumerate(budget_fracs):
                 key = f"outlier_{outlier_rate:.2f}__budget_{budget_frac:.2f}"
-                grid[i, j] = payload["summary"][key]["delta_vs_all"][policy]
-        im = ax.imshow(grid, cmap="RdYlGn", aspect="auto", origin="lower")
+                grid[i, j] = -payload["summary"][key]["delta_vs_all"][policy]
+        benefit_grids.append(grid)
+
+    max_abs = max(float(np.max(np.abs(grid))) for grid in benefit_grids)
+    norm = TwoSlopeNorm(vmin=-max_abs, vcenter=0.0, vmax=max_abs)
+    fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.9), sharey=True)
+    fig.subplots_adjust(left=0.08, right=0.90, bottom=0.16, top=0.89, wspace=0.10)
+    for ax, grid, title in zip(axes, benefit_grids, titles):
+        _light_panel(ax, PALETTE["note_fill"])
+        im = ax.imshow(grid, cmap=cmap, norm=norm, aspect="auto", origin="lower", interpolation="nearest")
         ax.set_xticks(np.arange(len(budget_fracs)))
         ax.set_xticklabels([f"{v:.2f}" for v in budget_fracs])
         ax.set_yticks(np.arange(len(outlier_rates)))
@@ -673,60 +973,21 @@ def plot_selection_benefit_map() -> None:
         ax.set_title(title)
         for i in range(len(outlier_rates)):
             for j in range(len(budget_fracs)):
-                ax.text(j, i, f"{grid[i, j]:.2f}", ha="center", va="center", fontsize=8, color="#111827")
+                ax.text(j, i, f"{grid[i, j]:+.2f}", ha="center", va="center", fontsize=8.4, color=PALETTE["ink"])
+        ax.tick_params(length=0)
+        for spine in ax.spines.values():
+            spine.set_color(PALETTE["line_light"])
+            spine.set_linewidth(1.0)
     axes[0].set_ylabel("Outlier Rate")
-    cbar = fig.colorbar(im, ax=axes.ravel().tolist(), shrink=0.86)
-    cbar.set_label("Median Error Gain Over All-Sensor")
-    _save(fig, "figure_selection_benefit_map.png")
+    cbar = fig.colorbar(im, ax=axes, fraction=0.038, pad=0.03)
+    cbar.set_label("Median error difference\nvs. all-sensor fusion", color=PALETTE["ink"], labelpad=10)
+    cbar.outline.set_edgecolor(PALETTE["line_light"])
+    cbar.outline.set_linewidth(0.9)
+    cbar.ax.tick_params(colors=PALETTE["muted_ink"])
+    _save(fig, "figure_selection_benefit_map.png", tight=False)
 
 
 def plot_screening_weight_sensitivity() -> None:
-    if not (EXP / "screening_weight_sensitivity.json").exists() and (EXP / "screening_weight_grid_result.json").exists():
-        payload = json.loads((EXP / "screening_weight_grid_result.json").read_text(encoding="utf-8"))
-        combos = payload["combinations"]
-        baseline = payload["baseline"]["default_median_error"]
-        medians = np.array([item["median_error"] for item in combos], dtype=float)
-        overlaps = np.array([item["mean_jaccard"] for item in combos], dtype=float)
-        stress = np.array([max(abs(mult - 1.0) for mult in item["multipliers"]) for item in combos], dtype=float)
-
-        fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.8))
-        axes[0].scatter(stress * 100.0, medians, s=42, alpha=0.75, color=PALETTE["active_proposed"], edgecolor="white", linewidth=0.5)
-        axes[0].axhline(baseline, color=PALETTE["active_all"], linestyle="--", linewidth=1.8, label="Default weights")
-        axes[0].fill_between(
-            [18, 22],
-            np.percentile(medians, 5),
-            np.percentile(medians, 95),
-            color="#D1FAE5",
-            alpha=0.8,
-            label="5--95% across exact +/-20% grid",
-        )
-        axes[0].set_xlabel("Largest coefficient perturbation (%)")
-        axes[0].set_ylabel("Median Error Across Budgeted Windows")
-        axes[0].set_title("Exact +/-20% Weight Grid")
-        axes[0].grid(True, axis="y", linestyle=":", alpha=0.35)
-        axes[0].legend(frameon=False, loc="upper left")
-
-        axes[1].scatter(medians, overlaps, s=48, alpha=0.78, color=PALETTE["active_spread"], edgecolor="white", linewidth=0.5)
-        axes[1].axvline(baseline, color=PALETTE["active_all"], linestyle="--", linewidth=1.6)
-        axes[1].set_xlabel("Median Error Across Budgeted Windows")
-        axes[1].set_ylabel("Mean Jaccard Overlap vs Default Subset")
-        axes[1].set_ylim(0.75, 1.01)
-        axes[1].set_title("Subset Choices Stay Stable")
-        axes[1].grid(True, linestyle=":", alpha=0.35)
-        axes[1].text(
-            0.02,
-            0.05,
-            f"Median overlap = {np.median(overlaps):.3f}\nMedian error inflation = {100.0 * (np.median(medians) - baseline) / baseline:.1f}%",
-            transform=axes[1].transAxes,
-            ha="left",
-            va="bottom",
-            fontsize=9,
-            color="#0F172A",
-            bbox={"boxstyle": "round,pad=0.25", "facecolor": "#F8FAFC", "edgecolor": "#CBD5E1"},
-        )
-        _save(fig, "figure_screening_weight_sensitivity.png")
-        return
-
     payload = json.loads((EXP / "screening_weight_sensitivity.json").read_text(encoding="utf-8"))
     levels = ["mild", "moderate", "strong"]
     labels = ["Mild", "Moderate", "Strong"]
@@ -744,7 +1005,7 @@ def plot_screening_weight_sensitivity() -> None:
             tick_labels=labels,
             patch_artist=True,
             widths=0.55,
-            medianprops={"color": "#0F172A", "linewidth": 1.4},
+            medianprops={"color": PALETTE["ink"], "linewidth": 1.4},
             boxprops={"linewidth": 1.2},
             whiskerprops={"linewidth": 1.0},
             capprops={"linewidth": 1.0},
@@ -815,8 +1076,8 @@ def plot_threshold_sweep() -> None:
             xs = [entry["threshold_r"] for entry in entries]
             ys = [entry["success_rate"] for entry in entries]
             ax.plot(xs, ys, marker="o", linewidth=2.1, color=color, label=label)
-        ax.axvline(0.2, color="#CBD5E1", linestyle="--", linewidth=1.1)
-        ax.axvline(0.3, color="#94A3B8", linestyle="--", linewidth=1.1)
+        ax.axvline(0.2, color=PALETTE["line_light"], linestyle="--", linewidth=1.1)
+        ax.axvline(0.3, color=PALETTE["active_spread"], linestyle="--", linewidth=1.1)
         ax.set_title(title)
         ax.set_xlabel("Threshold (R)")
         ax.set_xlim(0.1, 0.5)
@@ -855,15 +1116,15 @@ def plot_ransac_failure_case() -> None:
             start = np.array([sensor["x"], sensor["y"]], dtype=float)
             ray = np.array([np.cos(sensor["bearing"]), np.sin(sensor["bearing"])], dtype=float)
             end = start + 16.0 * ray
-            geo_ax.plot([start[0], end[0]], [start[1], end[1]], linestyle="--", linewidth=1.0, color="#CBD5E1", alpha=0.85)
+            geo_ax.plot([start[0], end[0]], [start[1], end[1]], linestyle="--", linewidth=1.0, color=PALETTE["line_light"], alpha=0.88)
             pose_error = float(sensor.get("pose_error", 0.0))
             sensor_bias = float(sensor.get("sensor_bias", 0.0))
             highlight = pose_error > 0.30 or abs(sensor_bias) > 0.05
-            face = "#FDE68A" if highlight else "#E5E7EB"
-            edge = "#B45309" if highlight else "#6B7280"
+            face = PALETTE["sensor_alert"] if highlight else PALETTE["sensor_fill"]
+            edge = PALETTE["sensor_alert_edge"] if highlight else PALETTE["sensor_edge"]
             geo_ax.scatter(sensor["x"], sensor["y"], s=74, color=face, edgecolor=edge, linewidth=0.95, zorder=3)
 
-        geo_ax.scatter(target["x"], target["y"], marker="*", s=240, color="#B91C1C", edgecolor="white", linewidth=0.9, zorder=5, label="True target")
+        geo_ax.scatter(target["x"], target["y"], marker="*", s=240, color=PALETTE["target"], edgecolor="white", linewidth=0.9, zorder=5, label="True target")
         markers = {
             "least_squares": ("o", PALETTE["ls"], "LS"),
             "ransac": ("X", PALETTE["ransac"], "RANSAC"),
@@ -901,7 +1162,7 @@ def plot_ransac_failure_case() -> None:
         bar_ax.bar(labels, vals, color=colors)
         best_idx = int(np.argmin(vals))
         for idx, val in enumerate(vals):
-            txt_color = "#065F46" if idx == best_idx else "#0F172A"
+            txt_color = PALETTE["robust"] if idx == best_idx else PALETTE["ink"]
             bar_ax.text(idx, val, f"{val:.2f}", ha="center", va="bottom", fontsize=9.2, color=txt_color)
         bar_ax.set_ylabel("Localization error")
         bar_ax.set_title("Method error on this window")
@@ -912,42 +1173,72 @@ def plot_ransac_failure_case() -> None:
 
 def plot_tracking_proxy() -> None:
     payload = json.loads((EXP / "tracking_proxy_result.json").read_text(encoding="utf-8"))
-    methods = ["LS", "RANSAC", "Proposed"]
+    methods = ["LS", "GNC-GM", "RANSAC", "Proposed"]
     overall = payload["summary"]["overall"]
     disturbed = payload["summary"]["by_regime"]["disturbed_pybullet"]
     metrics = [
-        ("overall_break", "Overall sequence break rate", [overall[m]["sequence_break_rate"] for m in methods], True),
-        ("disturbed_break", "Disturbed sequence break rate", [disturbed[m]["sequence_break_rate"] for m in methods], True),
-        ("rapid_reacq", "Rapid reacquisition rate", [disturbed[m]["mean_rapid_reacquisition_rate"] for m in methods], True),
-        ("disturbed_roi", "Disturbed ROI radius P90", [disturbed[m]["median_roi_radius_p90"] for m in methods], False),
+        ("overall_break", "Overall sequence break rate", [overall[m]["sequence_break_rate"] for m in methods], True, "lower"),
+        ("disturbed_break", "Disturbed sequence break rate", [disturbed[m]["sequence_break_rate"] for m in methods], True, "lower"),
+        ("rapid_reacq", "Rapid reacquisition rate", [disturbed[m]["mean_rapid_reacquisition_rate"] for m in methods], True, "higher"),
+        ("disturbed_roi", "Disturbed ROI radius (P90)", [disturbed[m]["median_roi_radius_p90"] for m in methods], False, "lower"),
     ]
+    colors = [PALETTE["ls"], PALETTE["gnc"], PALETTE["ransac"], PALETTE["robust"]]
 
-    fig, axes = plt.subplots(1, 4, figsize=(16.4, 4.6))
-    for ax, (_metric_key, title, vals, as_percent) in zip(axes, metrics):
-        colors = [PALETTE["ls"], PALETTE["ransac"], PALETTE["robust"]]
-        ax.bar(methods, vals, color=colors)
-        for idx, val in enumerate(vals):
-            ax.text(idx, val, f"{val:.2f}", ha="center", va="bottom", fontsize=9, color="#0F172A")
-        ax.set_title(title)
-        ax.grid(True, axis="y", linestyle=":", alpha=0.35)
+    fig, axes = plt.subplots(2, 2, figsize=(11.4, 6.9))
+    for ax, (_metric_key, title, vals, as_percent, direction) in zip(axes.flat, metrics):
+        ranked = sorted(
+            zip(methods, vals, colors),
+            key=lambda item: item[1],
+            reverse=(direction == "higher"),
+        )
+        ranked_methods = [item[0] for item in ranked]
+        ranked_vals = [item[1] for item in ranked]
+        ranked_colors = [item[2] for item in ranked]
+        ypos = np.arange(len(ranked_methods))
+        fill_colors = [_mix(color, ratio=0.58) for color in ranked_colors]
+
+        ax.barh(
+            ypos,
+            ranked_vals,
+            height=0.58,
+            color=fill_colors,
+            edgecolor=ranked_colors,
+            linewidth=1.15,
+        )
+        label_offset = 0.018 * max(max(ranked_vals), 1.0)
+        for idx, (method, val, color) in enumerate(zip(ranked_methods, ranked_vals, ranked_colors)):
+            ax.text(
+                val + label_offset,
+                idx,
+                f"{val:.2f}",
+                va="center",
+                ha="left",
+                fontsize=9.6,
+                color=PALETTE["ink"],
+            )
+        ax.set_yticks(ypos)
+        ax.set_yticklabels(ranked_methods)
+        ax.invert_yaxis()
+        ax.set_title(f"{title} {'↓' if direction == 'lower' else '↑'}", loc="left", fontsize=12.7)
+        ax.set_xlim(0.0, max(ranked_vals) * 1.18 if max(ranked_vals) > 0 else 1.0)
+        _light_panel(ax, _mix(PALETTE["panel"], ratio=0.05))
+        _style_axes(ax, grid_axis="x")
         if as_percent:
-            ax.yaxis.set_major_formatter(PercentFormatter(1.0))
-
-    axes[0].set_ylabel("Proxy metric value")
-    axes[-1].text(
-        0.04,
-        0.95,
-        "Disturbed replay:\n"
-        f"LS ROI$_{{P90}}$ = {disturbed['LS']['median_roi_radius_p90']:.2f}\n"
-        f"RANSAC ROI$_{{P90}}$ = {disturbed['RANSAC']['median_roi_radius_p90']:.2f}\n"
-        f"Proposed ROI$_{{P90}}$ = {disturbed['Proposed']['median_roi_radius_p90']:.2f}",
-        transform=axes[-1].transAxes,
-        ha="left",
-        va="top",
-        fontsize=9,
-        color="#0F172A",
-        bbox={"boxstyle": "round,pad=0.25", "facecolor": "#F8FAFC", "edgecolor": "#CBD5E1"},
-    )
+            ax.xaxis.set_major_formatter(PercentFormatter(1.0))
+            ax.set_xlabel("Rate")
+        else:
+            ax.set_xlabel("P90 radius")
+        if title == "Disturbed break rate" and np.allclose(ranked_vals, ranked_vals[0]):
+            ax.text(
+                0.985,
+                0.08,
+                "All methods tie under disturbed replay",
+                transform=ax.transAxes,
+                ha="right",
+                va="bottom",
+                fontsize=8.6,
+                color=PALETTE["muted_ink"],
+            )
     _save(fig, "figure_tracking_proxy.png")
 
 
@@ -1015,14 +1306,9 @@ def plot_screening_case_studies() -> None:
         ("All-sensor fusion should be kept", _replay_selection_case(worst_row)),
     ]
 
-    fig, axes = plt.subplots(
-        2,
-        2,
-        figsize=(13.0, 9.0),
-        gridspec_kw={"width_ratios": [1.35, 1.0]},
-    )
+    fig, axes = plt.subplots(2, 2, figsize=(13.2, 8.8), gridspec_kw={"width_ratios": [1.05, 1.15]})
     policy_labels = [
-        ("all_sensors", "All", PALETTE["active_all"]),
+        ("all_sensors", "All-sensor", PALETTE["active_all"]),
         ("spread", "Spread", PALETTE["active_spread"]),
         ("crlb", "FIM", PALETTE["active_crlb"]),
         ("residual", "Residual", PALETTE["active_residual"]),
@@ -1034,7 +1320,6 @@ def plot_screening_case_studies() -> None:
     for row_idx, (title, case) in enumerate(cases):
         geo_ax = axes[row_idx, 0]
         bar_ax = axes[row_idx, 1]
-        scenario = case["scenario"]
         target = case["target"]
         valid_sensors = case["valid_sensors"]
         valid_bearings = case["valid_bearings"]
@@ -1045,14 +1330,15 @@ def plot_screening_case_studies() -> None:
             ray = np.array([np.cos(bearing), np.sin(bearing)], dtype=float)
             start = np.array([sensor.x, sensor.y], dtype=float)
             end = start + 16.0 * ray
-            geo_ax.plot([start[0], end[0]], [start[1], end[1]], linestyle="--", linewidth=0.9, color="#CBD5E1", alpha=0.7, zorder=1)
+            geo_ax.plot([start[0], end[0]], [start[1], end[1]], linestyle="--", linewidth=0.9, color=PALETTE["line_light"], alpha=0.72, zorder=1)
 
         geo_ax.scatter(
             [sensor.x for sensor in valid_sensors],
             [sensor.y for sensor in valid_sensors],
-            s=50,
-            color="#E5E7EB",
-            edgecolor="#6B7280",
+            s=46,
+            facecolor="white",
+            color=PALETTE["sensor_fill"],
+            edgecolor=PALETTE["active_random"],
             linewidth=0.8,
             label="Valid sensors",
             zorder=2,
@@ -1062,7 +1348,7 @@ def plot_screening_case_studies() -> None:
         geo_ax.scatter(
             [valid_sensors[idx].x for idx in proposed_sel],
             [valid_sensors[idx].y for idx in proposed_sel],
-            s=82,
+            s=84,
             color=PALETTE["active_proposed"],
             edgecolor="white",
             linewidth=1.1,
@@ -1083,41 +1369,60 @@ def plot_screening_case_studies() -> None:
                 zorder=3,
             )
 
-        geo_ax.scatter(target[0], target[1], marker="*", s=220, color="#B91C1C", edgecolor="white", linewidth=0.8, zorder=5, label="True target")
+        geo_ax.scatter(target[0], target[1], marker="*", s=220, color=PALETTE["target"], edgecolor="white", linewidth=0.8, zorder=5, label="True target")
         geo_ax.scatter(*estimates["all_sensors"]["point"], marker="X", s=90, color=PALETTE["active_all"], zorder=5, label="All-sensor estimate")
         geo_ax.scatter(*estimates["observability_robust"]["point"], marker="s", s=76, color=PALETTE["active_proposed"], zorder=5, label="Proposed estimate")
         geo_ax.scatter(*estimates["adaptive"]["point"], marker="D", s=60, color=PALETTE["active_adaptive"], zorder=5, label="Adaptive estimate")
 
         geo_ax.set_aspect("equal", adjustable="box")
-        geo_ax.grid(True, linestyle=":", alpha=0.35)
+        _style_axes(geo_ax, grid_axis="both")
         geo_ax.set_xlabel("X")
         geo_ax.set_ylabel("Y")
-        geo_ax.set_title(
-            f"{title}\n{row['regime'].title()}, {row['formation'].title()}, {row['num_uavs']} observers, budget={row['budget']}"
+        geo_ax.set_title(title, loc="left")
+        geo_ax.text(
+            0.02,
+            0.98,
+            f"{row['regime'].title()}, {row['formation'].title()}, {row['num_uavs']} observers, budget={row['budget']}",
+            transform=geo_ax.transAxes,
+            ha="left",
+            va="top",
+            fontsize=9.0,
+            color=PALETTE["muted_ink"],
+            bbox={"boxstyle": "round,pad=0.20", "facecolor": "white", "edgecolor": PALETTE["line_light"]},
         )
-        geo_ax.legend(frameon=False, fontsize=8, loc="upper right")
+        if row_idx == 0:
+            legend = geo_ax.legend(loc="upper right", fontsize=8.1)
+            _style_legend(legend)
 
-        labels = [label for _, label, _ in policy_labels]
-        colors = [color for _, _, color in policy_labels]
-        vals = [estimates[key]["error"] for key, _, _ in policy_labels]
-        bar_ax.bar(labels, vals, color=colors)
+        sorted_rows = sorted(
+            [(key, label, estimates[key]["error"], color) for key, label, color in policy_labels],
+            key=lambda item: item[2],
+        )
+        labels = [item[1] for item in sorted_rows]
+        vals = [item[2] for item in sorted_rows]
+        colors = [item[3] for item in sorted_rows]
+        ypos = np.arange(len(labels))
+        bar_ax.barh(ypos, vals, color=colors, edgecolor="none", height=0.68)
+        bar_ax.axvline(estimates["all_sensors"]["error"], color=PALETTE["active_all"], linestyle="--", linewidth=1.2)
         best_idx = int(np.argmin(vals))
         for idx, val in enumerate(vals):
-            color = "#111827" if idx != best_idx else "#065F46"
-            bar_ax.text(idx, val, f"{val:.2f}", ha="center", va="bottom", fontsize=8, color=color)
-        bar_ax.set_ylabel("Localization Error")
-        bar_ax.set_title("Policy outcome on this case")
-        bar_ax.grid(True, axis="y", linestyle=":", alpha=0.35)
-        bar_ax.tick_params(axis="x", rotation=12)
+            txt_color = PALETTE["robust"] if idx == best_idx else PALETTE["ink"]
+            bar_ax.text(val + max(vals) * 0.02, idx, f"{val:.2f}", va="center", ha="left", fontsize=8.9, color=txt_color)
+        bar_ax.set_yticks(ypos)
+        bar_ax.set_yticklabels(labels)
+        bar_ax.invert_yaxis()
+        bar_ax.set_xlabel("Localization error")
+        bar_ax.set_title("Policy outcome on this case", loc="left")
+        _style_axes(bar_ax, grid_axis="x")
 
         if not estimates["adaptive"]["triggered"]:
             bar_ax.text(
-                0.03,
-                0.95,
+                0.02,
+                0.06,
                 "Adaptive gate kept full-set fusion",
                 transform=bar_ax.transAxes,
                 ha="left",
-                va="top",
+                va="bottom",
                 fontsize=9,
                 color=PALETTE["active_adaptive"],
             )
@@ -1137,7 +1442,7 @@ def plot_pybullet_validation() -> None:
 
     fig, axes = plt.subplots(1, 3, figsize=(13.6, 4.6), gridspec_kw={"width_ratios": [1.35, 1.0, 1.0]})
 
-    trajectory_colors = plt.cm.cividis(np.linspace(0.18, 0.92, len(trace["drones"])))
+    trajectory_colors = _editorial_series(len(trace["drones"]), 0.10, 0.88)
     for color, drone in zip(trajectory_colors, trace["drones"]):
         axes[0].plot(drone["x"], drone["y"], linewidth=1.4, alpha=0.86, color=color)
     axes[0].scatter(
@@ -1145,7 +1450,7 @@ def plot_pybullet_validation() -> None:
         [trace["meta"]["target"]["y"]],
         marker="*",
         s=180,
-        color="#B91C1C",
+        color=PALETTE["target"],
         edgecolor="white",
         linewidth=0.8,
         zorder=5,
@@ -1169,9 +1474,9 @@ def plot_pybullet_validation() -> None:
     axes[1].bar(x - width / 2, ls_medians, width=width, color=PALETTE["ls"], label="LS")
     axes[1].bar(x + width / 2, rb_medians, width=width, color=PALETTE["robust"], label="Proposed")
     for idx, value in enumerate(ls_p90):
-        axes[1].text(x[idx] - width / 2, ls_medians[idx], f"P90={value:.2f}", ha="center", va="bottom", fontsize=8, color="#374151")
+        axes[1].text(x[idx] - width / 2, ls_medians[idx], f"P90={value:.2f}", ha="center", va="bottom", fontsize=8, color=PALETTE["muted_ink"])
     for idx, value in enumerate(rb_p90):
-        axes[1].text(x[idx] + width / 2, rb_medians[idx], f"P90={value:.2f}", ha="center", va="bottom", fontsize=8, color="#065F46")
+        axes[1].text(x[idx] + width / 2, rb_medians[idx], f"P90={value:.2f}", ha="center", va="bottom", fontsize=8, color=PALETTE["robust"])
     axes[1].set_xticks(x)
     axes[1].set_xticklabels(regime_labels)
     axes[1].set_ylabel("Median Error")
@@ -1187,9 +1492,9 @@ def plot_pybullet_validation() -> None:
     axes[2].bar(x - width / 2, ls_success, width=width, color=PALETTE["ls"], label="LS")
     axes[2].bar(x + width / 2, rb_success, width=width, color=PALETTE["robust"], label="Proposed")
     for idx, value in enumerate(ls_fail):
-        axes[2].text(x[idx] - width / 2, ls_success[idx], f"fail={value:.2f}", ha="center", va="bottom", fontsize=8, color="#374151")
+        axes[2].text(x[idx] - width / 2, ls_success[idx], f"fail={value:.2f}", ha="center", va="bottom", fontsize=8, color=PALETTE["muted_ink"])
     for idx, value in enumerate(rb_fail):
-        axes[2].text(x[idx] + width / 2, rb_success[idx], f"fail={value:.2f}", ha="center", va="bottom", fontsize=8, color="#065F46")
+        axes[2].text(x[idx] + width / 2, rb_success[idx], f"fail={value:.2f}", ha="center", va="bottom", fontsize=8, color=PALETTE["robust"])
     axes[2].set_xticks(x)
     axes[2].set_xticklabels(regime_labels)
     axes[2].set_ylim(0.0, 1.05)
@@ -1215,16 +1520,16 @@ def plot_public_real_replay() -> None:
         ("robust_bias_trimmed", "Proposed", PALETTE["robust"]),
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(14.4, 4.9), gridspec_kw={"width_ratios": [1.15, 1.0, 1.0]})
+    fig, axes = plt.subplots(1, 3, figsize=(14.6, 5.2), gridspec_kw={"width_ratios": [1.0, 1.05, 1.0]})
 
     ax = axes[0]
-    ax.plot(trajectory[:, 0], trajectory[:, 1], color="#94A3B8", linewidth=1.8, alpha=0.95, label="RTK trajectory")
+    ax.plot(trajectory[:, 0], trajectory[:, 1], color=PALETTE["trajectory"], linewidth=1.7, alpha=0.9, label="RTK trajectory")
     ax.scatter(
         trajectory[0, 0],
         trajectory[0, 1],
         marker="o",
-        s=52,
-        color="#0F766E",
+        s=56,
+        color=PALETTE["robust"],
         edgecolor="white",
         linewidth=0.6,
         zorder=5,
@@ -1235,18 +1540,18 @@ def plot_public_real_replay() -> None:
         trajectory[-1, 1],
         marker="X",
         s=70,
-        color="#B91C1C",
+        color=PALETTE["extreme"],
         edgecolor="white",
         linewidth=0.6,
         zorder=5,
         label="End",
     )
-    cam_colors = plt.cm.viridis(np.linspace(0.16, 0.86, len(camera_names)))
+    cam_colors = _editorial_series(len(camera_names), 0.14, 0.82)
     for idx, (name, color) in enumerate(zip(camera_names, cam_colors)):
         ax.scatter(
             camera_positions[idx, 0],
             camera_positions[idx, 1],
-            s=82,
+            s=80,
             color=color,
             edgecolor="white",
             linewidth=0.8,
@@ -1256,94 +1561,192 @@ def plot_public_real_replay() -> None:
             camera_positions[idx, 0] + 1.6,
             camera_positions[idx, 1] + 1.2,
             f"C{idx}",
-            fontsize=8.5,
-            color="#0F172A",
+            fontsize=8.4,
+            color=PALETTE["ink"],
+            bbox={"boxstyle": "round,pad=0.15", "facecolor": "white", "edgecolor": "none", "alpha": 0.78},
         )
-    ax.set_title("Public Flight Trajectory Replay")
+    ax.set_title("Measured-data multi-view replay", loc="left")
     ax.set_xlabel("X (m)")
     ax.set_ylabel("Y (m)")
     ax.set_aspect("equal", adjustable="box")
-    ax.grid(True, linestyle=":", alpha=0.35)
-    ax.legend(frameon=False, loc="upper left", fontsize=8.5)
-
-    positions: list[float] = []
-    xticklabels: list[str] = []
-    p95_values: list[float] = []
-    median_values: list[float] = []
-    bar_colors: list[str] = []
-    for regime_idx, regime_key in enumerate(regime_keys):
-        base = regime_idx * (len(methods) + 1)
-        panel = result_payload["summary"]["by_regime"][regime_key]
-        for method_idx, (method_key, label, color) in enumerate(methods):
-            positions.append(base + method_idx)
-            xticklabels.append(label)
-            p95_values.append(panel[method_key]["p95"])
-            median_values.append(panel[method_key]["median"])
-            bar_colors.append(color)
+    _style_axes(ax, grid_axis="both")
+    legend = ax.legend(loc="upper left", fontsize=8.3)
+    _style_legend(legend)
 
     ax = axes[1]
-    ax.bar(positions, p95_values, color=bar_colors, alpha=0.88)
-    ax.scatter(
-        positions,
-        median_values,
-        s=48,
-        facecolor="white",
-        edgecolor="#0F172A",
-        linewidth=1.0,
-        zorder=5,
-        label="Median",
-    )
-    y_top = max(p95_values) * 1.15
-    for regime_idx, regime_label in enumerate(regime_labels):
-        base = regime_idx * (len(methods) + 1)
-        ax.text(base + 1.5, y_top * 0.98, regime_label, ha="center", va="top", fontsize=10.5, color="#334155")
-    ax.axvline(len(methods) - 0.4, color="#CBD5E1", linestyle="--", linewidth=1.0)
-    ax.set_xticks(positions)
-    ax.set_xticklabels(xticklabels, rotation=0)
-    ax.set_ylabel("Error (m)")
-    ax.set_title("Replay Tail Error (bars = P95, dots = median)")
-    ax.set_ylim(0.0, y_top)
-    ax.grid(True, axis="y", linestyle=":", alpha=0.35)
-    ax.legend(frameon=False, loc="upper right")
-
-    cue_colors = {
-        "ready": "#047857",
-        "degraded": "#D97706",
-        "extreme": "#B91C1C",
-    }
-    ready_values: list[float] = []
-    degraded_values: list[float] = []
-    extreme_values: list[float] = []
-    for regime_key in regime_keys:
+    method_order = methods
+    y_positions = np.array([7, 6, 5, 4, 2.2, 1.2, 0.2, -0.8], dtype=float)
+    y_labels = []
+    y_values = []
+    for regime_idx, regime_key in enumerate(regime_keys):
         panel = result_payload["summary"]["by_regime"][regime_key]
-        for method_key, _label, _color in methods:
-            ready_values.append(panel[method_key]["ready_rate"])
-            degraded_values.append(panel[method_key]["degraded_rate"])
-            extreme_values.append(panel[method_key]["extreme_rate"])
+        for method_idx, (method_key, label, color) in enumerate(method_order):
+            y = y_positions[regime_idx * len(method_order) + method_idx]
+            median = panel[method_key]["median"]
+            p95 = panel[method_key]["p95"]
+            ax.hlines(y, median, p95, color=color, linewidth=4.4, alpha=0.95)
+            ax.scatter(median, y, s=54, facecolor="white", edgecolor=color, linewidth=1.3, zorder=3)
+            ax.scatter(p95, y, s=42, facecolor=color, edgecolor="white", linewidth=0.8, zorder=3)
+            y_labels.append(label)
+            y_values.append(y)
+    ax.axhline(3.2, color=PALETTE["line_light"], linestyle="--", linewidth=1.0)
+    ax.text(0.0, 7.35, "Nominal", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.text(0.0, 2.75, "Disturbed", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.set_yticks(y_values)
+    ax.set_yticklabels(y_labels)
+    ax.set_xlabel("Replay error (m)")
+    ax.set_title("Median-to-tail replay envelope", loc="left")
+    _style_axes(ax, grid_axis="x")
+    legend = ax.legend(handles=_range_handles(), loc="lower right")
+    _style_legend(legend)
 
     ax = axes[2]
-    ax.bar(positions, ready_values, color=cue_colors["ready"])
-    ax.bar(positions, degraded_values, bottom=ready_values, color=cue_colors["degraded"])
-    ax.bar(
-        positions,
-        extreme_values,
-        bottom=np.asarray(ready_values, dtype=float) + np.asarray(degraded_values, dtype=float),
-        color=cue_colors["extreme"],
+    cue_colors = {"ready": PALETTE["ready"], "degraded": PALETTE["degraded"], "extreme": PALETTE["extreme"]}
+    y_values = []
+    y_labels = []
+    for regime_idx, regime_key in enumerate(regime_keys):
+        panel = result_payload["summary"]["by_regime"][regime_key]
+        for method_idx, (method_key, label, _color) in enumerate(method_order):
+            y = y_positions[regime_idx * len(method_order) + method_idx]
+            ready = panel[method_key]["ready_rate"]
+            degraded = panel[method_key]["degraded_rate"]
+            extreme = panel[method_key]["extreme_rate"]
+            ax.barh(y, ready, color=cue_colors["ready"], height=0.68)
+            ax.barh(y, degraded, left=ready, color=cue_colors["degraded"], height=0.68)
+            ax.barh(y, extreme, left=ready + degraded, color=cue_colors["extreme"], height=0.68)
+            y_values.append(y)
+            y_labels.append(label)
+    ax.axhline(3.2, color=PALETTE["line_light"], linestyle="--", linewidth=1.0)
+    ax.text(0.0, 7.35, "Nominal", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.text(0.0, 2.75, "Disturbed", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.set_yticks(y_values)
+    ax.set_yticklabels(y_labels)
+    ax.set_xlim(0.0, 1.0)
+    ax.xaxis.set_major_formatter(PercentFormatter(1.0))
+    ax.set_xlabel("Fraction of replay windows")
+    ax.set_title(f"Cue partition ({thresholds['ready']:.0f} m / {thresholds['extreme']:.0f} m)", loc="left")
+    _style_axes(ax, grid_axis="x")
+    legend = ax.legend(
+        handles=[Patch(color=cue_colors[key], label=label) for key, label in [("ready", "Ready"), ("degraded", "Degraded"), ("extreme", "Extreme")]],
+        loc="lower right",
     )
-    for regime_idx, regime_label in enumerate(regime_labels):
-        base = regime_idx * (len(methods) + 1)
-        ax.text(base + 1.5, 1.03, regime_label, ha="center", va="bottom", fontsize=10.5, color="#334155")
-    ax.axvline(len(methods) - 0.4, color="#CBD5E1", linestyle="--", linewidth=1.0)
-    ax.set_xticks(positions)
-    ax.set_xticklabels(xticklabels, rotation=0)
-    ax.set_ylim(0.0, 1.08)
-    ax.set_ylabel("Fraction of windows")
-    ax.set_title(f"Cue Partition ({thresholds['ready']:.0f} m / {thresholds['extreme']:.0f} m)")
-    ax.grid(True, axis="y", linestyle=":", alpha=0.35)
-    handles = [plt.Rectangle((0, 0), 1, 1, color=cue_colors[key]) for key in ["ready", "degraded", "extreme"]]
-    ax.legend(handles, ["Ready", "Degraded", "Extreme"], frameon=False, loc="upper right")
+    _style_legend(legend)
 
     _save(fig, "figure_public_real_replay.png")
+
+
+def plot_deadline_replay() -> None:
+    result_payload = json.loads((EXP / "deadline_replay_result.json").read_text(encoding="utf-8"))
+    regime_keys = ["deadline_nominal", "deadline_disturbed"]
+    regime_labels = ["Nominal", "Disturbed"]
+    methods = [
+        ("least_squares", "LS", PALETTE["ls"]),
+        ("gnc_gm", "GNC-GM", PALETTE["gnc"]),
+        ("ransac", "RANSAC", PALETTE["ransac"]),
+        ("robust_bias_trimmed", "Proposed", PALETTE["robust"]),
+    ]
+    availability = result_payload["summary"]["availability"]["by_regime"]
+    thresholds = result_payload["meta"]["thresholds_m"]
+
+    fig, axes = plt.subplots(1, 3, figsize=(14.6, 5.2), gridspec_kw={"width_ratios": [1.0, 1.05, 1.0]})
+
+    ax = axes[0]
+    x = np.arange(len(regime_keys))
+    mean_original = np.array([availability[key]["mean_original_valid"] for key in regime_keys], dtype=float)
+    mean_on_time = np.array([availability[key]["mean_on_time"] for key in regime_keys], dtype=float)
+    late_count = np.array(
+        [availability[key]["mean_original_valid"] * availability[key]["mean_late_ratio"] for key in regime_keys],
+        dtype=float,
+    )
+    drop_count = np.array(
+        [availability[key]["mean_original_valid"] * availability[key]["mean_packet_drop_ratio"] for key in regime_keys],
+        dtype=float,
+    )
+    retention = np.array([availability[key]["retention_rate"] for key in regime_keys], dtype=float)
+
+    width = 0.56
+    ax.bar(x, mean_on_time, width=width, color=PALETTE["ready"], label="On-time")
+    ax.bar(x, late_count, width=width, bottom=mean_on_time, color=PALETTE["degraded"], label="Late/stale")
+    ax.bar(x, drop_count, width=width, bottom=mean_on_time + late_count, color=PALETTE["extreme"], label="Packet loss")
+    ax.plot(x, mean_original, color=PALETTE["ink"], marker="o", linewidth=1.3, label="Original valid")
+    for idx, value in enumerate(retention):
+        ax.text(
+            x[idx],
+            mean_original[idx] + 0.14,
+            f"retain={value:.0%}",
+            ha="center",
+            va="bottom",
+            fontsize=8.8,
+            color=PALETTE["muted_ink"],
+        )
+    ax.set_xticks(x)
+    ax.set_xticklabels(regime_labels)
+    ax.set_ylabel("Bearings per current cycle")
+    ax.set_title("Deadline-filtered cue availability", loc="left")
+    ax.set_ylim(0.0, max(np.max(mean_original) + 0.7, 4.4))
+    _style_axes(ax, grid_axis="y")
+    legend = ax.legend(loc="upper right", fontsize=8.4)
+    _style_legend(legend)
+
+    ax = axes[1]
+    y_positions = np.array([7, 6, 5, 4, 2.2, 1.2, 0.2, -0.8], dtype=float)
+    y_labels = []
+    y_values = []
+    for regime_idx, regime_key in enumerate(regime_keys):
+        panel = result_payload["summary"]["by_regime"][regime_key]
+        for method_idx, (method_key, label, color) in enumerate(methods):
+            y = y_positions[regime_idx * len(methods) + method_idx]
+            median = panel[method_key]["median"]
+            p95 = panel[method_key]["p95"]
+            ax.hlines(y, median, p95, color=color, linewidth=4.4, alpha=0.95)
+            ax.scatter(median, y, s=54, facecolor="white", edgecolor=color, linewidth=1.3, zorder=3)
+            ax.scatter(p95, y, s=42, facecolor=color, edgecolor="white", linewidth=0.8, zorder=3)
+            y_labels.append(label)
+            y_values.append(y)
+    ax.axhline(3.2, color=PALETTE["line_light"], linestyle="--", linewidth=1.0)
+    ax.text(0.0, 7.35, "Nominal", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.text(0.0, 2.75, "Disturbed", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.set_yticks(y_values)
+    ax.set_yticklabels(y_labels)
+    ax.set_xlabel("Replay error (m)")
+    ax.set_title("Median-to-tail under deadline replay", loc="left")
+    _style_axes(ax, grid_axis="x")
+    legend = ax.legend(handles=_range_handles(), loc="lower right")
+    _style_legend(legend)
+
+    ax = axes[2]
+    cue_colors = {"ready": PALETTE["ready"], "degraded": PALETTE["degraded"], "extreme": PALETTE["extreme"]}
+    y_values = []
+    y_labels = []
+    for regime_idx, regime_key in enumerate(regime_keys):
+        panel = result_payload["summary"]["by_regime"][regime_key]
+        for method_idx, (method_key, label, _color) in enumerate(methods):
+            y = y_positions[regime_idx * len(methods) + method_idx]
+            ready = panel[method_key]["ready_rate"]
+            degraded = panel[method_key]["degraded_rate"]
+            extreme = panel[method_key]["extreme_rate"]
+            ax.barh(y, ready, color=cue_colors["ready"], height=0.68)
+            ax.barh(y, degraded, left=ready, color=cue_colors["degraded"], height=0.68)
+            ax.barh(y, extreme, left=ready + degraded, color=cue_colors["extreme"], height=0.68)
+            y_values.append(y)
+            y_labels.append(label)
+    ax.axhline(3.2, color=PALETTE["line_light"], linestyle="--", linewidth=1.0)
+    ax.text(0.0, 7.35, "Nominal", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.text(0.0, 2.75, "Disturbed", ha="left", va="center", fontsize=10.1, color=PALETTE["muted_ink"])
+    ax.set_yticks(y_values)
+    ax.set_yticklabels(y_labels)
+    ax.set_xlim(0.0, 1.0)
+    ax.xaxis.set_major_formatter(PercentFormatter(1.0))
+    ax.set_xlabel("Fraction of retained windows")
+    ax.set_title(f"Cue partition ({thresholds['ready']:.0f} m / {thresholds['extreme']:.0f} m)", loc="left")
+    _style_axes(ax, grid_axis="x")
+    legend = ax.legend(
+        handles=[Patch(color=cue_colors[key], label=label) for key, label in [("ready", "Ready"), ("degraded", "Degraded"), ("extreme", "Extreme")]],
+        loc="lower right",
+    )
+    _style_legend(legend)
+
+    _save(fig, "figure_deadline_replay.png")
 
 
 def plot_operational_utility() -> None:
@@ -1359,9 +1762,9 @@ def plot_operational_utility() -> None:
         ("robust_bias_trimmed", "Proposed"),
     ]
     colors = {
-        "ready": "#047857",
-        "degraded": "#D97706",
-        "failed": "#B91C1C",
+        "ready": PALETTE["ready"],
+        "degraded": PALETTE["degraded"],
+        "failed": PALETTE["extreme"],
     }
 
     fig, axes = plt.subplots(1, 2, figsize=(11.8, 4.6), sharey=True)
@@ -1382,18 +1785,19 @@ def plot_operational_utility() -> None:
         ax.set_xticklabels(labels)
         ax.set_ylim(0.0, 1.05)
         ax.set_title(title)
-        ax.grid(True, axis="y", linestyle=":", alpha=0.35)
+        _style_axes(ax, grid_axis="y")
 
     axes[0].set_ylabel("Fraction of replay windows")
     handles = [plt.Rectangle((0, 0), 1, 1, color=colors[key]) for key in ["ready", "degraded", "failed"]]
-    fig.legend(
+    legend = fig.legend(
         handles,
         ["Handoff-ready cue ($\\leq 1.0$)", "Degraded cue $(1.0, 5.0]$", "Unusable cue $(>5.0)$"],
         loc="upper center",
         ncol=3,
-        frameon=False,
+        frameon=True,
         bbox_to_anchor=(0.5, 1.05),
     )
+    _style_legend(legend)
     _save(fig, "figure_operational_utility.png")
 
 
@@ -1419,8 +1823,6 @@ def main() -> None:
         plot_selection_benefit_map()
     if (EXP / "screening_weight_sensitivity.json").exists():
         plot_screening_weight_sensitivity()
-    elif (EXP / "screening_weight_grid_result.json").exists():
-        plot_screening_weight_sensitivity()
     if (EXP / "screening_score_ablation.json").exists():
         plot_screening_score_ablation()
     if (EXP / "active_selection_result.json").exists():
@@ -1430,6 +1832,8 @@ def main() -> None:
         plot_ransac_failure_case()
     if (EXP / "public_dataset3_replay_result.json").exists():
         plot_public_real_replay()
+    if (EXP / "deadline_replay_result.json").exists():
+        plot_deadline_replay()
     if (EXP / "pybullet_replay_result.json").exists() and (EXP / "pybullet_replay_traces.json").exists():
         plot_pybullet_validation()
         plot_operational_utility()

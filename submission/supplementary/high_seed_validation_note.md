@@ -12,9 +12,9 @@ Script:
 
 Main findings:
 
-- Outlier regime, Robust-BT vs LS:
+- Outlier regime, Proposed vs LS:
   `83 wins / 17 losses`, sign-test `p = 1.31e-11`, median improvement `1.6921`
-- Mixed regime, Robust-BT vs LS:
+- Mixed regime, Proposed vs LS:
   `75 wins / 25 losses`, sign-test `p = 5.64e-7`, median improvement `0.5511`
 
 These follow-up results preserve the core interpretation of the manuscript:

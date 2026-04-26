@@ -1,0 +1,217 @@
+\section{与邻近文献的代表性定位}
+\label{app:positioning}
+
+\newcolumntype{Q}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{Z}{>{\RaggedRight\arraybackslash}X}
+
+\begin{table}[H]
+\centering
+\caption{本文相对于代表性近年文献的定位。}
+\label{tab:positioning}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{Q{0.19\linewidth} Q{0.29\linewidth} Q{0.12\linewidth} Q{0.12\linewidth} Q{0.18\linewidth}}
+\toprule
+文献 & 主要关注点 & 受污染 bearing 前端 & 固定预算筛选 & 验证层 \\
+\midrule
+\cite{kramaric2025comprehensive} & UAV 定位综述与分类体系 & 否 & 否 & 综述论文 \\
+\cite{huang2025emcompat} & 面向无人机群的无源定位与编队电磁兼容 & 未显式讨论 & 否 & 以仿真为主 \\
+\cite{li2025bearing} & 电磁静默下带编队调整的 bearing-only 无源定位 & 部分讨论几何 / 偏置 & 否 & 以仿真为主 \\
+\cite{yin2025dual} & 基于粒子滤波的双无人机协同 bearing-only 定位 & 是，通过滤波实现 & 否 & 算法仿真 \\
+本文工作 & 面向离群点、偏置、缺失与位姿不确定性的单次鲁棒融合 & 是 & 是 & 合成、伪物理回放与 PyBullet 回放 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\section{有效性威胁}
+\label{app:threats}
+
+最主要的构念有效性威胁在于：本文用参数化随机模型来表示受污染 bearing，而不是直接来自机载传感器栈。伪物理回放和 PyBullet 回放缩小了这一差距，但并没有消除它。最主要的内部有效性威胁在于：筛选模块仍是一个带固定系数的工程得分，尽管随机系数扰动实验表明，其行为并不绑定于某一个脆弱权重向量。最主要的外部有效性威胁则在于：当前研究仍然是平面且集中式的。这些限制共同界定了本文范围，并直接指向 SITL、HITL、实飞日志回放和完整三维定位等后续扩展方向。
+
+\section{三维扩展草图}
+\label{app:threed}
+
+如果将每个观测者位姿表示为 $s_i=[x_i,y_i,z_i]^T$，并将目标状态表示为 $p=[x,y,z]^T$，同样的前端结构可以自然扩展到三维无源定位。一个紧凑的测量模型为
+\begin{equation}
+\mathbf{z}_i=
+\begin{bmatrix}
+\psi_i\\
+\varphi_i
+\end{bmatrix}
+=
+\begin{bmatrix}
+\operatorname{atan2}(y-y_i,x-x_i)\\
+\operatorname{atan2}\!\left(z-z_i,\sqrt{(x-x_i)^2+(y-y_i)^2}\right)
+\end{bmatrix}
+\mathbf{b}_i+\boldsymbol{\epsilon}_i+\mathbf{o}_i,
+\end{equation}
+其中 $\psi_i$ 和 $\varphi_i$ 分别表示方位角与俯仰角。三维前端仍可沿用相同的两阶段逻辑：共识式初值、修剪式鲁棒精化，以及可选的预算感知筛选；但 Jacobian 与 FIM 将变成 $3\times 3$ 对象，而可观测性得分也需要同时反映水平与垂直几何。进一步的分布式 V2V 版本则需要决定是传输完整角度包、压缩后的充分统计量，还是仅传输筛选后的子集。
+
+\clearpage
+
+\section{基准矩阵与超参数}
+\label{app:hyperparams}
+
+\begin{table}[H]
+\centering
+\caption{本文使用的基准矩阵。}
+\label{tab:benchmatrix}
+\small
+\begin{tabularx}{\linewidth}{Q{0.2\linewidth} Q{0.12\linewidth} Q{0.18\linewidth} Q{0.18\linewidth} Z}
+\toprule
+基准层 & 样本数 & 编队 / 数量设置 & 主要扰动 & 主要目的 \\
+\midrule
+主蒙特卡洛 & 3000 & Circle、random、degenerate；8 个观测者 & 离群点、混合污染、位姿噪声、异构偏置 & 建立核心鲁棒定位主线 \\
+固定预算筛选 & 2285 & Circle、perturbed、random、degenerate；8 / 10 / 12 个观测者 & 子集预算下的 mixed 与 severe 污染 & 检验在无法融合全量 bearing 时筛选是否有帮助 \\
+实测多视角重放 surrogate & 536 & 测绘多视角观测者；真实目标轨迹 & 实测可见性丢失、实测异步、位姿噪声、偏置、离群点 & 在 synthetic 与 replay 证据之间加入 measured-data 层 \\
+Deadline-aware 实测重放 & 227 & 同一组测绘观测者网络；同步后的 replay 窗口 & 实测可见性、同步表，加上链路延迟、丢包与 staleness 过滤 & 测试当当前周期只能融合按时 bearing 时，前端是否仍然可用 \\
+伪物理回放 & 720 & 三类编队；三种群体规模 & 延迟、抖动、缺失、传感器个体偏置、离群点 & 不依赖完整飞行器仿真器地引入 flight-like 扰动 \\
+PyBullet 多机回放 & 1103 & Circle 与 ellipse；8 / 10 个观测者 & 姿态扰动、gust-like 扰动、延迟、偏置漂移、缺失 & 在多机轨迹与异步日志上评估估计器 \\
+泛化 / 效率扫描 & 多组扫描 & 四类编队；4--12 个观测者；五档严重度 & 离群率、偏置、噪声、可观测性、时间代价 & 刻画方法的扩展性、敏感性与计算负担 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{鲁棒估计器与筛选模块使用的关键超参数。}
+\label{tab:hyperparams}
+\small
+\begin{tabularx}{\linewidth}{Q{0.22\linewidth} Q{0.12\linewidth} Z Q{0.17\linewidth}}
+\toprule
+设置项 & 默认值 & 作用 & 被压力测试于 \\
+\midrule
+\texttt{trim\_ratio} & 0.15 & 在重加权前去除最大残差，并保证至少保留三条活跃 bearing & 消融实验 \\
+\texttt{reweight\_iters} & 3 & 外层鲁棒权重更新轮数 & 消融实验 \\
+\texttt{huber\_delta} & 0.08 & 初始可靠性估计使用的残差尺度 & 敏感性与筛选基准 \\
+\texttt{tukey\_c} & 0.18 & 精化阶段激进下权的尾部截断参数 & 消融实验 \\
+\texttt{lm\_damping} & $10^{-3}$ & Gauss--Newton / LM 更新的阻尼项 & 全部基准 \\
+\texttt{max\_step\_norm} & 3.0 & 防止差初值引起的不稳定大步长跳变 & 动态回放与 PyBullet 回放 \\
+\texttt{\seqsplit{ransac\_iterations}} & 72 & 共识回退搜索深度 & 主蒙特卡洛与 replay \\
+\texttt{ransac\_thr} & 0.12 & 回退假设使用的 bearing 残差阈值 & 主蒙特卡洛与 replay \\
+自适应门控 & MAD $<0.05$ 且 $\sigma_w<0.12$ & 在较干净窗口中保留全量融合 & 固定预算筛选 \\
+候选池大小 & $\max(k+2,8)$ & 将穷举搜索限制在可计算的高可靠性候选池内 & 固定预算筛选 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{补充结果表}
+\label{app:suppresults}
+
+\begin{table}[H]
+\centering
+\caption{敏感性扫描中的代表性取点。}
+\label{tab:sensitivityextra}
+\small
+\begin{tabular}{llrrr}
+\toprule
+扫描项 & 水平 & LS & GNC-GM & 本文方法 \\
+\midrule
+Outlier rate & 0.0 & 0.1808 & 0.1893 & 0.1893 \\
+Outlier rate & 0.2 & 0.8950 & 0.5629 & 0.3673 \\
+Outlier rate & 0.4 & 2.0484 & 0.9010 & 0.6599 \\
+\midrule
+Bias & 0.00 & 0.8377 & 0.3121 & 0.1824 \\
+Bias & 0.04 & 0.8950 & 0.5629 & 0.3673 \\
+Bias & 0.08 & 1.2289 & 0.9805 & 1.2045 \\
+\midrule
+Noise std & 0.01 & 0.8580 & 0.5467 & 0.3522 \\
+Noise std & 0.04 & 0.9754 & 0.6107 & 0.3130 \\
+Noise std & 0.08 & 1.1580 & 0.7869 & 0.7146 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Circle 与 random 编队下的观测者数量扩展中位数。}
+\label{tab:scalingextra}
+\small
+\begin{tabular}{llrrr}
+\toprule
+编队 & 观测者数量 & LS & GNC-GM & 本文方法 \\
+\midrule
+Circle & 4 & 0.5046 & 0.4443 & 0.4166 \\
+Circle & 6 & 0.8950 & 0.5629 & 0.3673 \\
+Circle & 8 & 0.9085 & 0.3372 & 0.2667 \\
+Circle & 10 & 0.6760 & 0.3952 & 0.3420 \\
+Circle & 12 & 0.4882 & 0.2742 & 0.2613 \\
+\midrule
+Random & 4 & 0.6340 & 0.6012 & 0.6032 \\
+Random & 6 & 0.7375 & 0.5186 & 0.4140 \\
+Random & 8 & 0.7327 & 0.6165 & 0.3931 \\
+Random & 10 & 0.5481 & 0.2719 & 0.2497 \\
+Random & 12 & 0.6972 & 0.3335 & 0.2773 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{混合污染实验中的编队泛化中位数。}
+\label{tab:formationextra}
+\begin{tabular}{lrrr}
+\toprule
+编队 & LS & GNC-GM & 本文方法 \\
+\midrule
+Circle & 0.8950 & 0.5629 & 0.3673 \\
+Ellipse & 1.0501 & 0.5661 & 0.4244 \\
+Perturbed & 0.7024 & 0.3723 & 0.2574 \\
+Random & 0.7375 & 0.5186 & 0.4140 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{PyBullet 多机回放汇总。中位误差与较强鲁棒基线接近，但在扰动场景下若干尾部指标有所改善。}
+\label{tab:pybullet}
+\small
+\begin{tabular}{llrrrr}
+\toprule
+场景 & 方法 & Median & P90 & Success@1.0 & Cat.@5.0 \\
+\midrule
+Overall & Least Squares & 1.7469 & 16.6860 & 0.3282 & 0.2448 \\
+Overall & GNC-GM & 1.6967 & 12.7876 & 0.3309 & 0.2221 \\
+Overall & RANSAC & 2.0073 & 15.0330 & 0.3200 & 0.2593 \\
+Overall & 本文方法 & 2.0611 & 13.1131 & 0.3028 & 0.2584 \\
+\midrule
+Nominal & Least Squares & 1.3930 & 10.9102 & 0.3874 & 0.2075 \\
+Nominal & 本文方法 & 1.5377 & 10.3484 & 0.3597 & 0.2273 \\
+\midrule
+Disturbed & Least Squares & 2.1975 & 36.5283 & 0.2781 & 0.2764 \\
+Disturbed & 本文方法 & 2.3891 & 18.1859 & 0.2546 & 0.2848 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{来自 3000 组合成主基准的扩展配对显著性统计。正的中位提升表示本文前端误差更低。}
+\label{tab:significance}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrr}
+\toprule
+场景 & 比较对象 & Wins--Losses--Ties & Wilcoxon $p$ & 中位提升 \\
+\midrule
+Outlier & Proposed vs LS & 521--70--9 & $2.35\times 10^{-77}$ & 0.7637 \\
+Outlier & Proposed vs GNC-GM & 385--134--81 & $6.16\times 10^{-33}$ & 0.0953 \\
+Outlier & Proposed vs RANSAC & 93--86--421 & 0.0357 & 0.0000 \\
+\midrule
+Mixed & Proposed vs LS & 411--169--20 & $2.39\times 10^{-42}$ & 0.3258 \\
+Mixed & Proposed vs GNC-GM & 293--161--146 & $2.32\times 10^{-14}$ & 0.0000 \\
+Mixed & Proposed vs RANSAC & 78--107--415 & 0.9992 & 0.0000 \\
+\midrule
+Pose uncertainty & Proposed vs LS & 394--189--17 & $1.21\times 10^{-32}$ & 0.0680 \\
+Pose uncertainty & Proposed vs GNC-GM & 262--195--143 & $5.06\times 10^{-6}$ & 0.0000 \\
+Pose uncertainty & Proposed vs RANSAC & 127--114--359 & 0.1933 & 0.0000 \\
+\midrule
+Heterogeneous bias & Proposed vs LS & 338--240--22 & $2.33\times 10^{-13}$ & 0.0025 \\
+Heterogeneous bias & Proposed vs GNC-GM & 184--196--220 & 0.2640 & 0.0000 \\
+Heterogeneous bias & Proposed vs RANSAC & 136--150--314 & 0.8396 & 0.0000 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

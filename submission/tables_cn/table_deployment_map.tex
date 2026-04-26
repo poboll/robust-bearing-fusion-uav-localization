@@ -1,0 +1,17 @@
+\begin{table}[!htbp]
+\centering
+\caption{无源感知部署场景与主导污染来源。}
+\label{tab:deploymain}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.23\linewidth} >{\RaggedRight\arraybackslash}p{0.23\linewidth} X}
+\toprule
+场景 & 主导污染来源 & 为什么本文前端与之相关 \\
+\midrule
+电磁静默编队感知 \cite{li2025bearing,huang2025emcompat} & 共享航向偏置、几何失衡、更新受通信限制 & 鲁棒单次融合前端可在重构编队或长时规划介入前先抑制灾难性 cue 偏移。 \\
+通信受限的群体 cueing \cite{xing2025node,zhou2026target} & 节点质量不均、上传延迟、带宽预算 & 固定预算筛选模块正是围绕该场景设计，并与 residual-only、reliability-only 和 geometry-only 子集规则对比。 \\
+退化导航与异步载荷运行 \cite{chen2025research,peng2024trajectory} & 位姿误差、时间戳失配、间歇检测、bearing 漂移 & 这一失败模式与本文的位姿不确定性、传感器偏置、伪物理回放和 PyBullet 回放实验直接对应。 \\
+从仿真走向真实的迁移研究 \cite{panerati2021learning,perezsegui2023bridging} & 延迟、姿态扰动、偏置漂移、回放失配 & 本文将该方法定位为一条中间层前端基线，后续应进一步接入 SITL、HITL 或实飞日志回放。 \\
+\bottomrule
+\end{tabularx}
+\end{table}

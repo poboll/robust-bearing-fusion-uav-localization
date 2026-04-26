@@ -152,6 +152,42 @@ def _candidate_points(initial: Point2D, sensors: list[Sensor2D], bearings: np.nd
     return uniq
 
 
+def _ransac_inlier_hypothesis(
+    sensors: list[Sensor2D],
+    bearings: np.ndarray,
+    config: MethodConfig,
+    seed: int = 0,
+) -> tuple[np.ndarray, np.ndarray] | None:
+    rng = np.random.default_rng(seed)
+    intersections = pairwise_intersections(sensors, bearings)
+    if not intersections:
+        return None
+
+    best_inliers: np.ndarray | None = None
+    best_candidate: np.ndarray | None = None
+    best_score: tuple[int, float] | None = None
+    threshold = config.ransac_inlier_threshold
+
+    for _ in range(max(config.ransac_iterations, len(intersections))):
+        candidate = np.asarray(intersections[rng.integers(0, len(intersections))], dtype=float)
+        residuals = np.abs(_bearing_residual(candidate, sensors, bearings))
+        inliers = residuals <= threshold
+        score = (int(np.sum(inliers)), -float(np.mean(residuals[inliers])) if np.any(inliers) else float("inf"))
+        if best_score is None or score > best_score:
+            best_score = score
+            best_inliers = inliers
+            best_candidate = candidate
+
+    assert best_candidate is not None
+    assert best_inliers is not None
+    if int(np.sum(best_inliers)) < 3:
+        residuals = np.abs(_bearing_residual(best_candidate, sensors, bearings))
+        chosen = np.argsort(residuals)[: min(3, len(sensors))]
+        best_inliers = np.zeros(len(sensors), dtype=bool)
+        best_inliers[chosen] = True
+    return best_candidate, best_inliers
+
+
 def least_squares_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray, config: MethodConfig) -> RefinedEstimate:
     point = initial.as_array().copy()
     weights = np.ones(len(bearings), dtype=float)
@@ -190,6 +226,41 @@ def tukey_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray
             break
     residual = _mean_abs_residual(point, sensors, bearings)
     return RefinedEstimate(point=Point2D(float(point[0]), float(point[1])), residual=residual, method="tukey_irls")
+
+
+def pure_ransac_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray, config: MethodConfig, seed: int = 0) -> RefinedEstimate:
+    hypothesis = _ransac_inlier_hypothesis(sensors, bearings, config, seed=seed)
+    if hypothesis is None:
+        return least_squares_refine(initial, sensors, bearings, config)
+    best_candidate, best_inliers = hypothesis
+    residual = _mean_abs_residual(best_candidate, sensors, bearings)
+    return RefinedEstimate(
+        point=Point2D(float(best_candidate[0]), float(best_candidate[1])),
+        residual=residual,
+        method="pure_ransac",
+        kept_measurements=int(np.sum(best_inliers)),
+        removed_measurements=int(len(sensors) - np.sum(best_inliers)),
+        removed_indices=[idx for idx, keep in enumerate(best_inliers.tolist()) if not keep],
+    )
+
+
+def ransac_lm_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray, config: MethodConfig, seed: int = 0) -> RefinedEstimate:
+    hypothesis = _ransac_inlier_hypothesis(sensors, bearings, config, seed=seed)
+    if hypothesis is None:
+        return least_squares_refine(initial, sensors, bearings, config)
+    best_candidate, best_inliers = hypothesis
+    inlier_sensors = [sensor for sensor, keep in zip(sensors, best_inliers) if keep]
+    inlier_bearings = bearings[best_inliers]
+    refined = least_squares_refine(Point2D(float(best_candidate[0]), float(best_candidate[1])), inlier_sensors, inlier_bearings, config)
+    residual = _mean_abs_residual(refined.point.as_array(), sensors, bearings)
+    return RefinedEstimate(
+        point=refined.point,
+        residual=residual,
+        method="ransac_lm",
+        kept_measurements=int(np.sum(best_inliers)),
+        removed_measurements=int(len(sensors) - np.sum(best_inliers)),
+        removed_indices=[idx for idx, keep in enumerate(best_inliers.tolist()) if not keep],
+    )
 
 
 def robust_bias_trimmed_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray, config: MethodConfig) -> RefinedEstimate:
@@ -372,33 +443,10 @@ def robust_bias_trimmed_refine(initial: Point2D, sensors: list[Sensor2D], bearin
 
 
 def ransac_refine(initial: Point2D, sensors: list[Sensor2D], bearings: np.ndarray, config: MethodConfig, seed: int = 0) -> RefinedEstimate:
-    rng = np.random.default_rng(seed)
-    intersections = pairwise_intersections(sensors, bearings)
-    if not intersections:
+    hypothesis = _ransac_inlier_hypothesis(sensors, bearings, config, seed=seed)
+    if hypothesis is None:
         return robust_refine(initial, sensors, bearings, config)
-
-    best_inliers: np.ndarray | None = None
-    best_candidate: np.ndarray | None = None
-    best_score: tuple[int, float] | None = None
-    threshold = config.ransac_inlier_threshold
-
-    for _ in range(max(config.ransac_iterations, len(intersections))):
-        candidate = np.asarray(intersections[rng.integers(0, len(intersections))], dtype=float)
-        residuals = np.abs(_bearing_residual(candidate, sensors, bearings))
-        inliers = residuals <= threshold
-        score = (int(np.sum(inliers)), -float(np.mean(residuals[inliers])) if np.any(inliers) else float("inf"))
-        if best_score is None or score > best_score:
-            best_score = score
-            best_inliers = inliers
-            best_candidate = candidate
-
-    assert best_candidate is not None
-    assert best_inliers is not None
-    if int(np.sum(best_inliers)) < 3:
-        residuals = np.abs(_bearing_residual(best_candidate, sensors, bearings))
-        chosen = np.argsort(residuals)[: min(3, len(sensors))]
-        best_inliers = np.zeros(len(sensors), dtype=bool)
-        best_inliers[chosen] = True
+    best_candidate, best_inliers = hypothesis
 
     inlier_sensors = [sensor for sensor, keep in zip(sensors, best_inliers) if keep]
     inlier_bearings = bearings[best_inliers]

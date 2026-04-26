@@ -67,6 +67,7 @@ COUNTS = [8, 10]
 SEEDS = [0, 1, 2]
 METHODS = {
     "least_squares": "LS",
+    "gnc_gm": "GNC-GM",
     "ransac": "RANSAC",
     "robust_bias_trimmed": "Proposed",
 }
@@ -222,6 +223,7 @@ def run_tracking_proxy(output_dir: str | Path = "experiments") -> dict:
                             "time_s": float(row["meta"]["time_s"]),
                             "target": row["target"],
                             "least_squares": row["results"]["least_squares"],
+                            "gnc_gm": row["results"]["gnc_gm"],
                             "ransac": row["results"]["ransac"],
                             "robust_bias_trimmed": row["results"]["robust_bias_trimmed"],
                         }

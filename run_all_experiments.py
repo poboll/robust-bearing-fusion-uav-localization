@@ -20,6 +20,7 @@ from run_active_selection import run_active_selection
 from run_selection_benefit_map import run_selection_benefit_map
 from run_story_benchmark import run_story_benchmark
 from run_public_dataset3_replay_validation import run_public_dataset3_replay_validation
+from run_deadline_replay_validation import run_deadline_replay_validation
 from run_pybullet_replay_validation import run_pybullet_replay_validation
 from summarize_results import summarize_ablation
 
@@ -55,6 +56,7 @@ def run_all() -> dict:
     story_payload = run_story_benchmark(output_dir=EXP)
     selection_map_payload = run_selection_benefit_map(output_dir=EXP)
     public_replay_payload = run_public_dataset3_replay_validation(output_dir=EXP)
+    deadline_replay_payload = run_deadline_replay_validation(output_dir=EXP)
     pybullet_payload = run_pybullet_replay_validation(output_dir=EXP)
     significance_payload = run_significance(EXP / "ablation_result.json", EXP)
     runtime_payload = run_runtime(output_dir=EXP, repeats=100, warmup=10)
@@ -73,6 +75,7 @@ def run_all() -> dict:
         "figure_story_regimes.png",
         "figure_selection_benefit_map.png",
         "figure_public_real_replay.png",
+        "figure_deadline_replay.png",
         "figure_pybullet_replay.png",
     ]
     for figure_name in figure_names:
@@ -90,10 +93,14 @@ def run_all() -> dict:
         "scaling_result.json",
         "observability_result.json",
         "active_selection_result.json",
+        "story_revision_analysis.json",
         "story_benchmark_result.json",
         "selection_benefit_map.json",
+        "ransac_incremental_ablation.json",
         "public_dataset3_replay_result.json",
         "public_dataset3_replay_cases.json",
+        "deadline_replay_result.json",
+        "deadline_replay_cases.json",
         "pybullet_replay_result.json",
         "pybullet_replay_traces.json",
         "significance_result.json",
@@ -103,26 +110,24 @@ def run_all() -> dict:
         if src.exists():
             _sync_file(src, frozen_dir / json_name)
 
+    frozen_artifacts = {
+        path.stem: f"submission/supplementary/frozen_results/{path.name}"
+        for path in sorted(frozen_dir.glob("*.json"))
+        if path.name != "manifest.json"
+    }
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "zenodo_doi": "10.5281/zenodo.19657582",
+        "zenodo_record_type": "software",
+        "archived_release": "v0.3.0",
+        "live_repository": "https://github.com/poboll/robust-bearing-fusion-uav-localization",
+        "notes": [
+            "The Zenodo DOI is a GitHub-generated software/reproducibility archive, not a dataset-only deposit.",
+            "The files listed here are the curated frozen JSON result-data subset used to regenerate manuscript tables and figures.",
+        ],
         "runtime_repeats": 100,
         "runtime_warmup": 10,
-        "artifacts": {
-            "regime_comparison": str(EXP / "regime_comparison.json"),
-            "ablation_result": str(EXP / "ablation_result.json"),
-            "ablation_summary": str(EXP / "ablation_summary.json"),
-            "formation_result": str(EXP / "formation_result.json"),
-            "sensitivity_result": str(EXP / "sensitivity_result.json"),
-            "scaling_result": str(EXP / "scaling_result.json"),
-            "observability_result": str(EXP / "observability_result.json"),
-            "active_selection_result": str(EXP / "active_selection_result.json"),
-            "story_benchmark_result": str(EXP / "story_benchmark_result.json"),
-            "selection_benefit_map": str(EXP / "selection_benefit_map.json"),
-            "public_dataset3_replay_result": str(EXP / "public_dataset3_replay_result.json"),
-            "pybullet_replay_result": str(EXP / "pybullet_replay_result.json"),
-            "significance_result": str(EXP / "significance_result.json"),
-            "runtime_result": str(EXP / "runtime_result.json"),
-        },
+        "artifacts": frozen_artifacts,
     }
     _write_json(frozen_dir / "manifest.json", manifest)
 
@@ -137,6 +142,7 @@ def run_all() -> dict:
         "story_benchmark_result": story_payload,
         "selection_benefit_map": selection_map_payload,
         "public_dataset3_replay_result": public_replay_payload,
+        "deadline_replay_result": deadline_replay_payload,
         "pybullet_replay_result": pybullet_payload,
         "significance_result": significance_payload,
         "runtime_result": runtime_payload,

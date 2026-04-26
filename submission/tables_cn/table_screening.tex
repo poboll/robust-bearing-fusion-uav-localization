@@ -1,0 +1,18 @@
+\begin{table}[!htbp]
+\centering
+\caption{固定预算筛选基准。全量鲁棒融合仍是无约束上界，而 adaptive 与 geometry--reliability 策略在固定预算下优于更简单的子集规则。}
+\label{tab:screening}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+策略 & Overall Median & Mixed Median & Severe Median & Success@1.0 & Cat.@5.0 \\
+\midrule
+全量鲁棒融合        & 0.4981 & 0.3404 & 0.7022 & 0.8166 & 0.0306 \\
+仅残差              & 0.6118 & 0.4497 & 0.7913 & 0.8096 & 0.0302 \\
+仅可靠性            & 0.6383 & 0.4970 & 0.8145 & 0.7777 & 0.0319 \\
+几何+可靠性         & 0.5872 & 0.4300 & 0.7774 & 0.7996 & 0.0315 \\
+自适应              & 0.5518 & 0.3857 & 0.7487 & 0.8026 & 0.0311 \\
+\bottomrule
+\end{tabular}}
+\end{table}

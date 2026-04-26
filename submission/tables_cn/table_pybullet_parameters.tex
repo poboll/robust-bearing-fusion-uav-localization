@@ -1,0 +1,24 @@
+\begin{table}[!htbp]
+\centering
+\caption{半实物多无人机验证层使用的 PyBullet 回放配置。定位窗口每 3 个控制步采样一次，对应 16~Hz 的 cue 更新频率。}
+\label{tab:pybulletparams}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.25\linewidth} >{\RaggedRight\arraybackslash}p{0.17\linewidth} X}
+\toprule
+参数组 & 配置项 & 回放中使用的取值 \\
+\midrule
+飞行器仿真器 & 引擎 & \texttt{gym-pybullet-drones}; \texttt{PYB\_GND\_DRAG\_DW} 物理模式 \\
+时间参数 & 频率 & 240~Hz 仿真、48~Hz 控制、16~Hz 定位更新 \\
+编队回放 & 群体布局与规模 & 8 或 10 机的 circle 与 ellipse 编队 \\
+运动包络 & 时长 / 轨道 / 高度 & 7.0--7.5~s 视窗，6.0~s 轨道周期，0.95~m 基准高度并带 0.04~m 交错 \\
+bearing 生成 & FOV / 偏航偏置 & 相对机体航向带 $-90^\circ$ 传感器偏航偏移的 $\pm 105^\circ$ 半视场 \\
+延迟扰动 & 延迟步数 & nominal / disturbed 回放中均值分别为 0.45 / 0.60 控制步，标准差为 0.22 / 0.28 \\
+姿态诱导污染 & 增益对 & nominal / disturbed 回放中姿态增益 0.017 / 0.020，偏航角速度增益 0.0016 / 0.0020 \\
+偏置过程 & 共享偏置 / 漂移 & 0.0065 / 0.0090 的共享偏置，叠加 0.0022 / 0.0030 的正弦漂移 \\
+随机污染 & 缺失率 / 离群率 & nominal / disturbed 回放中缺失率 0.010 / 0.015，离群率 0.010 / 0.016 \\
+离群幅值 & 离群尺度 & nominal / disturbed 回放中分别为 0.08 / 0.12 弧度 \\
+阵风扰动 & 力标准差 / 触发概率 & nominal / disturbed 回放中分别为 0.13 / 0.16 与 0.24 / 0.30 \\
+\bottomrule
+\end{tabularx}
+\end{table}

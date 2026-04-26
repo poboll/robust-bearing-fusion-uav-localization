@@ -1,0 +1,24 @@
+\begin{table}[!htbp]
+\centering
+\caption{Deadline-aware 实测数据重放。它基于与表~\ref{tab:publicrealreplay} 相同的测绘几何、实测可见性和同步表，但额外加入周期级 arrival filter，在定位前丢弃 stale 或 late bearing。Nominal deadline 层保留了 152/257 个窗口，平均拥有 2.78 条按时 bearing；disturbed 层保留了 75/279 个窗口，平均拥有 1.97 条按时 bearing。本文前端在两类 deadline 场景中都保持可比中位误差并给出更小上尾。}
+\label{tab:deadlinereplay}
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\small
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+场景 & 方法 & Median (m) & P95 (m) & Ready@20 m & Extreme@80 m \\
+\midrule
+Nominal Deadline   & Least Squares & 32.8007 & 343.7387 & 0.2303 & 0.1316 \\
+Nominal Deadline   & GNC-GM        & 33.7005 & 332.0415 & 0.2500 & 0.1184 \\
+Nominal Deadline   & RANSAC        & 33.7950 & 139.6508 & 0.2500 & 0.1316 \\
+Nominal Deadline   & 本文方法       & 33.9664 &  82.7327 & 0.2566 & 0.0592 \\
+\midrule
+Disturbed Deadline & Least Squares & 33.6946 & 121.6554 & 0.2933 & 0.0933 \\
+Disturbed Deadline & GNC-GM        & 33.8389 & 108.2326 & 0.2800 & 0.0667 \\
+Disturbed Deadline & RANSAC        & 36.5773 & 104.9651 & 0.2933 & 0.1200 \\
+Disturbed Deadline & 本文方法       & 33.8389 &  86.0841 & 0.2800 & 0.0800 \\
+\bottomrule
+\end{tabular}
+\endgroup
+\end{table}

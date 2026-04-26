@@ -17,7 +17,7 @@ METHOD_KEYS = {
     "tukey_error": "Tukey-IRLS",
     "ransac_error": "RANSAC",
     "gnc_gm_error": "GNC-GM",
-    "robust_bias_trimmed_error": "Robust-BT",
+    "robust_bias_trimmed_error": "Proposed",
 }
 
 

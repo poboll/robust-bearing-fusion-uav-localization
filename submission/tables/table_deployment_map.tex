@@ -1,15 +1,16 @@
 \begin{table}[!htbp]
 \centering
-\caption{Representative passive-sensing deployment scenarios and their dominant corruption sources.}
+\caption{Passive-sensing deployment scenarios and dominant corruption sources.}
 \label{tab:deploymain}
 \small
+\setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.23\linewidth} >{\RaggedRight\arraybackslash}p{0.23\linewidth} X}
 \toprule
 Scenario & Dominant corruption sources & Why the present front end is relevant \\
 \midrule
 Electromagnetically silent formation sensing \cite{li2025bearing,huang2025emcompat} & Shared heading bias, geometry imbalance, communication-limited updates & A robust one-shot fusion block suppresses catastrophic cue displacement before formation redesign or long-horizon planning is invoked. \\
 Communication-limited swarm cueing \cite{xing2025node,zhou2026target} & Uneven node quality, delayed uplink, bandwidth budget & The fixed-budget screening module is explicitly motivated by this regime and is evaluated against residual-only, reliability-only, and geometry-only subset rules. \\
-Degraded navigation and asynchronous payload operation \cite{chen2025research,peng2024trajectory} & Pose error, timestamp mismatch, intermittent detections, bearing drift & The pose-uncertainty, heterogeneous-bias, pseudo-physical replay, and PyBullet replay layers target this failure pattern directly. \\
+Degraded navigation and asynchronous payload operation \cite{chen2025research,peng2024trajectory} & Pose error, timestamp mismatch, intermittent detections, bearing drift & This failure pattern is matched directly by pose uncertainty, sensor bias, pseudo-physical replay, and PyBullet replay experiments. \\
 Simulation-to-real transition studies \cite{panerati2021learning,perezsegui2023bridging} & Delay, attitude disturbance, bias drift, replay mismatch & The manuscript positions the method as an intermediate front-end baseline that should later be coupled to SITL, HITL, or field-log replay. \\
 \bottomrule
 \end{tabularx}

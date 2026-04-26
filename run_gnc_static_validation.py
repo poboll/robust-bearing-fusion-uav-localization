@@ -1,4 +1,4 @@
-"""Run a focused static validation comparing Robust-BT against the GNC-GM baseline."""
+"""Run a focused static validation comparing the proposed method against GNC-GM."""
 
 from __future__ import annotations
 

@@ -1,0 +1,17 @@
+\begin{table}[!htbp]
+\centering
+\caption{PyBullet 回放上的下游跟踪代理指标，使用带卡方门控的最简 Kalman filter。Sequence break 表示在一个 replay 序列内至少出现一次连续三次门控失败。四种前端全部报告，因为 replay 层的排序并不能完全代表下游 tail behavior。}
+\label{tab:trackingproxy}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+方法 & 总体中断率 & 总体 P90 RMSE & 扰动场景中断率 & 扰动场景 P90 RMSE & 扰动场景快速重捕获率 & 扰动场景 ROI P90 \\
+\midrule
+Least Squares & 0.7083 & 28.8386 & 0.8333 & 29.8760 & 0.6528 & 4.1488 \\
+GNC-GM        & 0.7083 & 16.6907 & 0.8333 & 12.9715 & 0.6042 & 4.1218 \\
+RANSAC        & 0.6667 & 34.3885 & 0.8333 & 36.5509 & 0.4861 & 18.7335 \\
+本文方法     & 0.6667 & 16.4994 & 0.8333 & 13.6756 & 0.5833 & 9.8080 \\
+\bottomrule
+\end{tabular}}
+\end{table}

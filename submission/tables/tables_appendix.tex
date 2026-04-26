@@ -1,9 +1,10 @@
 \section{Representative Positioning Against Nearby Literature}
+\label{app:positioning}
 
 \newcolumntype{Q}[1]{>{\RaggedRight\arraybackslash}p{#1}}
 \newcolumntype{Z}{>{\RaggedRight\arraybackslash}X}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{Positioning of the present manuscript relative to representative recent literature.}
 \label{tab:positioning}
@@ -17,15 +18,42 @@ Reference & Primary focus & Corrupted-bearing front end & Fixed-budget screening
 \cite{huang2025emcompat} & Passive positioning and formation electromagnetic compatibility for UAV swarms & Not explicit & No & Simulation-focused \\
 \cite{li2025bearing} & Bearing-only passive localization with formation adjustment under electromagnetic silence & Partial geometry/bias discussion & No & Simulation-focused \\
 \cite{yin2025dual} & Dual-UAV cooperative bearing-only localization with particle filtering & Yes, through filtering & No & Algorithm simulation \\
-This work & One-shot robust fusion under outliers, bias, missing data, and pose uncertainty & Yes & Yes & Synthetic, pseudo-physical replay, and PyBullet stress test \\
+This work & One-shot robust fusion under outliers, bias, missing data, and pose uncertainty & Yes & Yes & Synthetic, pseudo-physical replay, and PyBullet replay \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-\section{Benchmark Matrix and Hyperparameters}
+\section{Threats to Validity}
+\label{app:threats}
 
-\begin{table}[!htbp]
+The most important construct-validity threat is that corrupted bearings are represented by parameterized stochastic models rather than by an onboard sensor stack. The pseudo-physical and PyBullet replay layers reduce this gap, but they do not remove it. The most important internal-validity threat is that the screening module remains an engineered score with fixed coefficients, although the randomized coefficient-perturbation study shows that its behavior is not tied to one brittle weight vector. The most important external-validity threat is that the study remains planar and centralized. These limits define the current scope and motivate future extensions toward SITL, HITL, field-log replay, and full three-dimensional localization.
+
+\section{Sketch of a 3D Extension}
+\label{app:threed}
+
+The same front-end structure extends naturally to three-dimensional passive localization if each observer pose is represented as $s_i=[x_i,y_i,z_i]^T$ and the target state is represented as $p=[x,y,z]^T$. A compact measurement model is
+\begin{equation}
+\mathbf{z}_i=
+\begin{bmatrix}
+\psi_i\\
+\varphi_i
+\end{bmatrix}
+=
+\begin{bmatrix}
+\operatorname{atan2}(y-y_i,x-x_i)\\
+\operatorname{atan2}\!\left(z-z_i,\sqrt{(x-x_i)^2+(y-y_i)^2}\right)
+\end{bmatrix}
+\mathbf{b}_i+\boldsymbol{\epsilon}_i+\mathbf{o}_i,
+\end{equation}
+where $\psi_i$ and $\varphi_i$ denote azimuth and elevation, respectively. The 3D front end would keep the same two-stage logic: consensus-style seeding, trimmed robust refinement, and optional budget-aware screening, but the Jacobian and FIM terms would become $3\times 3$ objects and the observability score would need to reflect both horizontal and vertical geometry. A distributed V2V version would then decide whether to transmit full angle packets, compressed sufficient statistics, or only screened subsets.
+
+\clearpage
+
+\section{Benchmark Matrix and Hyperparameters}
+\label{app:hyperparams}
+
+\begin{table}[H]
 \centering
 \caption{Benchmark matrix used in the manuscript.}
 \label{tab:benchmatrix}
@@ -36,15 +64,16 @@ Benchmark layer & Cases & Formations / counts & Main perturbations & Main purpos
 \midrule
 Main Monte Carlo & 3000 & Circle, random, and degenerate; 8 observers & Outliers, mixed corruption, pose noise, heterogeneous bias & Establish the core robust-localization story \\
 Fixed-budget screening & 2285 & Circle, perturbed, random, and degenerate; 8/10/12 observers & Mixed and severe corruption under subset budgets & Test whether screening helps when not all bearings can be fused \\
-Public real-flight replay & 536 & Surveyed multi-view observers; real target trajectory & Measured visibility loss, measured asynchrony, pose noise, bias, outliers & Add a measured-data replay layer between synthetic and stress-test evidence \\
+Measured-data multi-view replay surrogate & 536 & Surveyed multi-view observers; real target trajectory & Measured visibility loss, measured asynchrony, pose noise, bias, outliers & Add a measured-data replay layer between synthetic and replay evidence \\
+Deadline-aware measured-data replay & 227 & Same surveyed observer network; synchronized replay windows & Measured visibility and synchronization plus sampled link delay, packet loss, and staleness filtering & Test whether the front end remains usable when only on-time bearings survive the current cycle \\
 Pseudo-physical replay & 720 & Three formations; three swarm sizes & Delay, jitter, missing data, per-sensor bias, outliers & Add flight-like disturbances without a full vehicle simulator \\
-PyBullet multi-vehicle replay & 1103 & Circle and ellipse; 8/10 observers & Attitude disturbance, gust-like perturbation, delay, bias drift, missing data & Stress the estimator on multi-vehicle trajectories and asynchronous logs \\
+PyBullet multi-vehicle replay & 1103 & Circle and ellipse; 8/10 observers & Attitude disturbance, gust-like perturbation, delay, bias drift, missing data & Evaluate the estimator on multi-vehicle trajectories and asynchronous logs \\
 Generalization / efficiency sweeps & Multiple sweeps & Four formations; 4--12 observers; five severity levels & Outlier-rate, bias, noise, observability, timing cost & Characterize scaling, sensitivity, and computational burden \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{Key algorithmic hyperparameters used by the robust estimator and the screening module.}
 \label{tab:hyperparams}
@@ -59,7 +88,7 @@ Setting & Default & Role & Stress-tested in \\
 \texttt{tukey\_c} & 0.18 & Tail cutoff for aggressive downweighting during refinement & Ablation study \\
 \texttt{lm\_damping} & $10^{-3}$ & Damping for Gauss--Newton / LM updates & All benchmarks \\
 \texttt{max\_step\_norm} & 3.0 & Prevents unstable jumps from poor initial hypotheses & Dynamic and PyBullet replay \\
-\texttt{ransac\_iterations} & 72 & Consensus fallback search depth & Main Monte Carlo and replay \\
+\texttt{\seqsplit{ransac\_iterations}} & 72 & Consensus fallback search depth & Main Monte Carlo and replay \\
 \texttt{ransac\_thr} & 0.12 & Bearing residual threshold for the fallback hypothesis & Main Monte Carlo and replay \\
 Adaptive gate & MAD $<0.05$ and $\sigma_w<0.12$ & Keeps all-sensor fusion in cleaner windows & Fixed-budget screening \\
 Candidate pool size & $\max(k+2,8)$ & Limits exhaustive search to a tractable top-reliability pool & Fixed-budget screening \\
@@ -68,8 +97,9 @@ Candidate pool size & $\max(k+2,8)$ & Limits exhaustive search to a tractable to
 \end{table}
 
 \section{Supplementary Result Tables}
+\label{app:suppresults}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{Selected points from the sensitivity sweeps.}
 \label{tab:sensitivityextra}
@@ -93,7 +123,7 @@ Noise std & 0.08 & 1.1580 & 0.7869 & 0.7146 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{Sensor-count scaling medians for circle and random formations.}
 \label{tab:scalingextra}
@@ -117,7 +147,7 @@ Random & 12 & 0.6972 & 0.3335 & 0.2773 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{Formation-generalization medians in the mixed-corruption study.}
 \label{tab:formationextra}
@@ -133,9 +163,9 @@ Random & 0.7375 & 0.5186 & 0.4140 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
-\caption{PyBullet multi-vehicle replay summary. The proposed estimator is broadly comparable to classical robust baselines in median error while improving several tail-oriented indicators.}
+\caption{PyBullet multi-vehicle replay summary. Median error remains close to the stronger robust baselines, while several tail-oriented indicators improve under disturbed replay.}
 \label{tab:pybullet}
 \small
 \begin{tabular}{llrrrr}
@@ -147,16 +177,16 @@ Overall & GNC-GM & 1.6967 & 12.7876 & 0.3309 & 0.2221 \\
 Overall & RANSAC & 2.0073 & 15.0330 & 0.3200 & 0.2593 \\
 Overall & Proposed & 2.0611 & 13.1131 & 0.3028 & 0.2584 \\
 \midrule
-Nominal & Least Squares & 1.3930 & 13.1086 & 0.3890 & 0.1984 \\
-Nominal & Proposed & 1.8426 & 9.0048 & 0.3340 & 0.2004 \\
+Nominal & Least Squares & 1.3930 & 10.9102 & 0.3874 & 0.2075 \\
+Nominal & Proposed & 1.5377 & 10.3484 & 0.3597 & 0.2273 \\
 \midrule
-Disturbed & Least Squares & 2.3330 & 31.1812 & 0.2798 & 0.2933 \\
-Disturbed & Proposed & 2.3099 & 18.8802 & 0.3008 & 0.2707 \\
+Disturbed & Least Squares & 2.1975 & 36.5283 & 0.2781 & 0.2764 \\
+Disturbed & Proposed & 2.3891 & 18.1859 & 0.2546 & 0.2848 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{table}[!htbp]
+\begin{table}[H]
 \centering
 \caption{Expanded paired-significance summary from the main 3000-case synthetic benchmark. Positive median improvement means lower error for the proposed front-end family.}
 \label{tab:significance}
@@ -185,25 +215,3 @@ Heterogeneous bias & Proposed vs RANSAC & 136--150--314 & 0.8396 & 0.0000 \\
 \end{tabular}
 }
 \end{table}
-
-\section{Threats to Validity}
-
-The most important construct-validity threat is that corrupted bearings are represented by parameterized stochastic models rather than by an onboard sensor stack. The pseudo-physical and PyBullet replay layers reduce this gap, but they do not remove it. The most important internal-validity threat is that the screening module remains an engineered score with fixed coefficients, although the exact $\pm20\%$ perturbation study shows that its behavior is not tied to one brittle weight vector. The most important external-validity threat is that the study remains planar and centralized. These limits define the current scope and motivate future extensions toward SITL, HITL, field-log replay, and full three-dimensional localization.
-
-\section{Sketch of a 3D Extension}
-
-The same front-end structure extends naturally to three-dimensional passive localization if each observer pose is represented as $s_i=[x_i,y_i,z_i]^T$ and the target state is represented as $p=[x,y,z]^T$. A compact measurement model is
-\begin{equation}
-\mathbf{z}_i=
-\begin{bmatrix}
-\psi_i\\
-\varphi_i
-\end{bmatrix}
-=
-\begin{bmatrix}
-\operatorname{atan2}(y-y_i,x-x_i)\\
-\operatorname{atan2}\!\left(z-z_i,\sqrt{(x-x_i)^2+(y-y_i)^2}\right)
-\end{bmatrix}
-\mathbf{b}_i+\boldsymbol{\epsilon}_i+\mathbf{o}_i,
-\end{equation}
-where $\psi_i$ and $\varphi_i$ denote azimuth and elevation, respectively. The 3D front end would keep the same two-stage logic: consensus-style seeding, trimmed robust refinement, and optional budget-aware screening, but the Jacobian and FIM terms would become $3\times 3$ objects and the observability score would need to reflect both horizontal and vertical geometry. A distributed V2V version would then decide whether to transmit full angle packets, compressed sufficient statistics, or only screened subsets.

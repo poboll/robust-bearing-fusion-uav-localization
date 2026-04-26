@@ -1,23 +1,24 @@
 \begin{table}[!htbp]
 \centering
-\caption{PyBullet replay configuration used for the semi-physical multi-UAV validation layer. Localization windows are sampled every three control steps, corresponding to a 16~Hz cue-update rate.}
+\caption{PyBullet replay configuration for the semi-physical multi-UAV validation layer. Localization windows are sampled every three control steps, corresponding to a 16~Hz cue-update rate.}
 \label{tab:pybulletparams}
 \small
-\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.28\linewidth} >{\RaggedRight\arraybackslash}p{0.18\linewidth} X}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.25\linewidth} >{\RaggedRight\arraybackslash}p{0.17\linewidth} X}
 \toprule
 Parameter group & Setting & Value used in replay \\
 \midrule
-Vehicle simulator & Physics engine & \texttt{gym-pybullet-drones} with \texttt{PYB\_GND\_DRAG\_DW} physics \\
-Timing & Simulation / control / localization rates & 240~Hz simulation, 48~Hz control, 16~Hz localization window update \\
+Vehicle simulator & Engine & \texttt{gym-pybullet-drones}; \texttt{PYB\_GND\_DRAG\_DW} physics \\
+Timing & Rates & 240~Hz simulation, 48~Hz control, 16~Hz localization update \\
 Formation replay & Swarm layouts and counts & Circle and ellipse formations with 8 or 10 vehicles \\
-Motion envelope & Orbit and altitude & 7.0--7.5~s replay horizon, 6.0~s orbit period, 0.95~m base altitude with 0.04~m stagger \\
-Bearing generation & FOV and payload mounting offset & $\pm 105^\circ$ half field of view with a $-90^\circ$ sensor-yaw offset relative to the body heading \\
-Delay perturbation & Delay-step distribution & Mean 0.45 / 0.60 control steps, standard deviation 0.22 / 0.28 in nominal / disturbed replay \\
-Attitude-induced corruption & Attitude and yaw-rate gains & 0.017 / 0.020 attitude gain and 0.0016 / 0.0020 yaw-rate gain in nominal / disturbed replay \\
-Bias process & Common bias and drift & 0.0065 / 0.0090 shared bias with 0.0022 / 0.0030 sinusoidal drift \\
-Random corruption & Missing rate and outlier rate & 0.010 / 0.015 missing rate and 0.010 / 0.016 outlier rate in nominal / disturbed replay \\
+Motion envelope & Horizon / orbit / altitude & 7.0--7.5~s horizon, 6.0~s orbit period, 0.95~m base altitude with 0.04~m stagger \\
+Bearing generation & FOV / yaw offset & $\pm 105^\circ$ half field of view with a $-90^\circ$ sensor-yaw offset relative to the body heading \\
+Delay perturbation & Delay steps & Mean 0.45 / 0.60 control steps, standard deviation 0.22 / 0.28 in nominal / disturbed replay \\
+Attitude-induced corruption & Gain pair & 0.017 / 0.020 attitude gain and 0.0016 / 0.0020 yaw-rate gain in nominal / disturbed replay \\
+Bias process & Shared bias / drift & 0.0065 / 0.0090 shared bias with 0.0022 / 0.0030 sinusoidal drift \\
+Random corruption & Missing / outlier rates & 0.010 / 0.015 missing rate and 0.010 / 0.016 outlier rate in nominal / disturbed replay \\
 Outlier magnitude & Outlier scale & 0.08 / 0.12 radians in nominal / disturbed replay \\
-Gust disturbance & Gust force standard deviation & 0.13 / 0.16 with 0.24 / 0.30 trigger probability in nominal / disturbed replay \\
+Gust disturbance & Force std / trigger prob. & 0.13 / 0.16 with 0.24 / 0.30 trigger probability in nominal / disturbed replay \\
 \bottomrule
 \end{tabularx}
 \end{table}

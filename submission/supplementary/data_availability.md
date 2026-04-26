@@ -1,5 +1,12 @@
 # Data and Code Availability
 
-The results reported in this study are generated from a fully synthetic and reproducible passive-localization simulation pipeline. Core experimental outputs, including regime comparison, ablation, formation generalization, sensitivity sweeps, scaling, observability interpretation, significance summaries, and measurement-selection benchmarks, are available in the project `experiments/` directory. Frozen result snapshots used by the submission package are archived under `submission/supplementary/frozen_results/`.
+The archival software and frozen result snapshot used for this manuscript are available on Zenodo:
 
-The source code used to generate these results is organized in the project `src/` directory together with the experiment runner scripts at the project root. At submission time, this statement can be adapted to the target journal's repository, DOI, and code-availability policy.
+- DOI: https://doi.org/10.5281/zenodo.19657582
+- Zenodo record type: Software
+- Archived version: `v0.3.0`
+- Live development repository: https://github.com/poboll/robust-bearing-fusion-uav-localization
+
+This DOI was minted from the GitHub-Zenodo integration, so the Zenodo file is an archival repository snapshot rather than a dataset-only deposit. It intentionally contains source code, scripts, manuscript assets, documentation, figures, and frozen result files needed to reproduce and audit the paper.
+
+For reviewers or portals that ask specifically for the data subset, the curated result-data files are kept under `submission/supplementary/frozen_results/` and bundled as `submission/supplementary/result_data_bundle.zip`. This data-only bundle contains the frozen JSON outputs, the result manifest, and this availability note. The larger `submission/supplementary/reproducibility_package.zip` remains the full manuscript-side reproducibility package, including MDPI source files, plotting scripts, experiment runners, frozen JSON outputs, and configuration files required to regenerate the reported tables and figures.

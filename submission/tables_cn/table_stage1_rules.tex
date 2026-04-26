@@ -1,0 +1,17 @@
+\begin{table}[!htbp]
+\centering
+\caption{Algorithm~\ref{alg:frontend} 使用的 Stage~1 内部决策规则。其中 $\delta_H=0.08$ 表示全文统一使用的 Huber 尺度。}
+\label{tab:stagerules}
+\small
+\begin{tabularx}{\linewidth}{>{\RaggedRight\arraybackslash}p{0.19\linewidth} >{\RaggedRight\arraybackslash}p{0.48\linewidth} >{\RaggedRight\arraybackslash}X}
+\toprule
+规则 & 实现中的定量触发条件 & 作用 \\
+\midrule
+一致性捷径 & $\operatorname{median}(|r_{\mathrm{LS}}|)\le 0.58\delta_H$，$\operatorname{MAD}(|r_{\mathrm{LS}}|)\le 0.32\delta_H$，$\operatorname{P90}(|r_{\mathrm{LS}}|)\le 1.65\delta_H$，且 $\operatorname{mean}(|r_{\mathrm{LS}}|)\le 0.95\delta_H$ & 当当前窗口本身已经较为一致时，直接接受低成本的平滑候选。 \\
+偏置激活 & 有效 bearing 数不少于 3，且 $\operatorname{std}(r_{\mathrm{active}})\le 1.8\delta_H$；否则共享偏置强制为 0 & 避免在残差过于分散时拟合不稳定的共享偏置。 \\
+严重残差标记 & 先修剪最大的 $\lfloor 0.15N\rfloor$ 个残差，再额外标记满足 $|r_i|>\max(1.75\delta_H,Q_{0.78}(|r|))$ 的测量，同时始终保证至少保留 3 条有效 bearing & 把“修剪大残差”落实为可复现的强抑制规则。 \\
+共识回退 & 若精化后满足严重残差比例 $\mathbb{E}[\mathbb{I}\{|r|>1.75\delta_H\}]\ge 0.12$，或移除数量达到 $\max(1,0.20N)$，或精化点相对共识点偏离超过 $1.0$ 且共识残差仅差 $0.03$ 以内，同时移除数量达到 $\max(2,0.25N)$ 或 $|b|\ge 0.08$，则回退到共识候选 & 在 nominal residual 看似不高、但 heavy-tail 或偏置迹象仍然可疑时，优先保住更稳的共识解。 \\
+平滑回退 & 若精化分支移除了至少 $\max(2,0.22N)$ 条 bearing、相对平滑点偏移超过 $0.65$，且残差优势不超过 $0.010$，则回退到最佳平滑候选；若精化残差仅比平滑分支低不到 $0.015$，同样回退 & 用显式阈值替代“修剪过猛”“没有明显更好”这类口语化说法。 \\
+\bottomrule
+\end{tabularx}
+\end{table}
