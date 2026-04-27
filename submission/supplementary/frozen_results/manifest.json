@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-25T10:10:31+0800",
-  "zenodo_doi": "10.5281/zenodo.19657582",
+  "generated_at": "2026-04-27T10:12:00+0800",
+  "zenodo_doi": "10.5281/zenodo.19805203",
   "zenodo_record_type": "software",
-  "archived_release": "v0.3.0",
+  "archived_release": "v0.4.0",
   "live_repository": "https://github.com/poboll/robust-bearing-fusion-uav-localization",
   "notes": [
     "The Zenodo DOI is a GitHub-generated software/reproducibility archive, not a dataset-only deposit.",

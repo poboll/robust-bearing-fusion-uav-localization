@@ -2,9 +2,9 @@
 
 The archival software and frozen result snapshot used for this manuscript are available on Zenodo:
 
-- DOI: https://doi.org/10.5281/zenodo.19657582
+- DOI: https://doi.org/10.5281/zenodo.19805203
 - Zenodo record type: Software
-- Archived version: `v0.3.0`
+- Archived version: `v0.4.0`
 - Live development repository: https://github.com/poboll/robust-bearing-fusion-uav-localization
 
 This DOI was minted from the GitHub-Zenodo integration, so the Zenodo file is an archival repository snapshot rather than a dataset-only deposit. It intentionally contains source code, scripts, manuscript assets, documentation, figures, and frozen result files needed to reproduce and audit the paper.

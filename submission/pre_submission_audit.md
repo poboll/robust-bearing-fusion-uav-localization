@@ -1,15 +1,15 @@
 # Pre-Submission Audit
 
-Audit date: April 25, 2026
+Audit date: April 27, 2026
 
 ## Current Status
 
 - Canonical manuscript: `submission/mdpi_manuscript/manuscript_mdpi.tex`
 - Current PDF build: `submission/mdpi_manuscript/manuscript_mdpi.pdf`
 - Current paper title: `Robust One-Shot Bearing-Only Localization Front-End for Passive Multi-UAV Sensing`
-- Current page count: English `39`; Chinese companion draft `33`
-- Current archival DOI: `https://doi.org/10.5281/zenodo.19657582`
-- Current repository snapshot: Zenodo software archive generated from GitHub release `v0.3.0`, plus frozen JSON outputs and plotting scripts inside the submission package
+- Current page count: English `39`; Chinese companion draft `32`
+- Current archival DOI: `https://doi.org/10.5281/zenodo.19805203`
+- Current repository snapshot: Zenodo software archive generated from GitHub release `v0.4.0`, plus frozen JSON outputs and plotting scripts inside the submission package
 
 ## Completed in the Current Revision Round
 

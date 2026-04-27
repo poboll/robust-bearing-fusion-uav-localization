@@ -117,9 +117,9 @@ def run_all() -> dict:
     }
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "zenodo_doi": "10.5281/zenodo.19657582",
+        "zenodo_doi": "10.5281/zenodo.19805203",
         "zenodo_record_type": "software",
-        "archived_release": "v0.3.0",
+        "archived_release": "v0.4.0",
         "live_repository": "https://github.com/poboll/robust-bearing-fusion-uav-localization",
         "notes": [
             "The Zenodo DOI is a GitHub-generated software/reproducibility archive, not a dataset-only deposit.",

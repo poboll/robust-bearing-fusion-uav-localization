@@ -65,8 +65,8 @@ latexmk -pdf -interaction=nonstopmode manuscript_mdpi.tex
 
 - Git remote: `git@github.com:poboll/robust-bearing-fusion-uav-localization.git`
 - Web URL: `https://github.com/poboll/robust-bearing-fusion-uav-localization`
-- Archival DOI: `https://doi.org/10.5281/zenodo.19657582`
-- Zenodo record type: software/reproducibility archive generated from GitHub release `v0.3.0`
+- Archival DOI: `https://doi.org/10.5281/zenodo.19805203`
+- Zenodo record type: software/reproducibility archive generated from GitHub release `v0.4.0`
 
 The Zenodo DOI should be cited as the fixed archival software snapshot. It is not a dataset-only deposit. The curated data subset for the manuscript is `submission/supplementary/frozen_results/` and the companion `submission/supplementary/result_data_bundle.zip`. If a venue explicitly requires a separate dataset DOI, create a new Zenodo dataset record from that data-only bundle rather than reusing the GitHub-generated software DOI as a pure dataset DOI.
 
